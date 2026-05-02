@@ -10,4 +10,4 @@ Record reusable lessons from completed sessions.
 - Scripts created: none.
 - Workflow improvement: keep bootstrap instructions and product plan together so harness docs can avoid generic placeholders.
 - Skill worth adding or updating: copy supplied onboarding skill bodies into `.codex/skills/` only after the user explicitly approves installing those skills.
-
+- Validation note: `git diff --check` was sufficient for the docs-only bootstrap; `ruff` and `pytest` were unavailable, and no package manifest existed for `npm` commands.

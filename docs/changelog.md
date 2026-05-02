@@ -10,5 +10,4 @@ Summary:
 - Why: prepare the repository for safe agentic development.
 - User-visible impact: no product behavior exists yet.
 - Migration notes: none.
-- Related PR/commit: pending local commit.
-
+- Related PR/commit: `b2714014dc46591dfb0f42b4d28e7ffac2138051`.

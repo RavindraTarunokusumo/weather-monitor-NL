@@ -41,8 +41,8 @@ Manual validation notes:
 
 - [x] Updated docs for behavior/API/architecture changes
 - [x] Updated `docs/changelog.md` for workflow setup
-- [ ] Updated `TODO.md` / moved completed items to `docs/iterations/archive/`
-- [ ] Added git notes per commit using `.github/git_notes_template.md`
+- [x] Updated `TODO.md` / moved completed items to `docs/iterations/archive/`
+- [x] Added git notes per commit using `.github/git_notes_template.md`
 
 ## Related
 
@@ -53,4 +53,3 @@ Manual validation notes:
 ## Targeted UI Checks
 
 - [ ] N/A; no UI exists yet.
-
