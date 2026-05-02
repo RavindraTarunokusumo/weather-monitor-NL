@@ -1,0 +1,5 @@
+Task: Harness bootstrap archive cleanup
+Summary: Removed completed bootstrap work from active TODO, archived the session and local PR draft, and recorded validation notes.
+Docs: TODO.md, docs/changelog.md, docs/insights.md, docs/iterations/archive/2026-05-02-harness-bootstrap.md, docs/iterations/archive/2026-05-02-harness-bootstrap-pr-draft.md
+TODO: Harness Bootstrap (2026-05-02)
+Validation: git diff --check passed
