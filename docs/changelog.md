@@ -10,7 +10,7 @@ Summary:
 - Why: make implementation scope explicit and durable before agents create TODO items, commits, PRs, or archived session records.
 - User-visible impact: feature work now starts from an accepted spec instead of direct chat prompts.
 - Migration notes: new workflow items should reference the related spec path in `TODO.md`, git notes, PRs, and archived sessions.
-- Related PR/commit: pending.
+- Related PR/commit: `8cb939e`.
 
 ## 2026-05-02 - Added Vercel Plugin Scaffold
 
