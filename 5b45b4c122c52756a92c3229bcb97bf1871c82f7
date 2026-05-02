@@ -1,0 +1,6 @@
+Task: root scaffold configuration baseline
+Summary: Added root uv-based Python packaging, linting, pre-commit, and ignore configuration for the project scaffold.
+Spec: docs/specs/project-scaffold-local-dev.md
+Docs: docs/specs/project-scaffold-local-dev.md, TODO.md
+TODO: TODO.md -> Active Work -> root scaffold configuration baseline
+Validation: uv lock --check; uv run --group dev pre-commit validate-config .pre-commit-config.yaml; uv run --group dev pre-commit run --all-files
