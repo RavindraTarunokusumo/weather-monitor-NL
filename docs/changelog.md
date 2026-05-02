@@ -10,7 +10,7 @@ Summary:
 - Why: make the supplied workflow instructions available from repo-local harness locations.
 - User-visible impact: no product behavior exists yet.
 - Migration notes: imported skill and agent bodies should be reviewed for project-specific references before operational use.
-- Related PR/commit: pending local commit.
+- Related PR/commit: `b972e5dae74474ee02ea7815f1c7fdbb4b69768f`.
 
 ## 2026-05-02 - Agent Harness Bootstrap
 
