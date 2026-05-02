@@ -2,6 +2,15 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-02 - Root Scaffold Configuration Baseline
+
+- What worked: `uv lock`, `uv sync --locked --group dev --no-install-project`, and `pre-commit` fit cleanly into a single CI validation path for the root scaffold.
+- What failed: initial pre-commit runs surfaced missing end-of-file newlines in existing tracked files, which the hook normalized automatically.
+- Useful commands: `uv lock --check`, `uv run --group dev pre-commit run --all-files`.
+- Scripts created: none.
+- Workflow improvement: keep the CI job focused on repository-root guarantees until application code and database services exist.
+- Skill worth adding or updating: a repo-specific CI checklist for uv-managed projects would reduce setup drift when the backend and frontend jobs arrive.
+
 ## 2026-05-02 - Spec-Driven Workflow
 
 - What worked: the accepted plan translated cleanly into a per-feature spec contract under `docs/specs/`.

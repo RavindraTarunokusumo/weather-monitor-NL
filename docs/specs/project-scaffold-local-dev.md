@@ -131,6 +131,7 @@ The following are intentionally out of scope:
 * Root Python tooling is configured with `pyproject.toml`, `requirements.txt`, and `uv.lock`.
 * Pre-commit and linting rules are defined in repository-managed config files.
 * `.gitignore` excludes local environment, cache, build, and lockfile artifacts that should not be committed.
+* CI validates the root scaffold with lockfile checks, pre-commit hooks, and a Python dependency import smoke test.
 * `apps/web` starts locally as a Next.js app.
 * `apps/api` starts locally as a FastAPI app.
 * Local PostgreSQL starts through Docker Compose.
@@ -164,6 +165,15 @@ Root configuration files to add first:
 * `pyproject.toml`
 * `requirements.txt`
 * `uv.lock`
+
+Recommended CI checks for the scaffold phase:
+
+```bash
+uv lock --check
+uv sync --locked --group dev --no-install-project
+uv run --group dev pre-commit run --all-files
+uv run python -c "import fastapi, pydantic_settings, psycopg, sqlalchemy, uvicorn"
+```
 
 Recommended commands:
 
