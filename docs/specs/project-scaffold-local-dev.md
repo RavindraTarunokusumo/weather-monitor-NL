@@ -1,9 +1,9 @@
 # Project Scaffold & Local Development Spec
 
-Status: Draft
+Status: Accepted
 Spec path: `docs/specs/project-scaffold-local-dev.md`
-Accepted by: TBD
-Accepted date: TBD
+Accepted by: User
+Accepted date: 2026-05-02
 
 ## Goal
 
@@ -18,6 +18,9 @@ This spec includes:
 * Monorepo structure
 * Frontend app scaffold
 * Backend app scaffold
+* Root Python project configuration
+* Pre-commit and linter configuration
+* Root ignore rules for local development artifacts
 * Local PostgreSQL setup
 * Docker Compose setup
 * Root environment template
@@ -125,6 +128,9 @@ The following are intentionally out of scope:
 ## Acceptance Criteria
 
 * Repository uses the agreed monorepo structure.
+* Root Python tooling is configured with `pyproject.toml`, `requirements.txt`, and `uv.lock`.
+* Pre-commit and linting rules are defined in repository-managed config files.
+* `.gitignore` excludes local environment, cache, build, and lockfile artifacts that should not be committed.
 * `apps/web` starts locally as a Next.js app.
 * `apps/api` starts locally as a FastAPI app.
 * Local PostgreSQL starts through Docker Compose.
@@ -150,6 +156,14 @@ The following are intentionally out of scope:
 * The frontend must consume backend API contracts rather than external weather APIs.
 
 ## Implementation Notes
+
+Root configuration files to add first:
+
+* `.gitignore`
+* `.pre-commit-config.yaml`
+* `pyproject.toml`
+* `requirements.txt`
+* `uv.lock`
 
 Recommended commands:
 

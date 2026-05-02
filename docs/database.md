@@ -88,4 +88,3 @@ Fields:
 - Writes must be atomic where consistency matters.
 - External side effects must be auditable.
 - Source freshness must travel with derived dashboard state.
-

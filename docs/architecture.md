@@ -93,4 +93,3 @@ Planned refresh targets:
 - AI may explain source-backed facts but must not create forecasts.
 - Flood prediction is out of scope for MVP.
 - Amsterdam is the first live prototype city; Utrecht and Rotterdam follow after adapters are stable.
-
