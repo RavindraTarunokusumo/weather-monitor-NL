@@ -10,7 +10,7 @@ Summary:
 - Why: make a Vercel plugin available from the repository's local Codex plugin catalog.
 - User-visible impact: the repo now includes a discoverable local plugin scaffold with placeholder manifest values.
 - Migration notes: plugin manifest metadata is still placeholder content and needs project-specific values before real distribution or use.
-- Related PR/commit: pending local commit.
+- Related PR/commit: `639606825f2d7b1175ce6fdf67fcd13eeab830fb`.
 
 ## 2026-05-02 - Installed Onboarding Skills and Agents
 
