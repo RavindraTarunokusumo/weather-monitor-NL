@@ -1,0 +1,5 @@
+Task: Harness bootstrap
+Summary: Added agent harness docs, TODO workflow, PR/git note templates, and tracked empty skill roots for the Dutch Weather Intelligence MVP.
+Docs: AGENTS.md, TODO.md, docs/index.md, docs/agent-harness.md, docs/architecture.md, docs/database.md, docs/patterns.md, docs/testing.md, docs/commands.md, docs/changelog.md, docs/insights.md
+TODO: Harness Bootstrap (2026-05-02)
+Validation: git diff --check passed; ruff and pytest unavailable; npm present but no package.json
