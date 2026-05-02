@@ -1,0 +1,6 @@
+Task: Spec-driven workflow documentation
+Summary: Adopted accepted per-feature specs under docs/specs as the source for feature implementation workflow.
+Spec: docs/specs/spec-driven-workflow.md
+Docs: AGENTS.md, docs/specs/README.md, docs/specs/TEMPLATE.md, docs/index.md, docs/agent-harness.md, docs/changelog.md, docs/insights.md, docs/commands.md, .github/git_notes_template.md, .github/pull_request_template.md, docs/iterations/archive/*.md
+TODO: TODO.md > Spec-driven workflow documentation
+Validation: git diff --check; git diff --cached --check; targeted rg workflow wording review; manual markdown link review
