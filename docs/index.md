@@ -25,6 +25,8 @@ Add module-specific docs here as the codebase grows:
 - `tests/`: test suite once implementation starts
 - `scripts/`: local automation scripts once implementation starts
 - `Onboarding/`: initial product plan, harness bootstrap, and supplied agent/skill material
+- `.codex/skills/`: installed repo-local skill packages
+- `.agents/`: installed repo-local agent configs and compatibility skill root
 - `TODO.md`: active work only
 - `docs/iterations/archive/`: completed TODO archive
 
@@ -44,4 +46,3 @@ Add module-specific docs here as the codebase grows:
 - Source freshness must be visible wherever dashboard data is shown.
 - External data sources must be mocked in tests.
 - Runtime secrets and API keys must never be logged or committed.
-

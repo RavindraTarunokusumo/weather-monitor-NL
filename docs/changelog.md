@@ -2,6 +2,16 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-05-02 - Installed Onboarding Skills and Agents
+
+Summary:
+
+- What changed: copied supplied onboarding skill packages into `.codex/skills/` and agent TOML configs into `.agents/`.
+- Why: make the supplied workflow instructions available from repo-local harness locations.
+- User-visible impact: no product behavior exists yet.
+- Migration notes: imported skill and agent bodies should be reviewed for project-specific references before operational use.
+- Related PR/commit: pending local commit.
+
 ## 2026-05-02 - Agent Harness Bootstrap
 
 Summary:

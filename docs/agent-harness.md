@@ -55,6 +55,10 @@ Canonical root:
 
 - `.codex/skills/<skill-name>/`
 
+Compatibility root:
+
+- `.agents/skills/<skill-name>/`
+
 Skill package structure:
 
 - `SKILL.md` required only when supplied by the user
@@ -70,6 +74,28 @@ Responsibilities:
 - output expectations
 - validation rules
 - safety boundaries
+
+Installed skills:
+
+- `brainstorming`
+- `dispatching-parallel-agents`
+- `receiving-code-review`
+- `security-review`
+- `simplify`
+- `subagent-driven-development`
+- `test-driven-development`
+- `test-plan-writer`
+- `trace-inspect`
+- `writing-plans`
+
+### Layer C.1 - Subagent Configs
+
+Installed agent configs:
+
+- `.agents/doc-updater.toml`
+- `.agents/test-plan-writer.toml`
+
+These configs are repository-local agent definitions. Review imported config bodies before relying on them for project-specific work.
 
 ### Layer D - Work Tracking and Change History
 
@@ -106,6 +132,7 @@ Responsibilities:
 - Work source of truth: `TODO.md`
 - Technical source of truth: `docs/`
 - Skill source of truth: `.codex/skills/`
+- Agent config source of truth: `.agents/*.toml`
 
 If duplicates exist, update canonical content first, then mirror.
 
@@ -115,4 +142,3 @@ If duplicates exist, update canonical content first, then mirror.
 - If workflow changes, update `AGENTS.md`.
 - If repeated tasks emerge, create or revise a skill.
 - Keep skills focused and composable.
-
