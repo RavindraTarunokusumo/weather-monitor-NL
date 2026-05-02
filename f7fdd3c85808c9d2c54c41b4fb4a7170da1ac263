@@ -1,0 +1,6 @@
+Task: Archive spec-driven workflow session
+Summary: Archived the completed spec-driven workflow TODO session and updated the changelog with the implementation commit.
+Spec: docs/specs/spec-driven-workflow.md
+Docs: TODO.md, docs/changelog.md, docs/iterations/archive/2026-05-02-spec-driven-workflow.md
+TODO: TODO.md > Spec-driven workflow documentation
+Validation: git diff --check; git diff --cached --check; archived session spec-path check
