@@ -1,0 +1,5 @@
+Task: Add Vercel plugin scaffold
+Summary: Added a repo-local vercel plugin scaffold with plugin manifest, MCP/app stubs, marketplace entry, and harness documentation for plugin locations.
+Docs: TODO.md, docs/agent-harness.md, docs/index.md, docs/changelog.md, docs/insights.md
+TODO: Add Vercel Plugin Scaffold (2026-05-02)
+Validation: git diff --check passed
