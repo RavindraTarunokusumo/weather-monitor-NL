@@ -1,0 +1,5 @@
+Task: Archive skills and agents install session
+Summary: Removed completed skills/agents install work from active TODO and archived the session record.
+Docs: TODO.md, docs/changelog.md, docs/iterations/archive/2026-05-02-install-onboarding-skills-agents.md
+TODO: Install Onboarding Skills and Agents (2026-05-02)
+Validation: git diff --check passed
