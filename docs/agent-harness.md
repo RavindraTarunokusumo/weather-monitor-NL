@@ -8,6 +8,7 @@ Give every agent one clear path to:
 
 - understand repo rules
 - understand architecture
+- identify the accepted implementation spec
 - pick the right skill
 - execute safely
 - validate changes
@@ -34,6 +35,7 @@ Responsibilities:
 
 Files:
 
+- `docs/specs/*.md`
 - `docs/architecture.md`
 - `docs/database.md`
 - `docs/patterns.md`
@@ -43,6 +45,7 @@ Files:
 
 Responsibilities:
 
+- accepted implementation specs
 - technical truth
 - data model
 - invariants
@@ -123,27 +126,30 @@ Files:
 
 Responsibilities:
 
-- active work
+- active work derived from accepted specs
 - completed work
 - why changes happened
 - session lessons
+- related spec paths for archived sessions
 
 ## Recommended Navigation Order
 
 1. Read `AGENTS.md`.
 2. Read `docs/index.md`.
-3. Read relevant technical docs.
-4. Select the matching skill if available.
-5. Implement through `TODO.md`.
-6. Validate.
-7. Update docs.
-8. Prepare PR.
-9. Archive completed work.
+3. Identify and read the accepted spec under `docs/specs/`.
+4. Read relevant technical docs.
+5. Select the matching skill if available.
+6. Implement through `TODO.md`.
+7. Validate.
+8. Update docs.
+9. Prepare PR.
+10. Archive completed work with the related spec path.
 
 ## Ownership and Source of Truth
 
 - Policy source of truth: `AGENTS.md`
-- Work source of truth: `TODO.md`
+- Spec source of truth: `docs/specs/`
+- Work tracking source of truth: `TODO.md`
 - Technical source of truth: `docs/`
 - Skill source of truth: `.codex/skills/`
 - Agent config source of truth: `.agents/*.toml`
@@ -155,6 +161,7 @@ If duplicates exist, update canonical content first, then mirror.
 ## Update Rules
 
 - If source behavior changes, update relevant docs in the same iteration.
-- If workflow changes, update `AGENTS.md`.
+- If workflow changes, update `AGENTS.md` and relevant `docs/specs/` guidance.
+- If implementation scope changes, update the active spec before `TODO.md`.
 - If repeated tasks emerge, create or revise a skill.
 - Keep skills focused and composable.

@@ -1,5 +1,7 @@
 # PR Draft: Harness Bootstrap
 
+Spec: N/A (completed before spec-driven workflow).
+
 ## Summary
 
 - Added the initial agent harness and documentation structure.

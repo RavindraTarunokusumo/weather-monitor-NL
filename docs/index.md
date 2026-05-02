@@ -10,6 +10,7 @@ Use this file as the second layer after `AGENTS.md`. It points to deeper docs wi
 - [patterns.md](patterns.md): durable coding and state-management rules
 - [testing.md](testing.md): test execution, fixtures, validation workflow
 - [commands.md](commands.md): common local commands
+- [specs/README.md](specs/README.md): spec-driven development workflow and acceptance rules
 - [changelog.md](changelog.md): notable behavior and architecture changes
 - [insights.md](insights.md): session lessons and reusable workflow observations
 
@@ -28,8 +29,9 @@ Add module-specific docs here as the codebase grows:
 - `.codex/skills/`: installed repo-local skill packages
 - `.agents/`: installed repo-local agent configs and compatibility skill root
 - `plugins/`: repo-local Codex plugin scaffolds
-- `TODO.md`: active work only
-- `docs/iterations/archive/`: completed TODO archive
+- `docs/specs/`: accepted per-feature implementation specs and templates
+- `TODO.md`: active work only, derived from the active spec
+- `docs/iterations/archive/`: completed TODO archive, including related spec paths
 
 ## Fast Path By Task
 
@@ -38,6 +40,7 @@ Add module-specific docs here as the codebase grows:
 - Changing tests: read `testing.md`
 - Preparing for review: read `AGENTS.md`, `testing.md`, and PR template
 - Adding agent workflow: read `agent-harness.md`
+- Implementing a feature: start from the accepted spec under `docs/specs/`
 
 ## Core Invariants
 

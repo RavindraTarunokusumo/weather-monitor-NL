@@ -96,8 +96,8 @@ Add a structured note for the latest commit:
 git log -1 --format="%H"
 git notes add -m "Task: <task name>
 Summary: <brief what changed and why>
+Spec: <docs/specs/<feature-slug>.md, or N/A>
 Docs: <docs paths updated, comma-separated, or N/A>
 TODO: <TODO.md section/item reference>
 Validation: <checks run>" <commit_hash>
 ```
-

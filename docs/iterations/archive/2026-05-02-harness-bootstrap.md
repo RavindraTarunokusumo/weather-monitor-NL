@@ -2,6 +2,8 @@
 
 Completed session archived from `TODO.md`.
 
+Spec: N/A (completed before spec-driven workflow).
+
 - [x] Create the agent harness scaffold. Commit: `b2714014dc46591dfb0f42b4d28e7ffac2138051`
 - [x] Adapt docs to the Dutch Weather Intelligence MVP. Commit: `b2714014dc46591dfb0f42b4d28e7ffac2138051`
 - [x] Run validation, create a local commit, and attach a git note. Commit: `b2714014dc46591dfb0f42b4d28e7ffac2138051`
@@ -22,4 +24,3 @@ Notes:
 
 - Skill directories were created under `.codex/skills/` and `.agents/skills/`.
 - Skill bodies from `Onboarding/Skills/` were not copied during bootstrap.
-

@@ -2,6 +2,15 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-02 - Spec-Driven Workflow
+
+- What worked: the accepted plan translated cleanly into a per-feature spec contract under `docs/specs/`.
+- What failed: none yet.
+- Useful commands: `rg -n "SPEC|spec|prompt|query" AGENTS.md docs .github TODO.md`, `git diff --check`.
+- Scripts created: none.
+- Workflow improvement: archived session records should include the related spec path so completed work remains traceable to its accepted scope.
+- Skill worth adding or updating: consider revising `brainstorming` and `writing-plans` defaults to write specs into `docs/specs/` for this repository.
+
 ## 2026-05-02 - Harness Bootstrap
 
 - What worked: the onboarding bootstrap and product plan were enough to create project-specific harness docs before implementation started.

@@ -2,6 +2,8 @@
 
 Completed session archived from `TODO.md`.
 
+Spec: N/A (completed before spec-driven workflow).
+
 - [x] Scaffold a repo-local `vercel` plugin with plugin manifest and marketplace entry. Commit: `639606825f2d7b1175ce6fdf67fcd13eeab830fb`
 - [x] Document the repo-local plugin location in harness docs. Commit: `639606825f2d7b1175ce6fdf67fcd13eeab830fb`
 - [x] Validate and commit the Vercel plugin scaffold. Commit: `639606825f2d7b1175ce6fdf67fcd13eeab830fb`

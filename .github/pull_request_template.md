@@ -3,6 +3,11 @@
 - What changed and why?
 - Keep this focused on behavior and outcomes.
 
+## Spec
+
+- Spec path:
+- Acceptance status: `Accepted` / `N/A`
+
 ## Root Cause (for fixes)
 
 - What was broken?
@@ -39,7 +44,7 @@ Manual validation notes:
 
 - [ ] Updated docs for behavior/API/architecture changes
 - [ ] Updated `docs/changelog.md` when behavior or architecture changed
-- [ ] Updated `TODO.md` / moved completed items to `docs/iterations/archive/`
+- [ ] Updated `TODO.md` / moved completed items to `docs/iterations/archive/` with related spec path
 - [ ] Added git notes per commit using `.github/git_notes_template.md`
 
 ## Related
@@ -53,4 +58,3 @@ Manual validation notes:
 List paths or test tags the automated agent should verify after merge.
 
 - [ ] /
-

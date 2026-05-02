@@ -2,6 +2,16 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-05-02 - Adopted Spec-Driven Workflow
+
+Summary:
+
+- What changed: updated the agent workflow so feature implementation is driven by accepted per-feature specs under `docs/specs/`.
+- Why: make implementation scope explicit and durable before agents create TODO items, commits, PRs, or archived session records.
+- User-visible impact: feature work now starts from an accepted spec instead of direct chat prompts.
+- Migration notes: new workflow items should reference the related spec path in `TODO.md`, git notes, PRs, and archived sessions.
+- Related PR/commit: pending.
+
 ## 2026-05-02 - Added Vercel Plugin Scaffold
 
 Summary:

@@ -2,6 +2,8 @@
 
 Completed session archived from `TODO.md`.
 
+Spec: N/A (completed before spec-driven workflow).
+
 - [x] Copy supplied skill packages into `.codex/skills/`. Commit: `b972e5dae74474ee02ea7815f1c7fdbb4b69768f`
 - [x] Copy supplied agent configs into `.agents/`. Commit: `b972e5dae74474ee02ea7815f1c7fdbb4b69768f`
 - [x] Update harness docs with installed locations. Commit: `b972e5dae74474ee02ea7815f1c7fdbb4b69768f`
@@ -23,4 +25,3 @@ Notes:
 
 - Imported files were copied from `Onboarding/` without editing their bodies.
 - Some imported content still references the source project and needs a later project-specific cleanup pass before operational use.
-
