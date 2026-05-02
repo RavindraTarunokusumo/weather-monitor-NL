@@ -1,0 +1,5 @@
+Task: Install onboarding skills and agents
+Summary: Copied supplied skill packages into .codex/skills and agent TOML configs into .agents, then documented installed locations and import caveats.
+Docs: TODO.md, docs/agent-harness.md, docs/index.md, docs/changelog.md, docs/insights.md
+TODO: Install Onboarding Skills and Agents (2026-05-02)
+Validation: git diff --check passed; ruff and pytest unavailable; no package.json or Python dependency manifest present
