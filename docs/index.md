@@ -27,6 +27,7 @@ Add module-specific docs here as the codebase grows:
 - `Onboarding/`: initial product plan, harness bootstrap, and supplied agent/skill material
 - `.codex/skills/`: installed repo-local skill packages
 - `.agents/`: installed repo-local agent configs and compatibility skill root
+- `plugins/`: repo-local Codex plugin scaffolds
 - `TODO.md`: active work only
 - `docs/iterations/archive/`: completed TODO archive
 

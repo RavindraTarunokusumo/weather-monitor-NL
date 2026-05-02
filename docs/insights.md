@@ -20,3 +20,12 @@ Record reusable lessons from completed sessions.
 - Scripts created: none.
 - Workflow improvement: after importing supplied skills, scan for source-project references before using the files operationally.
 - Skill worth adding or updating: project-specific cleanup pass for imported `test-plan-writer`, `trace-inspect`, `security-review`, and `simplify` content.
+
+## 2026-05-02 - Add Vercel Plugin Scaffold
+
+- What worked: the bundled `plugin-creator` script created the plugin manifest and stub `.mcp.json` and `.app.json` files correctly.
+- What failed: the script partially completed before hitting sandbox restrictions when creating `.agents/plugins/marketplace.json`, so the marketplace file had to be added afterward.
+- Useful commands: `python3 /root/.codex/skills/.system/plugin-creator/scripts/create_basic_plugin.py --help`, `find plugins -maxdepth 4 -type f`.
+- Scripts created: none.
+- Workflow improvement: when scaffolding repo-local plugins in this workspace, expect hidden-path writes under `.agents/` to require escalation.
+- Skill worth adding or updating: install `plugin-creator` into the repo-local skill roots if plugin scaffolding will be a recurring workflow here.

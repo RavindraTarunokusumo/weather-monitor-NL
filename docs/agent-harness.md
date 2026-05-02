@@ -97,6 +97,20 @@ Installed agent configs:
 
 These configs are repository-local agent definitions. Review imported config bodies before relying on them for project-specific work.
 
+### Layer C.2 - Repo Plugins
+
+Repo-local plugin root:
+
+- `plugins/<plugin-name>/`
+
+Marketplace index:
+
+- `.agents/plugins/marketplace.json`
+
+Installed repo-local plugins:
+
+- `vercel`
+
 ### Layer D - Work Tracking and Change History
 
 Files:
@@ -133,6 +147,8 @@ Responsibilities:
 - Technical source of truth: `docs/`
 - Skill source of truth: `.codex/skills/`
 - Agent config source of truth: `.agents/*.toml`
+- Repo plugin source of truth: `plugins/*/.codex-plugin/plugin.json`
+- Repo plugin marketplace source of truth: `.agents/plugins/marketplace.json`
 
 If duplicates exist, update canonical content first, then mirror.
 

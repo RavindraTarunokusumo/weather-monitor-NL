@@ -2,6 +2,16 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-05-02 - Added Vercel Plugin Scaffold
+
+Summary:
+
+- What changed: added a repo-local `vercel` plugin scaffold under `plugins/vercel` and registered it in `.agents/plugins/marketplace.json`.
+- Why: make a Vercel plugin available from the repository's local Codex plugin catalog.
+- User-visible impact: the repo now includes a discoverable local plugin scaffold with placeholder manifest values.
+- Migration notes: plugin manifest metadata is still placeholder content and needs project-specific values before real distribution or use.
+- Related PR/commit: pending local commit.
+
 ## 2026-05-02 - Installed Onboarding Skills and Agents
 
 Summary:
