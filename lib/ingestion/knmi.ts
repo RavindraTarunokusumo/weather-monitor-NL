@@ -23,6 +23,7 @@ export class KnmiAdapter extends SourceAdapter<NormalizedWeatherRecord> {
     return [{ ...MOCK_FIXTURE }];
   }
 
+  // TODO: When connecting to real KNMI data, derive observedAt from the source timestamp field.
   async normalize(
     rawRecords: Record<string, unknown>[],
     _city: CityConfig,

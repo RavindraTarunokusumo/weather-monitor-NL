@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
+import type { CityConfig } from "@/lib/ingestion/base";
 import { KnmiAdapter } from "@/lib/ingestion/knmi";
 
-const mockCity = {
+const mockCity: CityConfig = {
   id: "city-1",
   slug: "amsterdam",
   name: "Amsterdam",
@@ -30,8 +31,14 @@ describe("KnmiAdapter", () => {
     expect(r).toMatchObject({
       sourceName: "mock_knmi",
       temperatureC: expect.any(Number),
+      feelsLikeC: expect.any(Number),
+      rainMm: expect.any(Number),
+      rainProbability: expect.any(Number),
       windSpeedKmh: expect.any(Number),
+      windGustKmh: expect.any(Number),
       windDirection: expect.any(String),
+      weatherCode: expect.any(String),
+      warningLevel: expect.any(String),
     });
     expect(r.observedAt).toBeInstanceOf(Date);
   });
