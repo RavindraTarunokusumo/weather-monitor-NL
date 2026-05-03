@@ -1,0 +1,6 @@
+Task: archive completed foundation session
+Summary: Archived the completed Vercel/Postgres foundation work, cleaned up TODO.md, and added a changelog entry.
+Spec: docs/specs/project-scaffold-vercel-postgres-foundation.md
+Docs: TODO.md, docs/changelog.md, docs/iterations/archive/2026-05-03-vercel-postgres-foundation.md
+TODO: archived session cleanup
+Validation: git diff --check
