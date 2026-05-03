@@ -73,6 +73,18 @@ async function main() {
     where: { cityId: amsterdam.id, stateHash: "mock-amsterdam-v1" },
   });
 
+  await prisma.weatherSnapshot.deleteMany({
+    where: { cityId: amsterdam.id, sourceName: "mock_knmi" },
+  });
+
+  await prisma.airQualitySnapshot.deleteMany({
+    where: { cityId: amsterdam.id, sourceName: "mock_luchtmeetnet" },
+  });
+
+  await prisma.waterSnapshot.deleteMany({
+    where: { cityId: amsterdam.id, sourceName: "mock_rijkswaterstaat" },
+  });
+
   const weather = await prisma.weatherSnapshot.create({
     data: {
       cityId: amsterdam.id,
