@@ -11,22 +11,22 @@ Create the first public, account-agnostic dashboard UI that renders seeded backe
 
 This spec enables users to open the app, select a supported city, view current environmental conditions, read a mock briefing, inspect 24-hour outlook cards, and see source freshness without needing an account.
 
+The current implementation is a simpler first pass: a single seeded dashboard page at `/` that renders Amsterdam data, briefing, current weather, cycle comfort, air quality, water signal, and source freshness from the same Next.js app. The remaining shell features in this spec are future work.
+
 ## Scope
 
 This spec includes:
 
 * Public dashboard page
-* App shell and top navigation
-* City selector
-* Current condition cards
-* AI briefing display card using seeded/mock text
-* 24-hour outlook panel placeholder
+* Seeded Amsterdam dashboard rendering
+* Briefing card using seeded/mock text
+* Current weather card
 * Cycle comfort card
 * Air quality card
 * Water signal card
-* Source freshness footer
+* Source freshness section
 * Loading, error, and missing-data states
-* Frontend API client for backend dashboard endpoint
+* Frontend API client for same-app dashboard route handler
 
 Required frontend page:
 
@@ -38,22 +38,6 @@ Optional route alias:
 
 ```text
 /dashboard
-```
-
-Required components:
-
-```text
-components/app-shell.tsx
-components/top-nav.tsx
-components/city-selector.tsx
-components/source-freshness.tsx
-components/dashboard/ai-briefing-card.tsx
-components/dashboard/current-condition-card.tsx
-components/dashboard/cycle-comfort-card.tsx
-components/dashboard/air-quality-card.tsx
-components/dashboard/water-signal-card.tsx
-components/dashboard/outlook-chart.tsx
-components/dashboard/ask-dashboard-box.tsx
 ```
 
 ## Non-Goals
@@ -73,12 +57,10 @@ The following are intentionally out of scope:
 ## Acceptance Criteria
 
 * Public dashboard page loads without requiring sign-in.
-* Dashboard fetches data from backend `/api/v1/dashboard?city=<slug>`.
-* City selector supports Amsterdam, Utrecht, and Rotterdam if returned by backend.
+* Dashboard fetches data from same-app `/api/dashboard?city=<slug>`.
 * Amsterdam seed data renders correctly.
-* UI displays current weather, cycle comfort, air quality, water signal, outlook, briefing, and source freshness.
+* UI displays current weather, cycle comfort, air quality, water signal, briefing, and source freshness.
 * Missing values render as unavailable instead of crashing.
-* Backend API base URL is controlled by environment configuration.
 * No external weather, water, air-quality, or AI provider keys are exposed in frontend code.
 * The interface follows the intended mood: clean, minimal, Dutch-inspired, practical, calm, and slightly bold.
 
@@ -93,6 +75,7 @@ The following are intentionally out of scope:
 * Use accessible contrast and semantic markup where practical.
 * Design must handle partial dashboard data.
 * UI must clearly show source freshness.
+* Use the root app's server-side data route; do not require a separate API base URL for the first pass.
 
 ## Implementation Notes
 
@@ -130,10 +113,8 @@ Main content
 Recommended frontend data access:
 
 ```typescript
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
 export async function getDashboard(city: string) {
-  const res = await fetch(`${API_BASE_URL}/api/v1/dashboard?city=${city}`, {
+  const res = await fetch(`/api/dashboard?city=${city}`, {
     cache: "no-store"
   });
 
@@ -148,7 +129,7 @@ export async function getDashboard(city: string) {
 Recommended environment variable:
 
 ```bash
-NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+NEXT_PUBLIC_APP_NAME=Dutch Weather Intelligence
 ```
 
 Only non-secret frontend values should use `NEXT_PUBLIC_`.

@@ -11,6 +11,8 @@ Add full account authentication after the public MVP foundation is working, whil
 
 This spec enables users to sign in, associate Q&A usage with an account, support higher quotas, and prepare for saved locations, preferences, and paid tiers later.
 
+The current app is a single Next.js deployment backed by Prisma/PostgreSQL. Auth and user-sync flows should be implemented in the same app as Route Handlers and UI, not in a separate backend package.
+
 ## Scope
 
 This spec includes:
@@ -46,7 +48,7 @@ Required routes/pages:
 ```text
 /settings
 /api/auth/* if using Auth.js-style auth
-POST /api/v1/internal/users/sync
+POST /api/internal/users/sync
 ```
 
 ## Non-Goals

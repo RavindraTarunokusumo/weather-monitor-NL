@@ -59,6 +59,8 @@ The following are intentionally out of scope:
 * Use PostgreSQL and Prisma.
 * Use Route Handlers under `app/api`.
 * Use `DATABASE_URL="postgresql://postgres:postgres@localhost:5432/dutch_weather"` for local development.
+* Use the provider's pooled connection string for Vercel Preview and Production deployments.
+* If the provider supplies a separate direct connection string for migrations, keep it available outside the browser bundle for `prisma migrate deploy` and other CLI-only tasks.
 * Keep dashboard data mocked and clearly seed-driven.
 * Do not implement live ingestion, AI Q&A, account auth, or VPS-specific deployment.
 * Use production migration command `prisma migrate deploy` for deployment docs, not `migrate dev`.

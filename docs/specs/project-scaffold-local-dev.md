@@ -1,6 +1,7 @@
 # Project Scaffold & Local Development Spec
 
-Status: Accepted
+Status: Superseded
+Superseded by: `docs/specs/project-scaffold-vercel-postgres-foundation.md`
 Spec path: `docs/specs/project-scaffold-local-dev.md`
 Accepted by: User
 Accepted date: 2026-05-02
@@ -8,6 +9,8 @@ Accepted date: 2026-05-02
 ## Goal
 
 Create the foundational monorepo, local development environment, and baseline project structure for Dutch Weather Intelligence.
+
+This spec documents the original monorepo/FastAPI scaffold and is retained for historical reference. The current implementation path is the single-app foundation in `docs/specs/project-scaffold-vercel-postgres-foundation.md`.
 
 This spec enables an engineer or agent to clone the repository, install dependencies, start the frontend, start the backend, run a local database, and verify that the system is alive before any real data ingestion or AI behavior is implemented.
 
