@@ -2,56 +2,45 @@
 
 ## Purpose
 
-Testing includes both execution and planning. Run automated tests and use `test-plan-writer` when meaningful changes need explicit coverage mapping.
+Testing includes route behavior, response shaping, Prisma schema validation, and production build checks.
 
 ## Prerequisites
 
-- activate the project environment
-- run commands from repo root
-- mock external services
+- run commands from the repository root
+- install Node dependencies with `npm install`
+- use local PostgreSQL for migration, seed, and manual API checks
 - avoid real credentials in tests
 
 ## Test Layout
 
-Planned test groups:
-
-- API tests: dashboard, briefing, Q&A, and source status endpoints
-- service tests: scoring, trend, and source freshness behavior
-- persistence tests: snapshots, observations, migrations, and station matching
-- integration tests: source adapter happy paths and failure paths with mocked network
-- frontend tests: dashboard rendering and user flows once frontend exists
-- fixtures: normalized city snapshots and source payload examples
+- `tests/`: Vitest tests for TypeScript helpers and API contract behavior.
+- `prisma/`: schema validation and migration checks.
+- Manual browser/API checks verify seeded data reaches the UI.
 
 ## Running Tests
 
 Run all tests:
 
 ```bash
-pytest
+npm test
 ```
 
 Run one file:
 
 ```bash
-pytest tests/test_example.py
+npm test -- tests/dashboard.test.ts
 ```
 
-Run one test:
+Typecheck:
 
 ```bash
-pytest tests/test_example.py::test_name -v
+npm run typecheck
 ```
 
-Run by keyword:
+Lint:
 
 ```bash
-pytest -k "keyword"
-```
-
-Stop on first failure:
-
-```bash
-pytest -x
+npm run lint
 ```
 
 ## Validation Workflow
@@ -59,16 +48,20 @@ pytest -x
 Default sequence before commit:
 
 ```bash
-ruff check . --fix
-ruff format .
-pytest
+npm run lint
+npm run typecheck
+npm test
+npx prisma validate
+npm run build
 ```
 
-Frontend validation once a frontend exists:
+When Docker is available, also run:
 
 ```bash
-npm run lint
-npm test
+docker compose -f infra/docker/docker-compose.yml config
+docker compose -f infra/docker/docker-compose.yml up -d postgres
+npx prisma migrate dev --name foundation_schema
+npx prisma db seed
 ```
 
 ## When To Invoke `test-plan-writer`
@@ -77,29 +70,11 @@ Invoke after implementation and before PR-ready when:
 
 - behavior changed
 - API changed
-- state transitions changed
 - persistence changed
-- external integrations changed
+- architecture changed
 - acceptance criteria need coverage mapping
 
 Do not invoke for trivial copy, docs-only, or tiny localized edits.
-
-## Test-Plan Output Contract
-
-The test plan should include:
-
-- `VERDICT`
-- `MERGE_BLOCKING`
-- `FILES`
-- `ACCEPTANCE_CRITERIA`
-- `REQUIRED_ACTIONS`
-- coverage mapping
-- explicit test cases
-- edge cases
-- negative tests
-- fixture/setup needs
-- out-of-scope items
-- open questions
 
 ## Coverage Expectations
 
@@ -108,15 +83,5 @@ Meaningful changes should cover:
 - happy path
 - failure path
 - boundary conditions
-- state before and after
-- persistence effects
-- external service mocks
-- regression case, if bug fix
-
-## Test Writing Rules
-
-- keep tests deterministic
-- isolate state
-- mock network and external services
-- name tests by behavior
-- assert durable outcomes, not implementation trivia
+- persistence effects where practical
+- public API response shape

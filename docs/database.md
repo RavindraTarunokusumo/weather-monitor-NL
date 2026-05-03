@@ -2,106 +2,70 @@
 
 ## Purpose
 
-Document the current foundation schema, state ownership, migrations, and persistence rules for the seeded environmental dashboard.
+Document the current Prisma/PostgreSQL foundation schema, seed path, migration commands, and persistence rules for the seeded dashboard.
 
 ## Storage Backend
 
-The current storage target is PostgreSQL with SQLAlchemy models and Alembic migrations under `apps/api/`.
+The current storage target is PostgreSQL with Prisma models and migrations under `prisma/`.
 
-The first database milestone keeps the schema portable:
+The first Vercel/Postgres milestone keeps the schema portable:
 
 - PostgreSQL-compatible tables only
-- no TimescaleDB dependency yet
-- no PostGIS dependency yet
-- no raw-object storage layer yet
+- no TimescaleDB dependency
+- no PostGIS dependency
+- no raw-object storage layer
 
-## Core Tables
+## Core Models
 
-### `cities`
+### `City`
 
-Purpose: store the supported city catalog for public dashboard access.
+Stores the supported city catalog for public dashboard access.
 
-Current fields:
+### `SourceRun`
 
-- `id`
-- `slug`
-- `name`
-- `country_code`
-- `latitude`
-- `longitude`
-- `timezone`
-- `is_active`
-- `created_at`
+Reserved for source job freshness and outcome tracking.
 
-### `source_runs`
+### `WeatherSnapshot`
 
-Purpose: record the freshness and outcome of source-specific fetch or seed jobs.
+Stores normalized mock weather observations for a city snapshot.
 
-Current fields:
+### `AirQualitySnapshot`
 
-- `id`
-- `source_name`
-- `job_type`
-- `status`
-- `started_at`
-- `finished_at`
-- `records_fetched`
-- `records_stored`
-- `error_message`
-- `metadata`
+Stores normalized mock air-quality observations for a city snapshot.
 
-### `weather_snapshots`
+### `WaterSnapshot`
 
-Purpose: store normalized weather observations for a city snapshot.
+Stores normalized mock water observations for a city snapshot.
 
-### `air_quality_snapshots`
+### `DashboardSnapshot`
 
-Purpose: store normalized air-quality observations for a city snapshot.
+Stores the API-ready read model used by `/api/dashboard`.
 
-### `water_snapshots`
+### `AiBriefing`
 
-Purpose: store normalized water observations for a city snapshot.
+Stores a mock briefing for the seeded dashboard. Real LLM generation is not implemented.
 
-### `dashboard_snapshots`
+### `User`, `QaInteraction`, `UsageQuota`
 
-Purpose: store the read-model used by `/api/v1/dashboard`.
-
-Current fields:
-
-- `id`
-- `city_id`
-- `generated_at`
-- `state_hash`
-- `weather_snapshot_id`
-- `air_quality_snapshot_id`
-- `water_snapshot_id`
-- `cycle_comfort_score`
-- `cycle_comfort_label`
-- `best_outdoor_window`
-- `worst_outdoor_window`
-- `summary_payload`
+Foundation tables reserved for later auth, AI Q&A, and quota milestones. They are not active in this milestone.
 
 ## Migration Rules
 
+- Local development uses `npx prisma migrate dev --name foundation_schema`.
+- Production deployment uses `npx prisma migrate deploy`.
 - Migrations must be deterministic.
-- Backward compatibility must be explicit.
 - Data deletion must be intentional and documented.
-- Tests must cover migration-sensitive behavior.
-- The initial revision is `20260503_0001_create_foundation_tables`.
+- Runtime secrets must not appear in migration files.
 
-## State Ownership
+## Seed Rules
 
-- Seed and ingestion jobs own persisted source-run metadata.
-- Snapshot tables own normalized weather, air-quality, and water observations.
-- Dashboard snapshots own the API-ready summary payload for seeded dashboard reads.
-- API schema models own serialization and response shape.
-- Later ingestion adapters and scoring modules may replace the seed path without changing the dashboard contract.
+- `npx prisma db seed` inserts Amsterdam, Utrecht, and Rotterdam.
+- The Amsterdam dashboard seed includes mock weather, air-quality, water, dashboard, and briefing data.
+- The seed removes the previous `mock-amsterdam-v1` dashboard and briefing before inserting a fresh mock snapshot.
 
 ## Persistence Invariants
 
-- Stable source and station IDs are authoritative.
+- Stable city slugs are public identifiers.
 - Display names are not state keys.
-- Writes must be atomic where consistency matters.
-- External side effects must be auditable.
-- Source freshness must travel with derived dashboard state.
-- Seed data must be repeatable so local reruns do not accumulate duplicate public dashboard records.
+- Writes that produce a dashboard snapshot must keep source freshness attached.
+- External source payloads are not exposed by default through public API responses.
