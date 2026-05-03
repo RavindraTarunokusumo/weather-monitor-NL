@@ -1,8 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { CityConfig } from "@/lib/ingestion/base";
 import { KnmiAdapter } from "@/lib/ingestion/knmi";
 import { LuchtmeetnetAdapter } from "@/lib/ingestion/luchtmeetnet";
 import { RijkswaterstaatAdapter } from "@/lib/ingestion/rijkswaterstaat";
+import type { PrismaClient } from "@prisma/client";
+import { runIngestionJob } from "@/lib/ingestion/run";
 
 const mockCity: CityConfig = {
   id: "city-1",
@@ -107,5 +109,68 @@ describe("RijkswaterstaatAdapter", () => {
       riskLabel: expect.any(String),
     });
     expect(r.observedAt).toBeInstanceOf(Date);
+  });
+});
+
+function makePrismaStub() {
+  return {
+    sourceRun: {
+      create: vi.fn().mockResolvedValue({ id: "run-abc" }),
+      update: vi.fn().mockResolvedValue({}),
+    },
+  } as unknown as PrismaClient;
+}
+
+describe("runIngestionJob", () => {
+  it("records status=success and updates source_run on success", async () => {
+    const prisma = makePrismaStub();
+    const adapter = new KnmiAdapter();
+
+    const result = await runIngestionJob({
+      adapter,
+      city: mockCity,
+      jobType: "ingest-weather",
+      store: async (records) => ({ recordsStored: records.length }),
+      prisma,
+    });
+
+    expect(result.status).toBe("success");
+    expect(result.recordsFetched).toBeGreaterThan(0);
+    expect(result.recordsStored).toBeGreaterThan(0);
+    expect(prisma.sourceRun.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        status: "running",
+        sourceName: "mock_knmi",
+        jobType: "ingest-weather",
+      }),
+    });
+    expect(prisma.sourceRun.update).toHaveBeenCalledWith({
+      where: { id: "run-abc" },
+      data: expect.objectContaining({ status: "success" }),
+    });
+  });
+
+  it("records status=failed and stores errorMessage when adapter throws", async () => {
+    const prisma = makePrismaStub();
+    const adapter = new KnmiAdapter();
+    vi.spyOn(adapter, "fetch").mockRejectedValue(new Error("network timeout"));
+
+    const result = await runIngestionJob({
+      adapter,
+      city: mockCity,
+      jobType: "ingest-weather",
+      store: async () => ({ recordsStored: 0 }),
+      prisma,
+    });
+
+    expect(result.status).toBe("failed");
+    expect(result.error).toBe("network timeout");
+    expect(prisma.sourceRun.update).toHaveBeenCalledWith({
+      where: { id: "run-abc" },
+      data: expect.objectContaining({
+        status: "failed",
+        errorMessage: "network timeout",
+      }),
+    });
   });
 });
