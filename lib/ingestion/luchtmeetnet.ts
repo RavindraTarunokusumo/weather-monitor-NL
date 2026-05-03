@@ -20,6 +20,7 @@ export class LuchtmeetnetAdapter extends SourceAdapter<NormalizedAirQualityRecor
   // TODO: Decide pollutant mapping and AQI/category method.
 
   async fetch(_city: CityConfig): Promise<Record<string, unknown>[]> {
+    void _city;
     return [{ ...MOCK_FIXTURE }];
   }
 
@@ -28,6 +29,7 @@ export class LuchtmeetnetAdapter extends SourceAdapter<NormalizedAirQualityRecor
     rawRecords: Record<string, unknown>[],
     _city: CityConfig,
   ): Promise<NormalizedAirQualityRecord[]> {
+    void _city;
     return rawRecords.map((r) => ({
       observedAt: new Date(),
       aqiValue: (r.aqi as number) ?? null,

@@ -20,6 +20,7 @@ export class KnmiAdapter extends SourceAdapter<NormalizedWeatherRecord> {
   // TODO: Decide file/API access pattern.
 
   async fetch(_city: CityConfig): Promise<Record<string, unknown>[]> {
+    void _city;
     return [{ ...MOCK_FIXTURE }];
   }
 
@@ -28,6 +29,7 @@ export class KnmiAdapter extends SourceAdapter<NormalizedWeatherRecord> {
     rawRecords: Record<string, unknown>[],
     _city: CityConfig,
   ): Promise<NormalizedWeatherRecord[]> {
+    void _city;
     return rawRecords.map((r) => ({
       observedAt: new Date(),
       temperatureC: (r.temperature as number) ?? null,

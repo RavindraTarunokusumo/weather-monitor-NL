@@ -16,6 +16,7 @@ export class RijkswaterstaatAdapter extends SourceAdapter<NormalizedWaterRecord>
   // TODO: Decide supported measurement type for water-level trend.
 
   async fetch(_city: CityConfig): Promise<Record<string, unknown>[]> {
+    void _city;
     return [{ ...MOCK_FIXTURE }];
   }
 
@@ -24,6 +25,7 @@ export class RijkswaterstaatAdapter extends SourceAdapter<NormalizedWaterRecord>
     rawRecords: Record<string, unknown>[],
     _city: CityConfig,
   ): Promise<NormalizedWaterRecord[]> {
+    void _city;
     return rawRecords.map((r) => ({
       observedAt: new Date(),
       stationId: (r.station_id as string) ?? null,
