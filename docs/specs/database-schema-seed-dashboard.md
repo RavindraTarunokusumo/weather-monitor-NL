@@ -1,6 +1,7 @@
 # Database Schema & Seed Dashboard Spec
 
-Status: Accepted
+Status: Superseded
+Superseded by: `docs/specs/project-scaffold-vercel-postgres-foundation.md`
 Spec path: `docs/specs/database-schema-seed-dashboard.md`
 Accepted by: User
 Accepted date: 2026-05-03
@@ -10,6 +11,8 @@ Accepted date: 2026-05-03
 Create the initial database schema, migrations, city seed data, and mock dashboard snapshot flow needed to render a realistic public dashboard before live data ingestion exists.
 
 This spec enables the frontend to consume a stable backend dashboard API using seeded Amsterdam, Utrecht, and Rotterdam data.
+
+This document reflects the original SQLAlchemy/Alembic backend contract. The implemented foundation now uses Prisma and Next.js Route Handlers in the root app, so the route paths and implementation notes below are historical unless they are explicitly rewritten.
 
 ## Scope
 

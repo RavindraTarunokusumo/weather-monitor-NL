@@ -9,7 +9,7 @@ Accepted date: TBD
 
 Create the ingestion skeleton for future KNMI, Rijkswaterstaat, and Luchtmeetnet data integration without implementing live source access yet.
 
-This spec enables agents or engineers to add source-specific ingestion later using a consistent adapter interface, source run tracking, normalization pattern, and job entrypoint structure.
+This spec enables agents or engineers to add source-specific ingestion later using a consistent adapter interface, source run tracking, normalization pattern, and job entrypoint structure. In the current single-app architecture, the job modules should live in the root app or shared server-side modules, not in a separate FastAPI package.
 
 ## Scope
 
@@ -28,14 +28,14 @@ This spec includes:
 Required files:
 
 ```text
-apps/api/app/ingestion/base.py
-apps/api/app/ingestion/knmi_adapter.py
-apps/api/app/ingestion/luchtmeetnet_adapter.py
-apps/api/app/ingestion/rijkswaterstaat_adapter.py
-apps/api/app/jobs/ingest_weather.py
-apps/api/app/jobs/ingest_air_quality.py
-apps/api/app/jobs/ingest_water.py
-apps/api/app/jobs/regenerate_dashboard_snapshots.py
+lib/ingestion/base.ts
+lib/ingestion/knmi.ts
+lib/ingestion/luchtmeetnet.ts
+lib/ingestion/rijkswaterstaat.ts
+app/api/jobs/ingest-weather/route.ts
+app/api/jobs/ingest-air-quality/route.ts
+app/api/jobs/ingest-water/route.ts
+app/api/jobs/regenerate-dashboard-snapshots/route.ts
 ```
 
 ## Non-Goals
@@ -68,7 +68,7 @@ The following are intentionally out of scope:
 
 * Source adapters must not write directly to frontend-facing schemas.
 * Source adapters should return normalized records for services to store.
-* Ingestion must be backend-only.
+* Ingestion must be server-side only in the Next.js app, not browser-side.
 * Do not expose source API keys to the frontend.
 * Jobs must be runnable locally and later from cron/systemd/cloud schedulers.
 * Source failures must be logged without crashing the entire app.
@@ -94,6 +94,8 @@ class SourceAdapter(ABC):
     async def normalize(self, raw_records: list[dict], city: Any) -> list[dict]:
         raise NotImplementedError
 ```
+
+If this work is implemented in TypeScript instead of Python, keep the same shape and names but express the contract with `class`/`interface` syntax in `lib/ingestion/*`.
 
 Recommended ingestion run pattern:
 
@@ -124,10 +126,9 @@ Log structured error
 Recommended job command shape:
 
 ```bash
-cd apps/api
-python -m app.jobs.ingest_weather --city amsterdam --mock
-python -m app.jobs.ingest_air_quality --city amsterdam --mock
-python -m app.jobs.ingest_water --city amsterdam --mock
+npm run ingest:weather -- --city amsterdam --mock
+npm run ingest:air-quality -- --city amsterdam --mock
+npm run ingest:water -- --city amsterdam --mock
 ```
 
 Adapter TODOs should include:

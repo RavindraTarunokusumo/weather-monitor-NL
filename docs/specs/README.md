@@ -8,6 +8,8 @@ Feature implementation in this repository is driven by accepted per-feature spec
 - Use `docs/specs/TEMPLATE.md` for new specs.
 - The active spec is the implementation contract for the 7-Step Workflow in `AGENTS.md`.
 - User or agent discussion may create or refine a spec, but chat alone is not implementation authority.
+- The current application foundation is `docs/specs/project-scaffold-vercel-postgres-foundation.md`.
+- Older monorepo/FastAPI scaffold specs are retained for history only and should be treated as superseded unless they are explicitly rewritten.
 
 ## Spec Lifecycle
 

@@ -11,6 +11,8 @@ Create the foundation for controlled AI Q&A usage without requiring full account
 
 This spec enables anonymous users to ask limited dashboard questions, allows the backend to enforce quotas, logs Q&A interactions, and prepares the system for future authenticated users and paid tiers.
 
+The current application is a single Next.js app with Prisma/PostgreSQL. Any ask flow should be implemented as a server-side Route Handler in the same app, not as a separate FastAPI service.
+
 ## Scope
 
 This spec includes:
@@ -29,13 +31,13 @@ This spec includes:
 Required API route:
 
 ```http
-POST /api/v1/ask
+POST /api/ask
 ```
 
 Future-compatible route stub:
 
 ```http
-POST /api/v1/internal/users/sync
+POST /api/internal/users/sync
 ```
 
 Required tables:
@@ -81,8 +83,8 @@ The following are intentionally out of scope:
 * Do not call an LLM until deterministic Q&A, logging, and quota checks exist.
 * Do not expose AI provider keys to the frontend.
 * Do not let every user question directly hit an expensive model.
-* The backend must own quota enforcement.
-* The frontend must treat Q&A as a backend API call only.
+* The server must own quota enforcement.
+* The frontend must treat Q&A as a same-app API call only.
 * Store enough metadata to audit cost and behavior later.
 * Avoid storing raw IP addresses; use hashed or session-based identifiers if IP-related abuse controls are needed.
 * AI answers must be grounded in dashboard snapshots once LLM calls are enabled.
