@@ -1,0 +1,6 @@
+Task: align scaffold guidance with Next.js foundation
+Summary: Updated README and project docs to match the single Next.js + Prisma/PostgreSQL architecture and recorded the active spec/plan.
+Spec: docs/specs/project-scaffold-vercel-postgres-foundation.md
+Docs: README.md, docs/architecture.md, docs/commands.md, docs/database.md, docs/index.md, docs/insights.md, docs/testing.md, docs/specs/project-scaffold-vercel-postgres-foundation.md, docs/superpowers/plans/2026-05-03-vercel-postgres-foundation.md, TODO.md
+TODO: Active Session / docs and session tracking
+Validation: git diff --check
