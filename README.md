@@ -35,6 +35,12 @@ Important values:
 
 ## Start Local Database
 
+Validate the Compose file first:
+
+```bash
+bash infra/scripts/validate-docker.sh
+```
+
 ```bash
 docker compose -f infra/docker/docker-compose.yml up -d postgres
 ```
@@ -112,4 +118,4 @@ npm test
 - If `fastapi dev` complains about the CLI, make sure `apps/api` dependencies were synced from `apps/api/pyproject.toml`.
 - If supported dashboard cities return 404, rerun `uv run alembic upgrade head` and `uv run python -m app.jobs.seed_dev` in `apps/api`.
 - If the frontend typecheck fails, rerun `npm install` in `apps/web/`.
-- If PostgreSQL fails to start, check that Docker is running and port `5432` is free.
+- If PostgreSQL fails to start, run `bash infra/scripts/validate-docker.sh`, check that Docker is running, and confirm port `5432` is free.

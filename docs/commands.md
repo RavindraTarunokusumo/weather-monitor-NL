@@ -30,6 +30,7 @@ npm install
 Local PostgreSQL:
 
 ```bash
+bash infra/scripts/validate-docker.sh
 docker compose -f infra/docker/docker-compose.yml up -d postgres
 ```
 
@@ -85,6 +86,7 @@ uv run python -m app.jobs.seed_dev
 Compose bootstrap helpers for local PostgreSQL:
 
 ```bash
+bash infra/scripts/validate-docker.sh
 bash infra/scripts/dev.sh
 bash infra/scripts/migrate.sh
 bash infra/scripts/seed.sh
