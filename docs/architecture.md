@@ -1,46 +1,41 @@
 # System Architecture
 
-Dutch Weather Intelligence is planned as a web dashboard that aggregates Dutch weather, water, and air-quality data into practical daily briefings.
+Dutch Weather Intelligence is a web dashboard scaffold that will aggregate Dutch weather, water, and air-quality data into practical daily briefings.
 
 ## Entry Points
 
-Implementation has not started yet. The current recommended stack is:
+Current scaffold entry points:
 
-- Frontend: Next.js, TypeScript, Tailwind CSS
-- Backend: Python FastAPI with Pydantic models
-- Jobs: Celery, Dramatiq, or APScheduler
-- Storage: PostgreSQL with TimescaleDB and PostGIS
-- AI: LLM API over compact normalized JSON only
+- Frontend: `apps/web/` Next.js with TypeScript and app router
+- Backend: `apps/api/` FastAPI with Pydantic settings and health routing
+- Infrastructure: `infra/docker/` for local PostgreSQL and API image scaffolding
+- Shared: `packages/shared/` reserved for later cross-cutting code
 
 ## Module Structure
 
-Expected source boundaries once implementation starts:
+Expected source boundaries once implementation grows:
 
-### `src/api/`
+### `apps/api/app/api/`
 
 HTTP API routes for dashboard state, AI briefing, dashboard Q&A, and source status.
 
-### `src/ingestion/`
+### `apps/api/app/ingestion/`
 
 Source adapters for KNMI, Rijkswaterstaat Waterinfo, and Luchtmeetnet / RIVM.
 
-### `src/normalization/`
+### `apps/api/app/schemas/`
 
-Validation and conversion from source-specific payloads into stable internal dashboard models.
+Validated internal models for normalized dashboard payloads and health responses.
 
-### `src/scoring/`
+### `apps/api/app/services/`
 
-Deterministic cycle comfort, air-quality category, water trend, and outdoor-window calculations.
+Deterministic scoring, trends, and business rules for the backend source of truth.
 
-### `src/ai/`
-
-Prompt templates, briefing generation, grounded Q&A, and guardrail validation.
-
-### `src/persistence/`
+### `apps/api/app/db/`
 
 Database sessions, repositories, migrations, raw response cache, and time-series writes.
 
-### `frontend/`
+### `apps/web/app/`
 
 Dashboard UI: city selector, briefing, cards, timelines, map panel, Q&A, and source freshness footer.
 

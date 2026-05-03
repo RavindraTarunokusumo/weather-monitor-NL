@@ -1,9 +1,9 @@
 # Database Schema & Seed Dashboard Spec
 
-Status: Draft
+Status: Accepted
 Spec path: `docs/specs/database-schema-seed-dashboard.md`
-Accepted by: TBD
-Accepted date: TBD
+Accepted by: User
+Accepted date: 2026-05-03
 
 ## Goal
 

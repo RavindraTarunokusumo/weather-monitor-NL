@@ -2,69 +2,84 @@
 
 ## Purpose
 
-Document schema, state ownership, migrations, and persistence rules for the planned environmental dashboard.
+Document the current foundation schema, state ownership, migrations, and persistence rules for the seeded environmental dashboard.
 
 ## Storage Backend
 
-The recommended storage layer is PostgreSQL with:
+The current storage target is PostgreSQL with SQLAlchemy models and Alembic migrations under `apps/api/`.
 
-- TimescaleDB for time-series observations and forecast snapshots
-- PostGIS for geospatial station matching
-- S3-compatible object storage for large raw files, if needed
+The first database milestone keeps the schema portable:
 
-No schema has been implemented yet.
+- PostgreSQL-compatible tables only
+- no TimescaleDB dependency yet
+- no PostGIS dependency yet
+- no raw-object storage layer yet
 
-## Core Tables / Collections
+## Core Tables
 
-Expected table families once implementation starts:
+### `cities`
 
-### `source_snapshots`
+Purpose: store the supported city catalog for public dashboard access.
 
-Purpose: preserve raw or lightly wrapped source responses with fetch metadata.
-
-Fields:
+Current fields:
 
 - `id`
-- `source`
-- `fetched_at`
-- `source_timestamp`
+- `slug`
+- `name`
+- `country_code`
+- `latitude`
+- `longitude`
+- `timezone`
+- `is_active`
+- `created_at`
+
+### `source_runs`
+
+Purpose: record the freshness and outcome of source-specific fetch or seed jobs.
+
+Current fields:
+
+- `id`
+- `source_name`
+- `job_type`
 - `status`
-- `payload_uri` or `payload_json`
+- `started_at`
+- `finished_at`
+- `records_fetched`
+- `records_stored`
+- `error_message`
+- `metadata`
 
-Relationships:
+### `weather_snapshots`
 
-- Used by normalizers and audit/debug workflows.
+Purpose: store normalized weather observations for a city snapshot.
 
-Notes:
+### `air_quality_snapshots`
 
-- Raw payloads must never include secrets.
+Purpose: store normalized air-quality observations for a city snapshot.
 
-### `observations`
+### `water_snapshots`
 
-Purpose: store normalized weather, air-quality, and water measurements.
-
-Fields:
-
-- `id`
-- `source`
-- `station_id`
-- `observed_at`
-- `metric`
-- `value`
-- `unit`
-- `quality_flag`
+Purpose: store normalized water observations for a city snapshot.
 
 ### `dashboard_snapshots`
 
-Purpose: store normalized city dashboard state used by the API and AI layer.
+Purpose: store the read-model used by `/api/v1/dashboard`.
 
-Fields:
+Current fields:
 
 - `id`
-- `city`
+- `city_id`
 - `generated_at`
-- `summary_json`
-- `source_freshness_json`
+- `state_hash`
+- `weather_snapshot_id`
+- `air_quality_snapshot_id`
+- `water_snapshot_id`
+- `cycle_comfort_score`
+- `cycle_comfort_label`
+- `best_outdoor_window`
+- `worst_outdoor_window`
+- `summary_payload`
 
 ## Migration Rules
 
@@ -72,14 +87,15 @@ Fields:
 - Backward compatibility must be explicit.
 - Data deletion must be intentional and documented.
 - Tests must cover migration-sensitive behavior.
+- The initial revision is `20260503_0001_create_foundation_tables`.
 
 ## State Ownership
 
-- Source adapters own fetch metadata.
-- Normalizers own unit conversion and source payload interpretation.
-- Scoring modules own deterministic scores and category labels.
-- AI modules own generated summaries, never raw measurements.
-- API modules own serialization and response shape.
+- Seed and ingestion jobs own persisted source-run metadata.
+- Snapshot tables own normalized weather, air-quality, and water observations.
+- Dashboard snapshots own the API-ready summary payload for seeded dashboard reads.
+- API schema models own serialization and response shape.
+- Later ingestion adapters and scoring modules may replace the seed path without changing the dashboard contract.
 
 ## Persistence Invariants
 
@@ -88,3 +104,4 @@ Fields:
 - Writes must be atomic where consistency matters.
 - External side effects must be auditable.
 - Source freshness must travel with derived dashboard state.
+- Seed data must be repeatable so local reruns do not accumulate duplicate public dashboard records.

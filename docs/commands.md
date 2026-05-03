@@ -2,88 +2,107 @@
 
 ## Setup
 
-Backend once dependencies exist:
+Root Python tooling:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+uv lock --check
+uv sync --locked --group dev --no-install-project
 ```
 
-For Windows PowerShell:
-
-```powershell
-.venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-Frontend once dependencies exist:
+Backend:
 
 ```bash
-npm install
-```
-
-## Development Server
-
-Backend placeholder:
-
-```bash
-uvicorn src.api.main:app --reload
-```
-
-Frontend placeholder:
-
-```bash
-npm run dev
-```
-
-Replace with actual project commands after the first implementation milestone.
-
-## Testing
-
-```bash
-pytest
-```
-
-## Lint and Format
-
-```bash
-ruff check . --fix
-ruff format .
+cd apps/api
+uv sync
+uv run alembic upgrade head
+uv run python -m app.jobs.seed_dev
 ```
 
 Frontend:
 
 ```bash
+cd apps/web
+npm install
+```
+
+## Development Server
+
+Local PostgreSQL:
+
+```bash
+docker compose -f infra/docker/docker-compose.yml up -d postgres
+```
+
+Backend:
+
+```bash
+cd apps/api
+uv run fastapi dev app/main.py
+```
+
+Frontend:
+
+```bash
+cd apps/web
+npm run dev
+```
+
+## Testing
+
+Backend:
+
+```bash
+cd apps/api
+uv sync --group dev
+uv run pytest
+```
+
+Frontend:
+
+```bash
+cd apps/web
 npm run lint
 npm test
 ```
 
-## Database
-
-Placeholder commands until migrations exist:
+Repo-level validation:
 
 ```bash
-python scripts/init_db.py
-python scripts/seed_mock_db.py
-python scripts/reset_db.py
+uv run --group dev pre-commit run --all-files
+uv run python -c "import fastapi, pydantic_settings, psycopg, sqlalchemy, uvicorn"
 ```
 
-## Logs
+## Database
+
+Apply migrations and seed mock dashboard data:
 
 ```bash
-tail -f logs/*.log
+cd apps/api
+uv run alembic upgrade head
+uv run python -m app.jobs.seed_dev
+```
+
+Compose bootstrap helpers for local PostgreSQL:
+
+```bash
+bash infra/scripts/dev.sh
+bash infra/scripts/migrate.sh
+bash infra/scripts/seed.sh
 ```
 
 ## Environment Variables
 
-List required variables as they are introduced:
-
 ```bash
 APP_ENV=development
-DATABASE_URL=
-KNMI_API_KEY=
-OPENAI_API_KEY=
+APP_NAME=dutch-weather-intelligence
+WEB_BASE_URL=http://localhost:3000
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+API_BASE_URL=http://localhost:8000
+DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/dutch_weather
+CORS_ALLOWED_ORIGINS=http://localhost:3000
+ENABLE_MOCK_DATA=true
+ENABLE_AI_QNA=false
+LOG_LEVEL=DEBUG
 ```
 
 Never commit real secrets.

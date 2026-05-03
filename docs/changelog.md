@@ -2,6 +2,16 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-05-03 - Seeded Dashboard Database Foundation
+
+Summary:
+
+- What changed: added the initial Alembic migration, SQLAlchemy models, repeatable seed job, seeded dashboard routes, and Amsterdam shared fixture.
+- Why: make the public dashboard contract available from backend seed data before live external ingestion exists.
+- User-visible impact: local backend can serve `GET /api/v1/cities`, `GET /api/v1/dashboard?city=amsterdam`, and `GET /api/v1/source-status` after migration and seeding.
+- Migration notes: run `cd apps/api && uv run alembic upgrade head && uv run python -m app.jobs.seed_dev`.
+- Related spec: `docs/specs/database-schema-seed-dashboard.md`.
+
 ## 2026-05-02 - Adopted Spec-Driven Workflow
 
 Summary:
