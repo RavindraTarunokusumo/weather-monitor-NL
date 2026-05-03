@@ -36,6 +36,7 @@ site/
 node_modules/
 .next/
 .turbo/
+*.tsbuildinfo
 coverage/
 
 # OS / editor
