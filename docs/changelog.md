@@ -2,6 +2,16 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-05-03 - Vercel/Postgres Foundation
+
+Summary:
+
+- What changed: replaced the monorepo/FastAPI scaffold with a single root Next.js App Router app, Prisma foundation schema, seeded dashboard data, Route Handlers, and a seeded Amsterdam homepage.
+- Why: align the implementation path with the Vercel/Postgres milestone so the browser can render dashboard data directly from a Next.js app backed by PostgreSQL.
+- User-visible impact: local `http://localhost:3000` can render Amsterdam dashboard data once PostgreSQL is running and Prisma seed data is loaded; `/api/health`, `/api/cities`, and `/api/dashboard?city=amsterdam` are available in the same app.
+- Migration notes: run `docker compose -f infra/docker/docker-compose.yml up -d postgres`, `npx prisma migrate dev --name foundation_schema`, and `npx prisma db seed` before starting the app locally.
+- Related spec: `docs/specs/project-scaffold-vercel-postgres-foundation.md`.
+
 ## 2026-05-03 - Seeded Dashboard Database Foundation
 
 Summary:

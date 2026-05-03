@@ -2,6 +2,14 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-03 - Vercel/Postgres Foundation
+
+- What worked: isolating dashboard response shaping in `lib/dashboard.ts` made the Route Handler contract easy to test without a live database.
+- What failed: Docker was unavailable on PATH again, so local Compose startup, Prisma migrate against PostgreSQL, and seed execution remain manual follow-ups in an environment with Docker.
+- Useful commands: `npm test -- tests/dashboard.test.ts`, `npx prisma validate`, `npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script`.
+- Scripts created: root `package.json` now owns app, Prisma, and validation commands.
+- Workflow improvement: when changing the product architecture from monorepo/FastAPI to single Next.js, create a replacement accepted spec first so docs and TODOs do not point at stale implementation authority.
+
 ## 2026-05-03 - Database Schema & Seed Dashboard
 
 - What worked: a temporary SQLite database plus Alembic upgrade in tests gave fast coverage for migration shape, repeatable seeding, route responses, and the shared Amsterdam fixture.

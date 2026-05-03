@@ -1,121 +1,101 @@
-# weather-monitor-NL
+# Dutch Weather Intelligence
 
-Dutch Weather Intelligence is a local-first scaffold for Dutch weather, water, and air-quality intelligence.
+Dutch Weather Intelligence is a single full-stack Next.js app for a seeded Amsterdam weather, air-quality, and water dashboard.
 
-Start with [AGENTS.md](AGENTS.md), [docs/index.md](docs/index.md), and the accepted spec in [docs/specs/project-scaffold-local-dev.md](docs/specs/project-scaffold-local-dev.md).
+Start with [AGENTS.md](AGENTS.md), [docs/index.md](docs/index.md), and the active spec in [docs/specs/project-scaffold-vercel-postgres-foundation.md](docs/specs/project-scaffold-vercel-postgres-foundation.md).
 
 ## Project Overview
 
-- `apps/web/`: Next.js frontend shell
-- `apps/api/`: FastAPI backend shell
-- `infra/docker/`: local PostgreSQL Compose configuration and API container image
-- `infra/scripts/`: bootstrap helpers for local development
-- `packages/shared/`: reserved space for future shared utilities
-- `docs/specs/`: accepted per-feature specs that drive implementation
+- `app/`: Next.js App Router pages and API Route Handlers.
+- `lib/`: server-side helpers, including Prisma and dashboard response shaping.
+- `prisma/`: Prisma schema, migrations, and seed data.
+- `infra/docker/`: local PostgreSQL Compose configuration.
+- `tests/`: focused TypeScript tests for API response behavior.
+- `docs/specs/`: accepted per-feature specs that drive implementation.
 
 ## Prerequisites
 
-- Python 3.11 or newer
 - Node.js 20 or newer
-- `uv`
-- Docker and Docker Compose
+- npm
+- Docker and Docker Compose for local PostgreSQL
 
 ## Environment Variables
 
-Copy `.env.example` to `.env` when you need local overrides.
+Copy `.env.example` to `.env` for local development.
 
 Important values:
 
-- `DATABASE_URL`
-- `CORS_ALLOWED_ORIGINS`
-- `APP_ENV`
-- `ENABLE_MOCK_DATA`
-- `ENABLE_AI_QNA`
-- `LOG_LEVEL`
+- `DATABASE_URL`: server-only PostgreSQL connection string.
+- `NEXT_PUBLIC_APP_NAME`: optional browser-safe display value.
+- `ENABLE_AI_QNA`, `ANON_DAILY_QA_LIMIT`, `CRON_SECRET`: reserved for later milestones.
+
+Only variables prefixed with `NEXT_PUBLIC_` are exposed to the browser.
 
 ## Start Local Database
-
-Validate the Compose file first:
-
-```bash
-bash infra/scripts/validate-docker.sh
-```
 
 ```bash
 docker compose -f infra/docker/docker-compose.yml up -d postgres
 ```
 
-Or use the helper:
+Check the container:
 
 ```bash
-bash infra/scripts/dev.sh
+docker ps
 ```
 
-## Start Backend
+## Install Dependencies
 
 ```bash
-cd apps/api
-uv sync
-uv run alembic upgrade head
-uv run python -m app.jobs.seed_dev
-uv run fastapi dev app/main.py
-```
-
-For backend tests:
-
-```bash
-cd apps/api
-uv sync --group dev
-uv run pytest
-```
-
-Seeded backend routes after migration and seeding:
-
-- `GET /api/v1/cities`
-- `GET /api/v1/dashboard?city=amsterdam`
-- `GET /api/v1/source-status`
-
-## Start Frontend
-
-```bash
-cd apps/web
 npm install
+```
+
+## Migrate and Seed
+
+```bash
+npx prisma migrate dev --name foundation_schema
+npx prisma db seed
+```
+
+Useful database commands:
+
+```bash
+npm run db:migrate
+npm run db:seed
+npm run db:studio
+```
+
+Use production migration deploys outside local development:
+
+```bash
+npx prisma migrate deploy
+```
+
+## Start the App
+
+```bash
 npm run dev
 ```
 
-For frontend validation:
+Open:
+
+- `http://localhost:3000`
+- `http://localhost:3000/api/health`
+- `http://localhost:3000/api/cities`
+- `http://localhost:3000/api/dashboard?city=amsterdam`
+
+## Validation
 
 ```bash
-cd apps/web
 npm run lint
+npm run typecheck
 npm test
-```
-
-## Run Tests
-
-From the repo root:
-
-```bash
-uv lock --check
-uv sync --locked --group dev --no-install-project
-uv run --group dev pre-commit run --all-files
-uv run python -c "import fastapi, pydantic_settings, psycopg, sqlalchemy, uvicorn"
-```
-
-Then run the app-level checks:
-
-```bash
-cd apps/api
-uv run pytest
-
-cd ../web
-npm run lint
-npm test
+npx prisma validate
+npm run build
 ```
 
 ## Troubleshooting
 
-- If `fastapi dev` complains about the CLI, make sure `apps/api` dependencies were synced from `apps/api/pyproject.toml`.
-- If supported dashboard cities return 404, rerun `uv run alembic upgrade head` and `uv run python -m app.jobs.seed_dev` in `apps/api`.
-- If the frontend typecheck fails, rerun `npm install` in `apps/web/`.
-- If PostgreSQL fails to start, run `bash infra/scripts/validate-docker.sh`, check that Docker is running, and confirm port `5432` is free.
+- If dashboard data is missing, start PostgreSQL and rerun `npx prisma migrate dev --name foundation_schema` and `npx prisma db seed`.
+- If Prisma cannot connect, confirm `DATABASE_URL` points to `postgresql://postgres:postgres@localhost:5432/dutch_weather`.
+- If port `5432` is already used, stop the conflicting service or set `POSTGRES_PORT` before starting Compose.
+- If Docker is unavailable, API and homepage database checks cannot run locally until PostgreSQL is available.

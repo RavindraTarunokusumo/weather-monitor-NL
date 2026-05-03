@@ -14,17 +14,13 @@ Use this file as the second layer after `AGENTS.md`. It points to deeper docs wi
 - [changelog.md](changelog.md): notable behavior and architecture changes
 - [insights.md](insights.md): session lessons and reusable workflow observations
 
-## Module Docs
-
-Add module-specific docs here as the codebase grows:
-
-- [utils/](utils/)
-
 ## Repo Areas
 
-- `src/`: application source once implementation starts
-- `tests/`: test suite once implementation starts
-- `scripts/`: local automation scripts once implementation starts
+- `app/`: Next.js App Router pages and API Route Handlers
+- `lib/`: server-side helpers and API response shaping
+- `prisma/`: Prisma schema, migrations, and seed data
+- `tests/`: Vitest test suite
+- `public/`: static frontend assets
 - `Onboarding/`: initial product plan, harness bootstrap, and supplied agent/skill material
 - `.codex/skills/`: installed repo-local skill packages
 - `.agents/`: installed repo-local agent configs and compatibility skill root
