@@ -13,7 +13,10 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "ingest:weather": "tsx scripts/ingest.ts weather",
+    "ingest:air-quality": "tsx scripts/ingest.ts air-quality",
+    "ingest:water": "tsx scripts/ingest.ts water"
   },
   "dependencies": {
     "@prisma/client": "^6.7.0",
