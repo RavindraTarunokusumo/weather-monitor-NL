@@ -25,8 +25,11 @@ export async function runIngestionJob<T>(options: {
     },
   });
 
+  let fetchedCount = 0;
+
   try {
     const rawRecords = await adapter.fetch(city);
+    fetchedCount = rawRecords.length;
     const normalized = await adapter.normalize(rawRecords, city);
     const { recordsStored } = await store(normalized, city, prisma);
 
@@ -44,17 +47,23 @@ export async function runIngestionJob<T>(options: {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
 
-    await prisma.sourceRun.update({
-      where: { id: run.id },
-      data: {
-        status: "failed",
-        finishedAt: new Date(),
-        errorMessage: message,
-      },
-    });
+    try {
+      await prisma.sourceRun.update({
+        where: { id: run.id },
+        data: {
+          status: "failed",
+          finishedAt: new Date(),
+          errorMessage: message,
+        },
+      });
+    } catch (updateErr) {
+      console.error(
+        `[ingestion] Failed to record failure state for run ${run.id}: ${String(updateErr)}`,
+      );
+    }
 
     console.error(`[ingestion] ${adapter.sourceName} failed: ${message}`);
 
-    return { status: "failed", recordsFetched: 0, recordsStored: 0, error: message };
+    return { status: "failed", recordsFetched: fetchedCount, recordsStored: 0, error: message };
   }
 }

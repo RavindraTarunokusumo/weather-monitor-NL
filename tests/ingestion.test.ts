@@ -173,4 +173,30 @@ describe("runIngestionJob", () => {
       }),
     });
   });
+
+  it("records status=failed when store throws", async () => {
+    const prisma = makePrismaStub();
+    const adapter = new KnmiAdapter();
+
+    const result = await runIngestionJob({
+      adapter,
+      city: mockCity,
+      jobType: "ingest-weather",
+      store: async () => {
+        throw new Error("db write failed");
+      },
+      prisma,
+    });
+
+    expect(result.status).toBe("failed");
+    expect(result.error).toBe("db write failed");
+    expect(result.recordsFetched).toBeGreaterThan(0);
+    expect(prisma.sourceRun.update).toHaveBeenCalledWith({
+      where: { id: "run-abc" },
+      data: expect.objectContaining({
+        status: "failed",
+        errorMessage: "db write failed",
+      }),
+    });
+  });
 });

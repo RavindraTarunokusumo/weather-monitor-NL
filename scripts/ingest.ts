@@ -22,6 +22,7 @@ function parseArgs() {
 }
 
 async function main() {
+  // mock is accepted for forward compatibility; all adapters currently return mock data
   const { type, city: citySlug } = parseArgs();
 
   if (!type || !(VALID_TYPES as readonly string[]).includes(type)) {
