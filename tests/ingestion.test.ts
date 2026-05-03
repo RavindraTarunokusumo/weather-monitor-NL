@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { CityConfig } from "@/lib/ingestion/base";
 import { KnmiAdapter } from "@/lib/ingestion/knmi";
 import { LuchtmeetnetAdapter } from "@/lib/ingestion/luchtmeetnet";
+import { RijkswaterstaatAdapter } from "@/lib/ingestion/rijkswaterstaat";
 
 const mockCity: CityConfig = {
   id: "city-1",
@@ -74,6 +75,36 @@ describe("LuchtmeetnetAdapter", () => {
       so2: expect.any(Number),
       mainPollutant: expect.any(String),
       trendLabel: expect.any(String),
+    });
+    expect(r.observedAt).toBeInstanceOf(Date);
+  });
+});
+
+describe("RijkswaterstaatAdapter", () => {
+  it("sourceName is mock_rijkswaterstaat", () => {
+    expect(new RijkswaterstaatAdapter().sourceName).toBe("mock_rijkswaterstaat");
+  });
+
+  it("fetch returns at least one raw record", async () => {
+    const adapter = new RijkswaterstaatAdapter();
+    const records = await adapter.fetch(mockCity);
+    expect(records.length).toBeGreaterThan(0);
+  });
+
+  it("normalize returns NormalizedWaterRecord shape", async () => {
+    const adapter = new RijkswaterstaatAdapter();
+    const raw = await adapter.fetch(mockCity);
+    const normalized = await adapter.normalize(raw, mockCity);
+
+    expect(normalized).toHaveLength(raw.length);
+    const r = normalized[0];
+    expect(r).toMatchObject({
+      sourceName: "mock_rijkswaterstaat",
+      stationId: expect.any(String),
+      stationName: expect.any(String),
+      waterLevelCm: expect.any(Number),
+      trendLabel: expect.any(String),
+      riskLabel: expect.any(String),
     });
     expect(r.observedAt).toBeInstanceOf(Date);
   });
