@@ -1,0 +1,6 @@
+Task: Simplify database tests
+Summary: Reuse the shared Alembic config test helper in migration and seed tests to remove duplicate setup code.
+Spec: docs/specs/database-schema-seed-dashboard.md
+Docs: N/A
+TODO: Step 6 simplify review
+Validation: uv run --group dev pre-commit run; uv run pytest; uv run ruff check . --fix
