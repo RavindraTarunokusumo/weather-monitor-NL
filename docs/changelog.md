@@ -2,6 +2,16 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-05-03 - GitHub Actions CI and Bootstrap Pipelines
+
+Summary:
+
+- What changed: replaced the stale Python-oriented CI workflow with Next.js/Prisma quality checks and added a PostgreSQL-backed bootstrap smoke workflow.
+- Why: make pre-commit, lint, typecheck, tests, Prisma validation, seeded build validation, and API smoke checks part of the repository’s automated path.
+- User-visible impact: pull requests and main-branch changes now get faster feedback on both code quality and seeded dashboard readiness.
+- Migration notes: the quality workflow runs pre-commit, npm lint/typecheck/tests, and Prisma validation; the bootstrap workflow runs a seeded build and API smoke checks against PostgreSQL.
+- Related spec: `docs/specs/project-scaffold-vercel-postgres-foundation.md`.
+
 ## 2026-05-03 - Vercel/Postgres Foundation
 
 Summary:

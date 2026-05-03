@@ -2,6 +2,16 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-03 - Production Bootstrap Debugging
+
+- What worked: `vercel logs --environment production --level error --expand` exposed the real failure quickly; the app was connected to Postgres, but Prisma raised `P2021` because the production schema had never been applied.
+- What failed: a healthy Vercel deployment can still serve 500s if the managed database is empty or uninitialized, so "deployment ready" is not the same as "data ready."
+- Useful commands: `vercel ls`, `vercel inspect <deployment-url>`, `vercel env ls production`, `vercel env pull --environment production`, `npm run build`, `npm test`.
+- Workflow improvement: for Prisma-backed Vercel apps, make the deploy path self-initializing by running `prisma migrate deploy` before app build completion and `prisma db seed` immediately after, with a direct non-pooled URL reserved for migration work.
+- CI/CD recommendation: keep a fast PR gate in GitHub Actions that runs pre-commit, lint, typecheck, tests, Prisma validation, and the production build. This matches the checks described in `.pre-commit-config.yaml` and the pre-commit section in `AGENTS/CLAUDE.md`.
+- CI/CD recommendation: add a separate database bootstrap job in GitHub Actions for main-branch deploy validation that starts Postgres, applies migrations, runs the seed, and then hits `/api/health` and `/api/dashboard?city=amsterdam`.
+- CI/CD recommendation: keep deployment itself on Vercel Preview/Production, and let GitHub Actions own code quality plus database smoke checks. That avoids duplicating deployment logic in two places.
+
 ## 2026-05-03 - Vercel/Postgres Foundation
 
 - What worked: isolating dashboard response shaping in `lib/dashboard.ts` made the Route Handler contract easy to test without a live database.

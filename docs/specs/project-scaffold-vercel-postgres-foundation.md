@@ -26,6 +26,7 @@ This spec includes:
   * `GET /api/dashboard?city=amsterdam`
 * Root homepage that fetches `/api/dashboard?city=amsterdam` and renders basic dashboard cards.
 * `.env.example` and README setup instructions for local development, migration, seed, and validation.
+* GitHub Actions pipelines for repository quality checks and seeded dashboard bootstrap smoke tests.
 
 ## Non-Goals
 
@@ -62,6 +63,7 @@ The following are intentionally out of scope:
 * Use the provider's pooled connection string for Vercel Preview and Production deployments.
 * If the provider supplies a separate direct connection string for migrations, keep it available outside the browser bundle for `prisma migrate deploy` and other CLI-only tasks.
 * Vercel production and preview builds may apply `prisma migrate deploy` and `prisma db seed` during the build pipeline so a fresh managed database becomes usable on first deploy.
+* GitHub Actions should keep a fast quality gate separate from the seeded database bootstrap smoke test.
 * Keep dashboard data mocked and clearly seed-driven.
 * Do not implement live ingestion, AI Q&A, account auth, or VPS-specific deployment.
 * Use production migration command `prisma migrate deploy` for deployment docs, not `migrate dev`.
@@ -73,10 +75,12 @@ Automated checks:
 
 * TypeScript typecheck passes.
 * ESLint passes.
+* GitHub Actions validates pre-commit hooks, linting, typecheck, tests, Prisma validation, and the seeded dashboard bootstrap smoke path.
 * Unit tests cover dashboard response shaping for an Amsterdam snapshot and unsupported city behavior where practical.
 * Prisma schema validates.
 * Docker Compose config validates when Docker is available.
 * Next.js production build passes.
+* A PostgreSQL-backed smoke test confirms seeded `/api/health`, `/api/cities`, and `/api/dashboard?city=amsterdam` responses after build.
 
 Manual checks:
 
