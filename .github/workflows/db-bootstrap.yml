@@ -1,0 +1,131 @@
+name: Database Bootstrap Smoke
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - AGENTS.md
+      - CLAUDE.md
+      - README.md
+      - TODO.md
+      - .github/workflows/db-bootstrap.yml
+      - .github/workflows/ci.yml
+      - .gitignore
+      - package.json
+      - package-lock.json
+      - prisma/**
+      - app/**
+      - lib/**
+      - tests/**
+      - docs/**
+      - infra/**
+  pull_request:
+    paths:
+      - AGENTS.md
+      - CLAUDE.md
+      - README.md
+      - TODO.md
+      - .github/workflows/db-bootstrap.yml
+      - .github/workflows/ci.yml
+      - .gitignore
+      - package.json
+      - package-lock.json
+      - prisma/**
+      - app/**
+      - lib/**
+      - tests/**
+      - docs/**
+      - infra/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: db-bootstrap-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bootstrap:
+    name: Seeded build and API smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: dutch_weather
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d dutch_weather"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/dutch_weather
+      NEXT_PUBLIC_APP_NAME: Dutch Weather Intelligence
+      ENABLE_AI_QNA: "false"
+      ANON_DAILY_QA_LIMIT: "3"
+      CRON_SECRET: replace_me
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build seeded app
+        run: npm run build
+
+      - name: Start production server
+        run: |
+          npm run start -- --hostname 127.0.0.1 --port 3000 > /tmp/weather-monitor.log 2>&1 &
+          echo $! > /tmp/weather-monitor.pid
+
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3000/api/health >/tmp/weather-monitor-health.json; then
+              exit 0
+            fi
+
+            sleep 2
+          done
+
+          cat /tmp/weather-monitor.log
+          exit 1
+
+      - name: Smoke test seeded endpoints
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+
+          const health = await fetch('http://127.0.0.1:3000/api/health').then((response) => response.json());
+          assert.equal(health.status, 'ok');
+
+          const cities = await fetch('http://127.0.0.1:3000/api/cities').then((response) => response.json());
+          assert.deepEqual(
+            cities.cities.map((city) => city.slug).sort(),
+            ['amsterdam', 'rotterdam', 'utrecht'],
+          );
+
+          const dashboard = await fetch('http://127.0.0.1:3000/api/dashboard?city=amsterdam').then((response) => response.json());
+          assert.equal(dashboard.city.slug, 'amsterdam');
+          assert.equal(dashboard.cycle_comfort.score, 78);
+          assert.equal(dashboard.air_quality.label, 'Good');
+
+          const homepage = await fetch('http://127.0.0.1:3000/').then((response) => response.text());
+          assert.match(homepage, /Amsterdam/);
+          assert.match(homepage, /Cycle comfort/i);
+          NODE
