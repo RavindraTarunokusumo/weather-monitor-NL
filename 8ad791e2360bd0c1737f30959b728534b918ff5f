@@ -1,0 +1,6 @@
+Task: remove stale monorepo runtime
+Summary: Deleted the obsolete FastAPI/monorepo scaffold, scripts, and shared fixture so the repository only exposes the single Next.js foundation required by the active spec.
+Spec: docs/specs/project-scaffold-vercel-postgres-foundation.md
+Docs: README.md, docs/architecture.md, docs/commands.md, docs/database.md, docs/index.md, docs/insights.md, docs/testing.md, docs/specs/project-scaffold-vercel-postgres-foundation.md, docs/superpowers/plans/2026-05-03-vercel-postgres-foundation.md
+TODO: N/A
+Validation: git status --short --branch
