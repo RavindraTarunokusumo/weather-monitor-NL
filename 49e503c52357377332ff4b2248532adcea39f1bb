@@ -1,0 +1,6 @@
+Task: serve and render seeded dashboard
+Summary: Added dashboard response shaping, Route Handlers for health/cities/dashboard, the homepage dashboard render, and focused contract tests.
+Spec: docs/specs/project-scaffold-vercel-postgres-foundation.md
+Docs: N/A
+TODO: Active Session / API routes and homepage
+Validation: npm test, npm run build
