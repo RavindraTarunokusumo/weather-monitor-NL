@@ -81,4 +81,3 @@ Rules:
 - unexplained background jobs
 - AI access to raw NetCDF or GRIB source files in MVP
 - docs that duplicate code instead of explaining behavior
-

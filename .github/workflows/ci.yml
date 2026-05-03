@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - AGENTS.md
+      - README.md
+      - TODO.md
+      - .github/workflows/ci.yml
+      - .gitignore
+      - .pre-commit-config.yaml
+      - pyproject.toml
+      - requirements.txt
+      - uv.lock
+      - docs/**
+      - apps/**
+      - infra/**
+      - packages/**
+  pull_request:
+    paths:
+      - AGENTS.md
+      - README.md
+      - TODO.md
+      - .github/workflows/ci.yml
+      - .gitignore
+      - .pre-commit-config.yaml
+      - pyproject.toml
+      - requirements.txt
+      - uv.lock
+      - docs/**
+      - apps/**
+      - infra/**
+      - packages/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-root-scaffold:
+    name: Validate root scaffold
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.9.28"
+          python-version: "3.11"
+          enable-cache: true
+
+      - name: Check lockfile
+        run: uv lock --check
+
+      - name: Sync dev environment
+        run: uv sync --locked --group dev --no-install-project
+
+      - name: Run pre-commit hooks
+        run: uv run --group dev pre-commit run --all-files
+
+      - name: Smoke test dependency imports
+        run: uv run python -c "import fastapi, pydantic_settings, psycopg, sqlalchemy, uvicorn"

@@ -2,6 +2,24 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-03 - Database Schema & Seed Dashboard
+
+- What worked: a temporary SQLite database plus Alembic upgrade in tests gave fast coverage for migration shape, repeatable seeding, route responses, and the shared Amsterdam fixture.
+- What failed: Docker was unavailable on PATH, so Compose validation remained a manual follow-up.
+- Useful commands: `cd apps/api && uv run pytest`, `cd apps/api && uv run ruff check .`, `cd apps/api && uv run alembic upgrade head`, `cd apps/api && uv run python -m app.jobs.seed_dev`.
+- Scripts created: `infra/scripts/migrate.sh` and `infra/scripts/seed.sh` now call the implemented Alembic and seed commands.
+- Workflow improvement: commit the scaffold baseline before starting dependent feature specs so Step 5 can map each TODO sub-item to its own clean commit.
+- Skill worth adding or updating: the repo-local `test-plan-writer` and `security-review` skills still contain trading-specific context and should be adapted for Dutch Weather Intelligence.
+
+## 2026-05-02 - Root Scaffold Configuration Baseline
+
+- What worked: `uv lock`, `uv sync --locked --group dev --no-install-project`, and `pre-commit` fit cleanly into a single CI validation path for the root scaffold.
+- What failed: initial pre-commit runs surfaced missing end-of-file newlines in existing tracked files, which the hook normalized automatically.
+- Useful commands: `uv lock --check`, `uv run --group dev pre-commit run --all-files`.
+- Scripts created: none.
+- Workflow improvement: keep the CI job focused on repository-root guarantees until application code and database services exist.
+- Skill worth adding or updating: a repo-specific CI checklist for uv-managed projects would reduce setup drift when the backend and frontend jobs arrive.
+
 ## 2026-05-02 - Spec-Driven Workflow
 
 - What worked: the accepted plan translated cleanly into a per-feature spec contract under `docs/specs/`.
