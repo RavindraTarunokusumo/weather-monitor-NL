@@ -15,7 +15,6 @@ export default defineConfig({
     include: ["tests/**/*.test.{ts,tsx}"],
     globals: true,
     pool: "forks",
-    environmentMatchGlobs: [["tests/**/*.test.tsx", "happy-dom"]],
     setupFiles: ["tests/setup.ts"],
   },
 });
