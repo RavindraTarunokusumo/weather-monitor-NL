@@ -16,10 +16,14 @@ Use this file as the second layer after `AGENTS.md`. It points to deeper docs wi
 
 ## Repo Areas
 
-- `app/`: Next.js App Router pages and API Route Handlers
-- `lib/`: server-side helpers and API response shaping
+- `app/`: Next.js App Router pages, API Route Handlers, and UI components
+  - `app/components/`: pure display cards (`briefing-card`, `weather-card`, `cycle-comfort-card`, `air-quality-card`, `water-signal-card`, `source-freshness`) and the stateful `live-dashboard` client component
+- `lib/`: server-side helpers, shared types, client fetch helpers, and formatting utilities
+  - `lib/types/dashboard.ts`: shared `DashboardResponse` and `CityListEntry` types
+  - `lib/api/dashboard-client.ts`: client-side `getDashboard()` and `getCities()` fetch helpers
+  - `lib/utils/format.ts`: pure display formatting functions (date, temperature, wind, AQI, water level, risk color)
 - `prisma/`: Prisma schema, migrations, and seed data
-- `tests/`: Vitest test suite
+- `tests/`: Vitest test suite (TypeScript helpers, API contract, formatter unit tests, React component tests)
 - `public/`: static frontend assets
 - `Onboarding/`: initial product plan, harness bootstrap, and supplied agent/skill material
 - `.codex/skills/`: installed repo-local skill packages

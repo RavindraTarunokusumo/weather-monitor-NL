@@ -1,9 +1,9 @@
 # Public Dashboard UI Shell Spec
 
-Status: Draft
+Status: Accepted
 Spec path: `docs/specs/public-dashboard-ui-shell.md`
-Accepted by: TBD
-Accepted date: TBD
+Accepted by: RavindraTarunokusumo
+Accepted date: 2026-05-04
 
 ## Goal
 

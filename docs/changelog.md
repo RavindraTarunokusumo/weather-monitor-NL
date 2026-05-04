@@ -2,6 +2,17 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-05-04 - Public Dashboard UI Shell
+
+Summary:
+
+- What changed: replaced the bare server-rendered homepage with a full dashboard UI shell — sticky navy nav, city selector, auto-refresh, and per-domain display cards.
+- Why: deliver the first account-agnostic public dashboard that renders seeded backend data in a Dutch-inspired interface per `docs/specs/public-dashboard-ui-shell.md`.
+- User-visible impact: `http://localhost:3000` now shows a styled dashboard with briefing, current weather, cycle comfort, air quality, water signal, and source freshness cards; the city selector and 30-second auto-poll are functional.
+- Architecture notes: `app/page.tsx` is a pure SSR shell that passes initial data to `LiveDashboard` (a `'use client'` component). All display cards are pure components. Shared types live in `lib/types/dashboard.ts`; client fetch helpers in `lib/api/dashboard-client.ts`; formatting utilities in `lib/utils/format.ts`.
+- Migration notes: set `NEXT_PUBLIC_APP_NAME=Dutch Weather Intelligence` in your local `.env.local` for the nav title to render correctly.
+- Related spec: `docs/specs/public-dashboard-ui-shell.md`.
+
 ## 2026-05-03 - GitHub Actions CI and Bootstrap Pipelines
 
 Summary:
