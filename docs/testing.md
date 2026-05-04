@@ -13,9 +13,32 @@ Testing includes route behavior, response shaping, Prisma schema validation, and
 
 ## Test Layout
 
-- `tests/`: Vitest tests for TypeScript helpers and API contract behavior.
+- `tests/`: Vitest tests for TypeScript helpers, API contract behavior, formatter unit tests, and React component tests.
+  - `tests/format.test.ts`: 21 unit tests covering all pure formatter functions in `lib/utils/format.ts`.
+  - `tests/live-dashboard.test.tsx`: 5 component render/interaction tests for `LiveDashboard` (city selector, auto-poll, manual refresh).
+  - `tests/setup.ts`: `@testing-library/jest-dom` matcher setup, imported by the Vitest config.
 - `prisma/`: schema validation and migration checks.
 - Manual browser/API checks verify seeded data reaches the UI.
+
+## React Component Tests
+
+Component tests use `@testing-library/react` and `@testing-library/jest-dom`, run under `happy-dom` via Vitest.
+
+The Vitest config (`vitest.config.ts`) sets:
+
+```ts
+environment: 'happy-dom'
+globals: true
+setupFiles: ['tests/setup.ts']
+```
+
+JSX is transpiled with esbuild (`jsx: 'react-jsx'`).
+
+Component test conventions:
+
+- Mock external fetch calls; do not hit the real API.
+- Test observable behavior (rendered text, user interactions) rather than implementation details.
+- Keep mocks minimal — only stub what is needed for the test to isolate correctly.
 
 ## Running Tests
 

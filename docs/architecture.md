@@ -4,10 +4,15 @@ Dutch Weather Intelligence is currently a single full-stack Next.js App Router a
 
 ## Entry Points
 
-- Frontend: `app/page.tsx`
+- Frontend (SSR shell): `app/page.tsx`
+- Client dashboard: `app/components/live-dashboard.tsx`
+- Display components: `app/components/`
 - API routes: `app/api/*/route.ts`
 - Database client: `lib/db.ts`
 - Dashboard response shaping: `lib/dashboard.ts`
+- Shared dashboard types: `lib/types/dashboard.ts`
+- Client-side fetch helpers: `lib/api/dashboard-client.ts`
+- Display formatting utilities: `lib/utils/format.ts`
 - Persistence schema and seed: `prisma/`
 - Local infrastructure: `infra/docker/docker-compose.yml`
 
@@ -16,8 +21,22 @@ Dutch Weather Intelligence is currently a single full-stack Next.js App Router a
 1. Local PostgreSQL stores supported cities, source snapshots, dashboard snapshots, and mock briefings.
 2. Prisma exposes a type-safe database client for server-side Next.js code.
 3. Route Handlers serve health, city catalog, and dashboard JSON from the database.
-4. The homepage fetches `/api/dashboard?city=amsterdam` and renders the seeded Amsterdam dashboard.
-5. Source freshness travels with weather, air-quality, and water snapshot data.
+4. `app/page.tsx` runs on the server: fetches initial dashboard data and the city list, then renders `LiveDashboard` with that data as props.
+5. `LiveDashboard` is a `'use client'` component that owns city-selection state and auto-polls the dashboard API every 30 seconds. It composes all display cards.
+6. Pure display components (`briefing-card`, `weather-card`, `cycle-comfort-card`, `air-quality-card`, `water-signal-card`, `source-freshness`) receive typed props and contain no fetch or business logic.
+7. Source freshness travels with weather, air-quality, and water snapshot data and is rendered with Dutch locale formatting.
+
+## LiveDashboard Pattern
+
+`LiveDashboard` is the single stateful client component. It:
+
+- Accepts initial data from the SSR parent to avoid a client-side loading flash.
+- Exposes a city selector dropdown; changing city triggers a fresh `getDashboard()` call.
+- Auto-refreshes every 30 seconds via `setInterval`.
+- Provides a manual Refresh button.
+- Passes shaped data down to pure display-only card components.
+
+All business logic (score calculation, risk categories) stays server-side. Cards display only what they receive.
 
 ## Current API Surface
 
