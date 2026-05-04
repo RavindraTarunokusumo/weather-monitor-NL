@@ -15,7 +15,7 @@ Testing includes route behavior, response shaping, Prisma schema validation, and
 
 - `tests/`: Vitest tests for TypeScript helpers, API contract behavior, formatter unit tests, and React component tests.
   - `tests/format.test.ts`: 21 unit tests covering all pure formatter functions in `lib/utils/format.ts`.
-  - `tests/live-dashboard.test.tsx`: 5 component render/interaction tests for `LiveDashboard` (city selector, auto-poll, manual refresh).
+  - `tests/live-dashboard.test.tsx`: 7 component render/interaction tests for `LiveDashboard` (data rendering, fallback labels, city selector, city-change fetch, manual Refresh button, 30s auto-poll).
   - `tests/setup.ts`: `@testing-library/jest-dom` matcher setup, imported by the Vitest config.
 - `prisma/`: schema validation and migration checks.
 - Manual browser/API checks verify seeded data reaches the UI.
@@ -24,15 +24,15 @@ Testing includes route behavior, response shaping, Prisma schema validation, and
 
 Component tests use `@testing-library/react` and `@testing-library/jest-dom`, run under `happy-dom` via Vitest.
 
-The Vitest config (`vitest.config.ts`) sets:
+The Vitest config (`vitest.config.ts`) sets `globals: true` and `setupFiles: ['tests/setup.ts']`. JSX is transpiled via esbuild (`jsx: 'automatic'`, `jsxImportSource: 'react'`).
+
+Per-test-file environment selection uses the Vitest file-level annotation:
 
 ```ts
-environment: 'happy-dom'
-globals: true
-setupFiles: ['tests/setup.ts']
+// @vitest-environment happy-dom
 ```
 
-JSX is transpiled with esbuild (`jsx: 'react-jsx'`).
+This is placed at the top of each `.test.tsx` file that needs a DOM environment. `.test.ts` files run in the default Node environment.
 
 Component test conventions:
 

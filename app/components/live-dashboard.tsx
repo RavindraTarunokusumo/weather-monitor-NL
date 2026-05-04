@@ -24,31 +24,34 @@ export function LiveDashboard({ initialData, initialCity, cities }: Props) {
   const [data, setData] = useState<DashboardResponse>(initialData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [lastRefreshed, setLastRefreshed] = useState<Date>(
+    () => new Date(initialData.generated_at),
+  );
+  const requestIdRef = useRef(0);
 
   const refresh = useCallback(async (targetCity: string) => {
+    const requestId = ++requestIdRef.current;
     setLoading(true);
     setError(null);
     try {
       const next = await getDashboard(targetCity);
+      if (requestId !== requestIdRef.current) return;
       setData(next);
       setLastRefreshed(new Date());
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load data");
+      if (requestId !== requestIdRef.current) return;
+      setError(err instanceof Error ? err.message : "Could not load dashboard data.");
     } finally {
-      setLoading(false);
+      if (requestId === requestIdRef.current) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    timerRef.current = setInterval(() => {
+    const timer = setInterval(() => {
       refresh(city);
     }, POLL_INTERVAL_MS);
 
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
+    return () => clearInterval(timer);
   }, [city, refresh]);
 
   const handleCityChange = async (slug: string) => {

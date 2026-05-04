@@ -6,15 +6,15 @@ export async function getDashboard(city: string): Promise<DashboardResponse> {
   });
 
   if (!res.ok) {
-    throw new Error(`Dashboard API returned ${res.status}`);
+    throw new Error("Could not load dashboard data. Try refreshing in a moment.");
   }
 
   return res.json() as Promise<DashboardResponse>;
 }
 
-export async function getCities(): Promise<CityListEntry[]> {
+export async function getCities(): Promise<CityListEntry[] | null> {
   const res = await fetch("/api/cities", { cache: "no-store" });
-  if (!res.ok) return [];
+  if (!res.ok) return null;
   const data = (await res.json()) as { cities?: CityListEntry[] };
-  return data.cities ?? [];
+  return data.cities ?? null;
 }

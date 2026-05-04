@@ -31,7 +31,7 @@ async function getServerCities(): Promise<CityListEntry[]> {
   try {
     const res = await fetch(`${base}/api/cities`, { cache: "no-store" });
     if (!res.ok) return [{ slug: "amsterdam", name: "Amsterdam" }];
-    const data = (await res.json()) as { cities?: CityListEntry[] };
+    const data = (await res.json()) as { cities?: CityListEntry[] | null };
     return data.cities ?? [{ slug: "amsterdam", name: "Amsterdam" }];
   } catch {
     return [{ slug: "amsterdam", name: "Amsterdam" }];

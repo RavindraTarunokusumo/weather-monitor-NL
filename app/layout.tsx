@@ -13,7 +13,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="nl">
+    <html lang="en">
       <body>{children}</body>
     </html>
   );

@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { LiveDashboard } from "@/app/components/live-dashboard";
@@ -168,5 +168,48 @@ describe("LiveDashboard", () => {
     await waitFor(() => {
       expect(getDashboard).toHaveBeenCalledWith("utrecht");
     });
+  });
+
+  it("calls getDashboard when Refresh button is clicked", async () => {
+    vi.mocked(getDashboard).mockResolvedValue(mockDashboard);
+    const user = userEvent.setup();
+
+    render(
+      <LiveDashboard
+        initialData={mockDashboard}
+        initialCity="amsterdam"
+        cities={mockCities}
+      />,
+    );
+
+    const btn = screen.getByRole("button", { name: /refresh/i });
+    await user.click(btn);
+
+    await waitFor(() => {
+      expect(getDashboard).toHaveBeenCalledWith("amsterdam");
+    });
+  });
+
+  it("polls getDashboard after 30 seconds", async () => {
+    vi.useFakeTimers();
+    vi.mocked(getDashboard).mockResolvedValue(mockDashboard);
+
+    render(
+      <LiveDashboard
+        initialData={mockDashboard}
+        initialCity="amsterdam"
+        cities={mockCities}
+      />,
+    );
+
+    expect(getDashboard).not.toHaveBeenCalled();
+
+    await act(async () => {
+      vi.advanceTimersByTime(30_001);
+    });
+
+    expect(getDashboard).toHaveBeenCalledWith("amsterdam");
+
+    vi.useRealTimers();
   });
 });
