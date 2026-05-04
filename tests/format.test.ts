@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   formatDate,
+  formatTime,
   formatTemp,
   formatFeelsLike,
   formatWind,
@@ -9,6 +10,14 @@ import {
   formatWaterLevel,
   riskColor,
 } from "@/lib/utils/format";
+
+describe("formatTime", () => {
+  it("formats a Date to time-only string", () => {
+    const result = formatTime(new Date("2026-05-04T10:30:00.000Z"));
+    expect(result).toMatch(/\d/);
+    expect(result).not.toContain("2026");
+  });
+});
 
 describe("formatDate", () => {
   it("formats an ISO string to Dutch locale", () => {

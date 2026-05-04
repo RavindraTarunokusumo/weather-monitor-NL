@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getDashboard } from "@/lib/api/dashboard-client";
+import { formatTime } from "@/lib/utils/format";
 import { BriefingCard } from "./briefing-card";
 import { WeatherCard } from "./weather-card";
 import { CycleComfortCard } from "./cycle-comfort-card";
@@ -51,12 +52,8 @@ export function LiveDashboard({ initialData, initialCity, cities }: Props) {
   }, [city, refresh]);
 
   const handleCityChange = async (slug: string) => {
-    setCity(slug);
-    if (timerRef.current) clearInterval(timerRef.current);
-    await refresh(slug);
-    timerRef.current = setInterval(() => {
-      refresh(slug);
-    }, POLL_INTERVAL_MS);
+    setCity(slug);      // triggers useEffect to clear and restart the poll interval
+    await refresh(slug); // immediate fetch for the newly selected city
   };
 
   return (
@@ -101,11 +98,7 @@ export function LiveDashboard({ initialData, initialCity, cities }: Props) {
           <div className="generated-box">
             <strong>Last refreshed</strong>
             <br />
-            <span suppressHydrationWarning>
-              {lastRefreshed.toLocaleTimeString("nl-NL", {
-                timeZone: "Europe/Amsterdam",
-              })}
-            </span>
+            <span suppressHydrationWarning>{formatTime(lastRefreshed)}</span>
           </div>
         </header>
 

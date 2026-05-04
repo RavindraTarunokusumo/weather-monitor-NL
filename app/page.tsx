@@ -4,12 +4,17 @@ import type { DashboardResponse, CityListEntry } from "@/lib/types/dashboard";
 
 export const dynamic = "force-dynamic";
 
-async function getServerDashboard(city: string): Promise<DashboardResponse> {
+async function getBaseUrl(): Promise<string> {
   const headerList = await headers();
   const host = headerList.get("host") ?? "localhost:3000";
   const protocol = process.env.VERCEL === "1" ? "https" : "http";
+  return `${protocol}://${host}`;
+}
+
+async function getServerDashboard(city: string): Promise<DashboardResponse> {
+  const base = await getBaseUrl();
   const res = await fetch(
-    `${protocol}://${host}/api/dashboard?city=${encodeURIComponent(city)}`,
+    `${base}/api/dashboard?city=${encodeURIComponent(city)}`,
     { cache: "no-store" },
   );
 
@@ -21,14 +26,10 @@ async function getServerDashboard(city: string): Promise<DashboardResponse> {
 }
 
 async function getServerCities(): Promise<CityListEntry[]> {
-  const headerList = await headers();
-  const host = headerList.get("host") ?? "localhost:3000";
-  const protocol = process.env.VERCEL === "1" ? "https" : "http";
+  const base = await getBaseUrl();
 
   try {
-    const res = await fetch(`${protocol}://${host}/api/cities`, {
-      cache: "no-store",
-    });
+    const res = await fetch(`${base}/api/cities`, { cache: "no-store" });
     if (!res.ok) return [{ slug: "amsterdam", name: "Amsterdam" }];
     const data = (await res.json()) as { cities?: CityListEntry[] };
     return data.cities ?? [{ slug: "amsterdam", name: "Amsterdam" }];

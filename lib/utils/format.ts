@@ -1,10 +1,21 @@
+const DATE_FORMATTER = new Intl.DateTimeFormat("nl-NL", {
+  dateStyle: "medium",
+  timeStyle: "short",
+  timeZone: "Europe/Amsterdam",
+});
+
+const TIME_FORMATTER = new Intl.DateTimeFormat("nl-NL", {
+  timeStyle: "short",
+  timeZone: "Europe/Amsterdam",
+});
+
 export function formatDate(value: string | null): string {
   if (!value) return "Unavailable";
-  return new Intl.DateTimeFormat("nl-NL", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "Europe/Amsterdam",
-  }).format(new Date(value));
+  return DATE_FORMATTER.format(new Date(value));
+}
+
+export function formatTime(date: Date): string {
+  return TIME_FORMATTER.format(date);
 }
 
 export function formatTemp(value: number | null): string {
