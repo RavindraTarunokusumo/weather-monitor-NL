@@ -1,9 +1,9 @@
 # Source Adapter & Ingestion Skeleton Spec
 
-Status: Draft
+Status: Accepted
 Spec path: `docs/specs/source-adapter-ingestion-skeleton.md`
-Accepted by: TBD
-Accepted date: TBD
+Accepted by: RavindraTarunokusumo
+Accepted date: 2026-05-03
 
 ## Goal
 
