@@ -44,6 +44,17 @@ export type NormalizedWaterRecord = {
   sourceName: string;
 };
 
+export type AdapterMode = "mock" | "live";
+
+export type JsonFetcher = (input: string, init?: RequestInit) => Promise<Response>;
+
+export type SourceAdapterOptions = {
+  mode?: AdapterMode;
+  fetcher?: JsonFetcher;
+  baseUrl?: string;
+  apiKey?: string;
+};
+
 export abstract class SourceAdapter<T> {
   abstract readonly sourceName: string;
   abstract fetch(city: CityConfig): Promise<Record<string, unknown>[]>;
