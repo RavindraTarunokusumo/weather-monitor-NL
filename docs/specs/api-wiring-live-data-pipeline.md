@@ -1,9 +1,9 @@
 # API Wiring & Live Data Pipeline Spec
 
-Status: Draft
+Status: Accepted
 Spec path: `docs/specs/api-wiring-live-data-pipeline.md`
-Accepted by: TBD
-Accepted date: TBD
+Accepted by: RavindraTarunokusumo
+Accepted date: 2026-05-05
 
 ## Goal
 
