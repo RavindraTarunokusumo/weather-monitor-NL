@@ -1,0 +1,6 @@
+Task: Record live adapter task completion
+Summary: Updated TODO.md with the completed Task 1 commit hash.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: TODO.md
+TODO: Add source configuration, safe HTTP helper, and live-capable KNMI/Luchtmeetnet/Rijkswaterstaat adapters.
+Validation: Task 1 validation recorded on commit fbbc513
