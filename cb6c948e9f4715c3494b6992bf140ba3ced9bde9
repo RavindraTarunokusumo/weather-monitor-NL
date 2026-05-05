@@ -1,0 +1,6 @@
+Task: Plan live data pipeline implementation
+Summary: Added implementation plan and spec-derived TODO session entries before code changes.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: docs/superpowers/plans/2026-05-05-api-wiring-live-data-pipeline.md, TODO.md
+TODO: api-wiring-live-data-pipeline active session
+Validation: pre-commit run --files TODO.md docs/superpowers/plans/2026-05-05-api-wiring-live-data-pipeline.md; git diff --check -- TODO.md docs/superpowers/plans/2026-05-05-api-wiring-live-data-pipeline.md
