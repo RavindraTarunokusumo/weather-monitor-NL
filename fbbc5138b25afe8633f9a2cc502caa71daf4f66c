@@ -1,0 +1,6 @@
+Task: Source configuration and live adapter contracts
+Summary: Added per-city source config, safe JSON fetch helper, and live-capable KNMI/Luchtmeetnet/Rijkswaterstaat adapters with mocked fixture tests.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: TODO.md active session item 1
+TODO: Add source configuration, safe HTTP helper, and live-capable KNMI/Luchtmeetnet/Rijkswaterstaat adapters.
+Validation: npm test -- tests/ingestion-live-adapters.test.ts tests/ingestion.test.ts; npm run typecheck; npx eslint touched Task 1 files; pre-commit run --files touched Task 1 files
