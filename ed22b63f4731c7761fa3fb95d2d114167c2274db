@@ -1,0 +1,6 @@
+Task: Require bearer token for job auth
+Summary: Removed CRON_SECRET query-parameter authorization and require bearer-token job auth to avoid URL/log secret exposure.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: docs/superpowers/plans/2026-05-05-api-wiring-live-data-pipeline.md
+TODO: Update docs, run simplification/security/test-plan checks, and complete full validation.
+Validation: npm test -- tests/ingestion-jobs.test.ts tests/ingestion.test.ts; npm run typecheck; npx eslint lib/ingestion/jobs.ts tests/ingestion-jobs.test.ts; pre-commit run --files lib/ingestion/jobs.ts tests/ingestion-jobs.test.ts docs/superpowers/plans/2026-05-05-api-wiring-live-data-pipeline.md
