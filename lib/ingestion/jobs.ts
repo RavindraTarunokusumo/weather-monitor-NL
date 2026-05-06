@@ -62,10 +62,9 @@ export function isAuthorizedJobRequest(request: Request): boolean {
     return false;
   }
 
-  const url = new URL(request.url);
   const header = request.headers.get("authorization");
 
-  return header === `Bearer ${secret}` || url.searchParams.get("secret") === secret;
+  return header === `Bearer ${secret}`;
 }
 
 export async function runWeatherIngestion(options: RunOptions): Promise<CityIngestionResult> {

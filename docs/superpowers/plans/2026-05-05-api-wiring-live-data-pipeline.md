@@ -86,7 +86,7 @@ Create reusable functions for `runWeatherIngestion`, `runAirQualityIngestion`, `
 
 - [ ] **Step 3: Wire routes and CLI**
 
-Routes must reject live execution without a valid bearer token or `?secret=` matching `CRON_SECRET`. CLI must support `--live`, `--mock`, `--city <slug>`, and `--all`.
+Routes must reject live execution without a valid bearer token matching `CRON_SECRET`. CLI must support `--live`, `--mock`, `--city <slug>`, and `--all`.
 
 - [ ] **Step 4: Verify task tests**
 

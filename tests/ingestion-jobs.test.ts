@@ -66,7 +66,7 @@ describe("ingestion job helpers", () => {
     expect(getIngestionMode(new URLSearchParams(""))).toBe("mock");
   });
 
-  it("authorizes job requests with bearer token or secret query param", () => {
+  it("authorizes job requests with bearer token only", () => {
     vi.stubEnv("CRON_SECRET", "cron-secret");
 
     expect(
@@ -80,7 +80,7 @@ describe("ingestion job helpers", () => {
       isAuthorizedJobRequest(
         new Request("https://example.test/api/jobs/ingest-weather?secret=cron-secret"),
       ),
-    ).toBe(true);
+    ).toBe(false);
     expect(
       isAuthorizedJobRequest(
         new Request("https://example.test/api/jobs/ingest-weather?secret=wrong"),
