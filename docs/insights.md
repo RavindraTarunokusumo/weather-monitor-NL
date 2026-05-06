@@ -2,6 +2,15 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-06 - Live Data Pipeline Wiring
+
+- What worked: keeping public dashboard requests snapshot-only made the live API work testable with mocked provider payloads and kept source failures away from page-request latency.
+- What worked: adding provider-specific fixture tests first exposed clean adapter contracts for KNMI CoverageJSON, Luchtmeetnet measurement rows, and Rijkswaterstaat WaterWebservices observations.
+- What failed: root `npm run lint` still scans ignored generated worktree output under `.worktrees/.../.next`, so full lint remains blocked by pre-existing generated files despite focused ESLint passing on touched files.
+- Useful commands: `npm test -- tests/ingestion-live-adapters.test.ts tests/ingestion-jobs.test.ts tests/dashboard-regeneration.test.ts tests/dashboard.test.ts`, `npm run ingest:all -- --live`, `npm run dashboard:regenerate -- --all`.
+- Scripts created: `npm run ingest:all` and `npm run dashboard:regenerate` now route through `scripts/ingest.ts`.
+- Workflow improvement: when a spec requires "live" data, keep provider API keys out of docs and use injected fetch clients so tests prove parsing without touching real services.
+
 ## 2026-05-03 - Production Bootstrap Debugging
 
 - What worked: `vercel logs --environment production --level error --expand` exposed the real failure quickly; the app was connected to Postgres, but Prisma raised `P2021` because the production schema had never been applied.

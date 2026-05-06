@@ -2,6 +2,16 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-05-06 - Live Data Pipeline Wiring
+
+Summary:
+
+- What changed: added live-capable KNMI, Luchtmeetnet, and Rijkswaterstaat ingestion adapters, explicit source configuration for Amsterdam/Utrecht/Rotterdam, shared ingestion jobs, all-source refresh command, dashboard snapshot regeneration, and source status metadata in `/api/dashboard`.
+- Why: make the skeleton dashboard capable of showing latest stored source-backed weather, air-quality, and water signals without request-time external API calls.
+- User-visible impact: the public page can select Amsterdam, Utrecht, or Rotterdam and display stored live-backed values plus freshness/stale/missing source states after ingestion and regeneration commands run.
+- Migration notes: add server-only `KNMI_API_KEY` and `CRON_SECRET` to local/production environments; run `npm run ingest:all -- --live` followed by `npm run dashboard:regenerate -- --all` to refresh all seeded cities.
+- Related spec: `docs/specs/api-wiring-live-data-pipeline.md`.
+
 ## 2026-05-03 - GitHub Actions CI and Bootstrap Pipelines
 
 Summary:

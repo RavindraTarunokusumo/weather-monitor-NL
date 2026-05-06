@@ -14,10 +14,12 @@ const eslintConfig = [
   {
     ignores: [
       ".next/**",
+      ".worktrees/**",
       ".agents/**",
       ".codex/**",
       ".github/**",
       "node_modules/**",
+      "next-env.d.ts",
       "coverage/**",
       "docs/iterations/**",
       "docs/superpowers/**",
