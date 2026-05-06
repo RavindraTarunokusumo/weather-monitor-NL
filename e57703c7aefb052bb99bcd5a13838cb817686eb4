@@ -1,0 +1,6 @@
+Task: Public dashboard API and UI wiring
+Summary: Extended dashboard source freshness metadata with observed/status/detail fields and added seeded city selection on the public page.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: TODO.md active session item 4
+TODO: Extend public dashboard API/UI for all seeded cities, source freshness, stale, and missing states.
+Validation: npm test -- tests/dashboard.test.ts tests/dashboard-regeneration.test.ts; npm run typecheck; npx eslint touched Task 4 files (CSS ignored warning only); pre-commit run --files touched Task 4 files
