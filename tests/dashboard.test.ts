@@ -13,7 +13,42 @@ const snapshot = {
   cycleComfortLabel: "good",
   bestOutdoorWindow: "10:00-16:00",
   worstOutdoorWindow: "18:00-21:00",
-  summaryPayload: { source: "seed" },
+  summaryPayload: {
+    source: "seed",
+    ui_summary: {
+      best_window: "10:00-16:00",
+      main_risk: "Evening showers and gusts",
+      changed: "Warmer than yesterday",
+      outdoor_window_detail: "Dry, brighter spells and comfortable temperatures.",
+      risk_detail: "Heavier rain possible after 18:00 with gusty winds.",
+      changed_detail: "Temperatures up ~3C. More sun in the first half.",
+    },
+    outlook: {
+      hourly: [
+        { h: "00", rain: 0.1, wind: 14, temp: 13 },
+        { h: "03", rain: 0.1, wind: 13, temp: 12 },
+        { h: "06", rain: 0, wind: 12, temp: 12 },
+        { h: "09", rain: 0, wind: 15, temp: 14 },
+        { h: "12", rain: 0.1, wind: 17, temp: 16 },
+        { h: "15", rain: 0.2, wind: 20, temp: 17 },
+        { h: "18", rain: 0.9, wind: 26, temp: 16 },
+        { h: "21", rain: 1.8, wind: 30, temp: 14 },
+        { h: "00", rain: 1.1, wind: 28, temp: 13 },
+      ],
+      weekly: [
+        { day: "Mon", hi: 14, lo: 9, rain: 80 },
+        { day: "Tue", hi: 15, lo: 10, rain: 40 },
+        { day: "Wed", hi: 17, lo: 11, rain: 20 },
+        { day: "Thu", hi: 16, lo: 11, rain: 30 },
+        { day: "Fri", hi: 16, lo: 10, rain: 20 },
+        { day: "Sat", hi: 13, lo: 8, rain: 70 },
+        { day: "Sun", hi: 12, lo: 7, rain: 90 },
+      ],
+    },
+    water_signal: {
+      weekly_levels_cm: [14, 13, 14, 15, 14, 16, 15],
+    },
+  },
   weatherSnapshot: {
     temperatureC: 16.2,
     feelsLikeC: 15.4,
@@ -22,6 +57,7 @@ const snapshot = {
     windSpeedKmh: 18,
     windGustKmh: 32,
     windDirection: "WSW",
+    weatherCode: "partly_cloudy",
     warningLevel: "none",
     sourceName: "mock_knmi",
     ingestedAt: new Date("2026-05-03T09:58:00.000Z"),
@@ -29,6 +65,11 @@ const snapshot = {
   airQualitySnapshot: {
     aqiValue: 42,
     aqiLabel: "Good",
+    pm25: 12,
+    pm10: 22,
+    no2: 18,
+    o3: 46,
+    so2: 6,
     mainPollutant: "O3",
     trendLabel: "stable",
     sourceName: "mock_luchtmeetnet",
@@ -65,6 +106,8 @@ describe("buildDashboardResponse", () => {
         temperature_c: 16.2,
         rain_probability: 0.2,
         wind_direction: "WSW",
+        condition_label: "Partly cloudy",
+        warning_level: "none",
       },
       cycle_comfort: {
         score: 78,
@@ -75,14 +118,31 @@ describe("buildDashboardResponse", () => {
         aqi_value: 42,
         label: "Good",
         main_pollutant: "O3",
+        pollutants: {
+          pm25: 12,
+          pm10: 22,
+          no2: 18,
+          o3: 46,
+          so2: 6,
+        },
       },
       water_signal: {
         station_name: "Amsterdam mock station",
         water_level_cm: 14,
         risk_label: "normal",
+        weekly_levels_cm: [14, 13, 14, 15, 14, 16, 15],
       },
-      summary_payload: { source: "seed" },
+      summary_payload: {
+        source: "seed",
+      },
+      ui_summary: {
+        best_window: "10:00-16:00",
+        main_risk: "Evening showers and gusts",
+        changed: "Warmer than yesterday",
+      },
     });
+    expect(response.outlook.hourly).toHaveLength(9);
+    expect(response.outlook.weekly).toHaveLength(7);
     expect(response.source_freshness).toHaveLength(3);
     expect(response.source_freshness[0]).toEqual({
       source: "mock_knmi",
@@ -101,8 +161,19 @@ describe("buildDashboardResponse", () => {
 
     expect(response.briefing).toBeNull();
     expect(response.current.temperature_c).toBeNull();
+    expect(response.current.condition_label).toBeNull();
     expect(response.air_quality.aqi_value).toBeNull();
+    expect(response.air_quality.pollutants).toEqual({
+      pm25: null,
+      pm10: null,
+      no2: null,
+      o3: null,
+      so2: null,
+    });
     expect(response.water_signal.station_name).toBeNull();
+    expect(response.water_signal.weekly_levels_cm).toEqual([]);
+    expect(response.outlook.hourly).toEqual([]);
+    expect(response.outlook.weekly).toEqual([]);
     expect(response.source_freshness).toEqual([
       { source: "weather", updated_at: null },
       { source: "air_quality", updated_at: null },

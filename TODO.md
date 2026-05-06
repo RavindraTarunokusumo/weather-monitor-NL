@@ -19,7 +19,7 @@ Completed sessions must be moved to `docs/iterations/archive/` and include the r
 
 ### Reference Dashboard Webpage UI
 
-- [ ] Copy supplied dashboard visual assets into the public asset tree.
+- [x] Copy supplied dashboard visual assets into the public asset tree. (`4b854fd`)
 - [ ] Extend seeded dashboard data and API response shaping for the reference UI.
 - [ ] Add frontend test harness for React interaction tests.
 - [ ] Build the reference-aligned dashboard page and components.
