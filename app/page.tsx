@@ -41,14 +41,23 @@ type DashboardResponse = {
   source_freshness: Array<{
     source: string;
     updated_at: string | null;
+    observed_at: string | null;
+    status: string;
+    detail: string | null;
   }>;
 };
 
-async function getDashboard(): Promise<DashboardResponse> {
+const CITIES = [
+  { slug: "amsterdam", name: "Amsterdam" },
+  { slug: "utrecht", name: "Utrecht" },
+  { slug: "rotterdam", name: "Rotterdam" },
+];
+
+async function getDashboard(city: string): Promise<DashboardResponse> {
   const headerList = await headers();
   const host = headerList.get("host") ?? "localhost:3000";
   const protocol = process.env.VERCEL === "1" ? "https" : "http";
-  const response = await fetch(`${protocol}://${host}/api/dashboard?city=amsterdam`, {
+  const response = await fetch(`${protocol}://${host}/api/dashboard?city=${city}`, {
     cache: "no-store",
   });
 
@@ -75,11 +84,19 @@ function formatPercent(value: number | null) {
   return value === null ? "unknown rain chance" : `${Math.round(value * 100)}% rain chance`;
 }
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams?: Promise<{ city?: string }>;
+}) {
   let dashboard: DashboardResponse;
+  const params = await searchParams;
+  const selectedCity = CITIES.some((city) => city.slug === params?.city)
+    ? params?.city ?? "amsterdam"
+    : "amsterdam";
 
   try {
-    dashboard = await getDashboard();
+    dashboard = await getDashboard(selectedCity);
   } catch (error) {
     return (
       <main className="page-shell">
@@ -87,7 +104,8 @@ export default async function Home() {
           <p className="eyebrow">Dashboard unavailable</p>
           <h1>Amsterdam data could not be loaded</h1>
           <p className="subtitle">
-            Start PostgreSQL, run the Prisma migration and seed command, then refresh this page.
+            Start PostgreSQL, run the Prisma migration, ingest source data, regenerate dashboard
+            snapshots, then refresh this page.
           </p>
           <p className="metric-detail">{error instanceof Error ? error.message : "Unknown error"}</p>
         </div>
@@ -99,11 +117,11 @@ export default async function Home() {
     <main className="page-shell">
       <header className="dashboard-header">
         <div>
-          <p className="eyebrow">Seeded dashboard</p>
+          <p className="eyebrow">Live-backed dashboard</p>
           <h1>{dashboard.city.name}</h1>
           <p className="subtitle">
-            Database-backed mock weather, air-quality, and water signals served through Next.js
-            Route Handlers.
+            Latest stored weather, air-quality, and water signals served through Next.js Route
+            Handlers.
           </p>
         </div>
         <div className="generated">
@@ -112,6 +130,18 @@ export default async function Home() {
           {formatDate(dashboard.generated_at)}
         </div>
       </header>
+
+      <nav className="city-tabs" aria-label="Select dashboard city">
+        {CITIES.map((city) => (
+          <a
+            key={city.slug}
+            className={city.slug === dashboard.city.slug ? "city-tab active" : "city-tab"}
+            href={`/?city=${city.slug}`}
+          >
+            {city.name}
+          </a>
+        ))}
+      </nav>
 
       <section className="briefing" aria-label="Daily briefing">
         <p>{dashboard.briefing ?? "No briefing is available for this dashboard snapshot."}</p>
@@ -166,7 +196,8 @@ export default async function Home() {
           {dashboard.source_freshness.map((item) => (
             <div key={item.source} className="freshness-item">
               <strong>{item.source}</strong>
-              <span>{formatDate(item.updated_at)}</span>
+              <span>{item.status}: updated {formatDate(item.updated_at)}</span>
+              {item.detail ? <span>{item.detail}</span> : null}
             </div>
           ))}
         </div>

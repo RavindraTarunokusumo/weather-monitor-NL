@@ -92,6 +92,29 @@ h1 {
   box-shadow: 0 12px 36px rgba(20, 36, 28, 0.08);
 }
 
+.city-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0 24px;
+}
+
+.city-tab {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.city-tab.active {
+  border-color: var(--accent-strong);
+  background: var(--accent-strong);
+  color: white;
+}
+
 .briefing p {
   margin-bottom: 0;
   font-size: 1.08rem;
@@ -161,6 +184,7 @@ h1 {
 }
 
 .freshness-item span {
+  display: block;
   color: var(--muted);
   font-size: 0.9rem;
 }
