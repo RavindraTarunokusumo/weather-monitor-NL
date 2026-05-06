@@ -1,0 +1,6 @@
+Task: Resolve PR merge conflicts
+Summary: Merged origin/main into the live data pipeline branch and resolved conflicts by keeping the componentized dashboard shell while preserving live-backed city selection, source status metadata, and changelog entries.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: docs/changelog.md
+TODO: TODO.md active API wiring/live data pipeline session
+Validation: npm test -- tests/live-dashboard.test.tsx tests/dashboard.test.ts tests/dashboard-regeneration.test.ts; npm run lint; npm run typecheck; npm test; npx prisma validate; npm run build
