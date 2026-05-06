@@ -23,4 +23,4 @@ Completed sessions must be moved to `docs/iterations/archive/` and include the r
 - [x] Extend seeded dashboard data and API response shaping for the reference UI. (`080de22`)
 - [x] Add frontend test harness for React interaction tests. (`341c087`)
 - [x] Build the reference-aligned dashboard page and components. (`3639354`)
-- [ ] Update docs and run pre-PR validation.
+- [x] Update docs and run pre-PR validation. (`42aad89`)
