@@ -8,7 +8,9 @@ export default defineConfig({
     },
   },
   test: {
-    include: ["tests/**/*.test.ts"],
+    environment: "jsdom",
+    include: ["tests/**/*.test.ts", "app/**/*.test.ts", "app/**/*.test.tsx"],
     pool: "forks",
+    setupFiles: ["./tests/setup.ts"],
   },
 });
