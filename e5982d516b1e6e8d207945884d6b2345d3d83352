@@ -1,0 +1,6 @@
+Task: Fix live source adapter contracts
+Summary: Corrected KNMI EDR live parameters and CoverageCollection normalization, switched Rijkswaterstaat to OphalenWaarnemingen with valid WATHTE location codes, and verified all seeded cities ingest live weather, air-quality, and water snapshots.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: docs/architecture.md, docs/changelog.md, docs/insights.md
+TODO: TODO.md api-wiring-live-data-pipeline follow-up
+Validation: npm test -- tests/ingestion-live-adapters.test.ts; npm run ingest:all -- --live; npm run dashboard:regenerate -- --all; browser verification at http://localhost:3001; npm run lint; npm run typecheck; npm test; npx prisma validate; npm_config_ignore_scripts=true npm run build
