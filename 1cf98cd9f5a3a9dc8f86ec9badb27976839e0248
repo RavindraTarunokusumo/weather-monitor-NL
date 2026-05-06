@@ -1,0 +1,6 @@
+Task: Dashboard snapshot regeneration
+Summary: Added deterministic dashboard regeneration from latest stored source snapshots, missing/stale source metadata, idempotent state hashing, route implementation, and CLI dashboard regeneration path.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: TODO.md active session item 3
+TODO: Implement dashboard snapshot regeneration from latest stored source snapshots.
+Validation: npm test -- tests/dashboard-regeneration.test.ts tests/dashboard.test.ts tests/ingestion-jobs.test.ts; npm run typecheck; npx eslint touched Task 3 files; pre-commit run --files touched Task 3 files
