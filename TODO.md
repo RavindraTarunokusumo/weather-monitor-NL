@@ -14,3 +14,13 @@ Completed sessions must be moved to `docs/iterations/archive/` and include the r
 ## Active Session
 
 <!-- public-dashboard-ui-shell — spec: docs/specs/public-dashboard-ui-shell.md -->
+
+<!-- reference-dashboard-webpage-ui — spec: docs/specs/reference-dashboard-webpage-ui.md -->
+
+### Reference Dashboard Webpage UI
+
+- [ ] Copy supplied dashboard visual assets into the public asset tree.
+- [ ] Extend seeded dashboard data and API response shaping for the reference UI.
+- [ ] Add frontend test harness for React interaction tests.
+- [ ] Build the reference-aligned dashboard page and components.
+- [ ] Update docs and run pre-PR validation.
