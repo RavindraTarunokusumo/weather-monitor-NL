@@ -21,4 +21,4 @@ Completed sessions must be moved to `docs/iterations/archive/` and include the r
 - [x] Add shared ingestion orchestration, live/mock CLI flags, all-city execution, and protected job routes. Commits: `7747aad`, `373b23d`
 - [x] Implement dashboard snapshot regeneration from latest stored source snapshots. Commit: `1cf98cd`
 - [x] Extend public dashboard API/UI for all seeded cities, source freshness, stale, and missing states. Commit: `e57703c`
-- [ ] Update docs, run simplification/security/test-plan checks, and complete full validation.
+- [x] Update docs, run simplification/security/test-plan checks, and complete full validation. Commit: `fddc9b6`
