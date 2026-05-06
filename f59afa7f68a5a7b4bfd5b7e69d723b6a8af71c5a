@@ -1,0 +1,6 @@
+Task: Archive live adapter follow-up
+Summary: Moved the completed live adapter follow-up from TODO.md into the archived API wiring session and recorded the implementation commit hash.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: docs/iterations/archive/2026-05-06-api-wiring-live-data-pipeline.md
+TODO: TODO.md active session cleanup
+Validation: git diff --cached --check
