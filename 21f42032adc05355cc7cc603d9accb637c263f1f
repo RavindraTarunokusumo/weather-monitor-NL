@@ -1,0 +1,6 @@
+Task: Record live pipeline validation completion
+Summary: Updated TODO.md with the completed documentation and validation commit hash.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: TODO.md
+TODO: Update docs, run simplification/security/test-plan checks, and complete full validation.
+Validation: Full validation recorded on commit fddc9b6
