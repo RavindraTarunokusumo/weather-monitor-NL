@@ -1,0 +1,6 @@
+Task: Documentation and validation updates
+Summary: Documented live ingestion environment variables, refresh commands, persistence behavior, changelog entry, insights, and lint generated-file ignores.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: .env.example, docs/commands.md, docs/database.md, docs/changelog.md, docs/insights.md, eslint.config.mjs
+TODO: Update docs, run simplification/security/test-plan checks, and complete full validation.
+Validation: pre-commit run --files docs/env/lint files; git diff --check docs/env/lint files; npm run lint; npm run typecheck; npm test; npx prisma validate; npm run build
