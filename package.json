@@ -16,7 +16,9 @@
     "db:studio": "prisma studio",
     "ingest:weather": "tsx scripts/ingest.ts weather",
     "ingest:air-quality": "tsx scripts/ingest.ts air-quality",
-    "ingest:water": "tsx scripts/ingest.ts water"
+    "ingest:water": "tsx scripts/ingest.ts water",
+    "ingest:all": "tsx scripts/ingest.ts all --all",
+    "dashboard:regenerate": "tsx scripts/ingest.ts dashboard"
   },
   "dependencies": {
     "@prisma/client": "^6.7.0",

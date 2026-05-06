@@ -39,6 +39,9 @@ export type DashboardWaterSignal = {
 export type DashboardFreshnessEntry = {
   source: string;
   updated_at: string | null;
+  observed_at: string | null;
+  status: string;
+  detail: string | null;
 };
 
 export type DashboardResponse = {

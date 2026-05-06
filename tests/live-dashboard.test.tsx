@@ -38,9 +38,27 @@ const mockDashboard: DashboardResponse = {
     risk_label: "normal",
   },
   source_freshness: [
-    { source: "mock_knmi", updated_at: "2026-05-04T09:58:00.000Z" },
-    { source: "mock_luchtmeetnet", updated_at: "2026-05-04T09:55:00.000Z" },
-    { source: "mock_rijkswaterstaat", updated_at: "2026-05-04T09:50:00.000Z" },
+    {
+      source: "mock_knmi",
+      updated_at: "2026-05-04T09:58:00.000Z",
+      observed_at: "2026-05-04T09:45:00.000Z",
+      status: "fresh",
+      detail: null,
+    },
+    {
+      source: "mock_luchtmeetnet",
+      updated_at: "2026-05-04T09:55:00.000Z",
+      observed_at: "2026-05-04T09:40:00.000Z",
+      status: "fresh",
+      detail: null,
+    },
+    {
+      source: "mock_rijkswaterstaat",
+      updated_at: "2026-05-04T09:50:00.000Z",
+      observed_at: "2026-05-04T09:35:00.000Z",
+      status: "fresh",
+      detail: null,
+    },
   ],
   summary_payload: {},
 };
@@ -62,9 +80,27 @@ const nullDashboard: DashboardResponse = {
   air_quality: { aqi_value: null, label: null, main_pollutant: null, trend: null },
   water_signal: { station_name: null, water_level_cm: null, trend: null, risk_label: null },
   source_freshness: [
-    { source: "weather", updated_at: null },
-    { source: "air_quality", updated_at: null },
-    { source: "water", updated_at: null },
+    {
+      source: "weather",
+      updated_at: null,
+      observed_at: null,
+      status: "missing",
+      detail: "No weather snapshot is available for this city.",
+    },
+    {
+      source: "air_quality",
+      updated_at: null,
+      observed_at: null,
+      status: "missing",
+      detail: "No air quality snapshot is available for this city.",
+    },
+    {
+      source: "water",
+      updated_at: null,
+      observed_at: null,
+      status: "missing",
+      detail: "No water snapshot is available for this city.",
+    },
   ],
 };
 
@@ -113,6 +149,7 @@ describe("LiveDashboard", () => {
     expect(screen.getByText("mock_knmi")).toBeInTheDocument();
     expect(screen.getByText("mock_luchtmeetnet")).toBeInTheDocument();
     expect(screen.getByText("mock_rijkswaterstaat")).toBeInTheDocument();
+    expect(screen.getAllByText(/fresh: updated/i)).toHaveLength(3);
   });
 
   it("renders fallback labels when values are null", () => {
@@ -126,7 +163,8 @@ describe("LiveDashboard", () => {
 
     const dashes = screen.getAllByText("—");
     expect(dashes.length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Unavailable").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/missing: updated unavailable/i)).toHaveLength(3);
+    expect(screen.getByText("No weather snapshot is available for this city.")).toBeInTheDocument();
   });
 
   it("shows city selector with all cities", () => {

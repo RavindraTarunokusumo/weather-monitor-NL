@@ -287,6 +287,13 @@ h1 {
   font-size: 0.825rem;
 }
 
+.freshness-detail {
+  display: block;
+  margin-top: 4px;
+  color: var(--orange);
+  font-size: 0.8rem;
+}
+
 /* ── Error states ── */
 .error-box {
   padding: 28px;

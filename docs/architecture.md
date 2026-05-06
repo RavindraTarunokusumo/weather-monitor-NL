@@ -48,13 +48,16 @@ GET /api/dashboard?city=amsterdam
 
 ## Planned Background Jobs
 
-Future ingestion should use Vercel Cron calling protected Route Handlers under `app/api/jobs/*`.
-
-No live ingestion job exists in this milestone.
+Live ingestion can run through protected Route Handlers under `app/api/jobs/*` or local CLI commands.
+The routes require `CRON_SECRET` authorization and persist normalized snapshots before dashboard
+regeneration links the latest available weather, air-quality, and water data.
 
 ## External Integrations
 
-No external weather, water, air-quality, LLM, auth, billing, or VPS integrations are implemented in this foundation phase.
+- KNMI EDR API: near-real-time weather observations from the configured seeded-city stations.
+- Luchtmeetnet API: station pollutant measurements for Amsterdam, Utrecht, and Rotterdam.
+- Rijkswaterstaat ddapi20 WaterWebservices: WATHTE water-level observations from configured nearby locations.
+- No LLM, auth, billing, or VPS integrations are implemented in this foundation phase.
 
 ## Invariants
 

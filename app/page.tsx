@@ -38,24 +38,30 @@ async function getServerCities(): Promise<CityListEntry[]> {
   }
 }
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams?: Promise<{ city?: string }>;
+}) {
   let dashboard: DashboardResponse;
   let cities: CityListEntry[];
+  const params = await searchParams;
 
   try {
-    [dashboard, cities] = await Promise.all([
-      getServerDashboard("amsterdam"),
-      getServerCities(),
-    ]);
+    cities = await getServerCities();
+    const selectedCity = cities.some((city) => city.slug === params?.city)
+      ? params?.city ?? "amsterdam"
+      : "amsterdam";
+    dashboard = await getServerDashboard(selectedCity);
   } catch (error) {
     return (
       <main className="page-shell">
         <div className="error-box">
           <p className="eyebrow">Dashboard unavailable</p>
-          <h1>Amsterdam data could not be loaded</h1>
+          <h1>Dashboard data could not be loaded</h1>
           <p className="subtitle">
-            Start PostgreSQL, run the Prisma migration and seed command, then
-            refresh this page.
+            Start PostgreSQL, run the Prisma migration, ingest source data, regenerate dashboard
+            snapshots, then refresh this page.
           </p>
           <p className="card-detail">
             {error instanceof Error ? error.message : "Unknown error"}
@@ -68,7 +74,7 @@ export default async function Home() {
   return (
     <LiveDashboard
       initialData={dashboard}
-      initialCity="amsterdam"
+      initialCity={dashboard.city.slug}
       cities={cities}
     />
   );

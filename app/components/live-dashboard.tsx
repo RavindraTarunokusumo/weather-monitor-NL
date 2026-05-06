@@ -92,10 +92,11 @@ export function LiveDashboard({ initialData, initialCity, cities }: Props) {
       <main className="page-shell">
         <header className="dashboard-header">
           <div>
-            <p className="eyebrow">Seeded dashboard</p>
+            <p className="eyebrow">Live-backed dashboard</p>
             <h1>{data.city.name}</h1>
             <p className="subtitle">
-              Environmental conditions from mock ingestion sources.
+              Latest stored weather, air-quality, and water signals served through Next.js Route
+              Handlers.
             </p>
           </div>
           <div className="generated-box">

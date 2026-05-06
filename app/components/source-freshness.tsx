@@ -11,7 +11,10 @@ export function SourceFreshness({ sources }: Props) {
         {sources.map((item) => (
           <div key={item.source} className="freshness-item">
             <span className="freshness-source">{item.source}</span>
-            <span className="freshness-time">{formatDate(item.updated_at)}</span>
+            <span className="freshness-time">
+              {item.status}: updated {formatDate(item.updated_at)}
+            </span>
+            {item.detail ? <span className="freshness-detail">{item.detail}</span> : null}
           </div>
         ))}
       </div>
