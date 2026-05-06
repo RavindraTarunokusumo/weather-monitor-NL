@@ -1,0 +1,6 @@
+Task: Record dashboard regeneration completion
+Summary: Updated TODO.md with the completed Task 3 commit hash.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: TODO.md
+TODO: Implement dashboard snapshot regeneration from latest stored source snapshots.
+Validation: Task 3 validation recorded on commit 1cf98cd
