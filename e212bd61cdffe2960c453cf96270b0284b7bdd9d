@@ -1,0 +1,6 @@
+Task: Record ingestion orchestration completion
+Summary: Updated TODO.md with the completed Task 2 commit hash.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: TODO.md
+TODO: Add shared ingestion orchestration, live/mock CLI flags, all-city execution, and protected job routes.
+Validation: Task 2 validation recorded on commit 7747aad
