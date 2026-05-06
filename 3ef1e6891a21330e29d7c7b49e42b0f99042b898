@@ -1,0 +1,6 @@
+Task: Remove completed regeneration backlog item
+Summary: Removed stale future TODO for regenerate-dashboard-snapshots route after implementation completed.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: TODO.md
+TODO: Future Backlog cleanup
+Validation: Covered by prior full validation; docs-only cleanup
