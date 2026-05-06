@@ -6,7 +6,10 @@ Record reusable lessons from completed sessions.
 
 - What worked: keeping public dashboard requests snapshot-only made the live API work testable with mocked provider payloads and kept source failures away from page-request latency.
 - What worked: adding provider-specific fixture tests first exposed clean adapter contracts for KNMI CoverageJSON, Luchtmeetnet measurement rows, and Rijkswaterstaat WaterWebservices observations.
-- What failed: root `npm run lint` still scans ignored generated worktree output under `.worktrees/.../.next`, so full lint remains blocked by pre-existing generated files despite focused ESLint passing on touched files.
+- What worked: direct provider probes showed KNMI EDR authentication separately from parameter validity, then exposed `R1H`/`fx` and CoverageCollection parsing requirements before code changes.
+- What worked: querying the Rijkswaterstaat catalog for WATHTE-capable locations found live-observation replacements for Amsterdam and Rotterdam instead of guessing station codes.
+- What failed: earlier root lint runs scanned ignored generated worktree output under `.worktrees/.../.next`; rerun full lint after dependency/worktree cleanup rather than assuming focused ESLint is enough.
+- What failed: running `npm run build` while the dev server was active locked Prisma's Windows query-engine DLL; stop the dev server before local build validation on Windows.
 - Useful commands: `npm test -- tests/ingestion-live-adapters.test.ts tests/ingestion-jobs.test.ts tests/dashboard-regeneration.test.ts tests/dashboard.test.ts`, `npm run ingest:all -- --live`, `npm run dashboard:regenerate -- --all`.
 - Scripts created: `npm run ingest:all` and `npm run dashboard:regenerate` now route through `scripts/ingest.ts`.
 - Workflow improvement: when a spec requires "live" data, keep provider API keys out of docs and use injected fetch clients so tests prove parsing without touching real services.

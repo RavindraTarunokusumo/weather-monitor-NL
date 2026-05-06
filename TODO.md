@@ -12,6 +12,10 @@ Completed sessions must be moved to `docs/iterations/archive/` and include the r
 
 ## Active Session
 
+<!-- api-wiring-live-data-pipeline follow-up — spec: docs/specs/api-wiring-live-data-pipeline.md -->
+
+- [x] Fix and verify live KNMI/Rijkswaterstaat adapter contracts for all seeded cities.
+
 <!-- public-dashboard-ui-shell — spec: docs/specs/public-dashboard-ui-shell.md -->
 
 - [x] Task 1: Shared types (`lib/types/dashboard.ts`). Commit: `f2c633f`

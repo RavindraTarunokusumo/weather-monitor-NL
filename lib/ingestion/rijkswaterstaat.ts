@@ -37,18 +37,25 @@ export class RijkswaterstaatAdapter extends SourceAdapter<NormalizedWaterRecord>
     }
 
     const config = getSourceConfig(city.slug);
+    const end = new Date();
+    const start = new Date(end.getTime() - 6 * 60 * 60_000);
     const payload = await fetchJson(
-      `${this.baseUrl}/ONLINEWAARNEMINGENSERVICES/OnlineWaarnemingen`,
+      `${this.baseUrl}/ONLINEWAARNEMINGENSERVICES/OphalenWaarnemingen`,
       {
         method: "POST",
         fetcher: this.fetcher,
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          LocatieLijst: [{ Code: config.rijkswaterstaat.locationCode }],
+          Locatie: { Code: config.rijkswaterstaat.locationCode },
           AquoPlusWaarnemingMetadata: {
             AquoMetadata: {
+              Compartiment: { Code: "OW" },
               Grootheid: { Code: config.rijkswaterstaat.measurementCode },
             },
+          },
+          Periode: {
+            Begindatumtijd: start.toISOString(),
+            Einddatumtijd: end.toISOString(),
           },
         }),
       },

@@ -30,12 +30,12 @@ export const SEEDED_CITY_SOURCE_CONFIGS: CitySourceConfig[] = [
       components: ["PM25", "PM10", "NO2", "O3", "SO2"],
     },
     rijkswaterstaat: {
-      locationCode: "zijkanaal.h",
-      locationName: "Zijkanaal, H",
+      locationCode: "amsterdam.surinamekade",
+      locationName: "Amsterdam, Surinamekade",
       measurementCode: "WATHTE",
     },
     selectionNotes:
-      "Amsterdam uses Schiphol for KNMI weather, Stadhouderskade for urban air quality, and Zijkanaal H as the nearest configured Rijkswaterstaat water-level location.",
+      "Amsterdam uses Schiphol for KNMI weather, Stadhouderskade for urban air quality, and Surinamekade as a nearby Rijkswaterstaat WATHTE location with recent observations.",
   },
   {
     citySlug: "utrecht",
@@ -68,12 +68,12 @@ export const SEEDED_CITY_SOURCE_CONFIGS: CitySourceConfig[] = [
       components: ["PM25", "PM10", "NO2", "O3", "SO2"],
     },
     rijkswaterstaat: {
-      locationCode: "rotterdam",
-      locationName: "Rotterdam",
+      locationCode: "rotterdam.nieuwemaas.boerengat",
+      locationName: "Rotterdam, Nieuwe Maas, Boerengat",
       measurementCode: "WATHTE",
     },
     selectionNotes:
-      "Rotterdam uses the Rotterdam KNMI station, Statenweg for urban air quality, and Rotterdam as the configured Rijkswaterstaat water-level location.",
+      "Rotterdam uses the Rotterdam KNMI station, Statenweg for urban air quality, and Boerengat on the Nieuwe Maas as a nearby Rijkswaterstaat WATHTE location with recent observations.",
   },
 ];
 

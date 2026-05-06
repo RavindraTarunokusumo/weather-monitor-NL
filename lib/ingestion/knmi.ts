@@ -51,7 +51,9 @@ export class KnmiAdapter extends SourceAdapter<NormalizedWeatherRecord> {
     const url = new URL(
       `${this.baseUrl}/collections/10-minute-in-situ-meteorological-observations/locations/${config.knmi.stationId}`,
     );
-    url.searchParams.set("parameter-name", "ta,ff,dd,rr");
+    const { start, end } = buildRecentObservationWindow();
+    url.searchParams.set("datetime", `${start.toISOString()}/${end.toISOString()}`);
+    url.searchParams.set("parameter-name", "ta,ff,dd,fx,R1H");
 
     const payload = await fetchJson(url.toString(), {
       fetcher: this.fetcher,
@@ -59,11 +61,13 @@ export class KnmiAdapter extends SourceAdapter<NormalizedWeatherRecord> {
         Authorization: this.apiKey,
       },
     });
+    const coverages = (payload as { coverages?: unknown }).coverages;
 
-    return [payload as Record<string, unknown>];
+    return Array.isArray(coverages)
+      ? coverages.filter(isRecord)
+      : [payload].filter(isRecord);
   }
 
-  // TODO: When connecting to real KNMI data, derive observedAt from the source timestamp field.
   async normalize(
     rawRecords: Record<string, unknown>[],
     _city: CityConfig,
@@ -91,16 +95,18 @@ export class KnmiAdapter extends SourceAdapter<NormalizedWeatherRecord> {
       const temperatureC = getCoverageNumber(record, "ta");
       const windMs = getCoverageNumber(record, "ff");
       const windSpeedKmh = windMs === null ? null : Math.round(windMs * 36) / 10;
+      const windGustMs = getCoverageNumber(record, "fx");
+      const windGustKmh = windGustMs === null ? null : Math.round(windGustMs * 36) / 10;
       const windDegrees = getCoverageNumber(record, "dd");
 
       return {
         observedAt,
         temperatureC,
         feelsLikeC: temperatureC,
-        rainMm: getCoverageNumber(record, "rr"),
+        rainMm: getCoverageNumber(record, "R1H"),
         rainProbability: null,
         windSpeedKmh,
-        windGustKmh: null,
+        windGustKmh,
         windDirection: degreesToCompass(windDegrees),
         weatherCode: null,
         warningLevel: null,
@@ -110,10 +116,23 @@ export class KnmiAdapter extends SourceAdapter<NormalizedWeatherRecord> {
   }
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function buildRecentObservationWindow() {
+  const now = new Date();
+  const end = new Date(Math.floor(now.getTime() / 600_000) * 600_000 - 20 * 60_000);
+  const start = new Date(end.getTime() - 2 * 60 * 60_000);
+
+  return { start, end };
+}
+
 function getCoverageNumber(record: Record<string, unknown>, key: string) {
   const ranges = record.ranges as Record<string, { values?: unknown[] }> | undefined;
   const directValue = record[key];
-  const value = ranges?.[key]?.values?.[0] ?? directValue;
+  const rangeValues = ranges?.[key]?.values;
+  const value = Array.isArray(rangeValues) ? findLatestFiniteNumber(rangeValues) : directValue;
 
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
@@ -122,9 +141,23 @@ function extractCoverageTime(record: Record<string, unknown>) {
   const domain = record.domain as
     | { axes?: { t?: { values?: unknown[] } } }
     | undefined;
-  const value = domain?.axes?.t?.values?.[0] ?? record.observedAt ?? record.datetime;
+  const values = domain?.axes?.t?.values;
+  const value = Array.isArray(values)
+    ? values.filter((item): item is string => typeof item === "string").at(-1)
+    : record.observedAt ?? record.datetime;
 
   return typeof value === "string" ? new Date(value) : new Date();
+}
+
+function findLatestFiniteNumber(values: unknown[]) {
+  for (let index = values.length - 1; index >= 0; index -= 1) {
+    const value = values[index];
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return value;
+    }
+  }
+
+  return null;
 }
 
 function degreesToCompass(value: number | null) {

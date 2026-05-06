@@ -53,6 +53,13 @@ describe("source configuration", () => {
       expect(config.rijkswaterstaat.locationCode.length).toBeGreaterThan(3);
       expect(config.selectionNotes.length).toBeGreaterThan(20);
     }
+
+    expect(getSourceConfig("amsterdam").rijkswaterstaat.locationCode).toBe(
+      "amsterdam.surinamekade",
+    );
+    expect(getSourceConfig("rotterdam").rijkswaterstaat.locationCode).toBe(
+      "rotterdam.nieuwemaas.boerengat",
+    );
   });
 
   it("rejects unsupported city source configuration lookups", () => {
@@ -97,18 +104,30 @@ describe("live-capable adapters", () => {
   it("fetches and normalizes KNMI CoverageJSON observations without network access", async () => {
     const fetcher = vi.fn().mockResolvedValue(
       jsonResponse({
-        type: "Coverage",
-        domain: {
-          axes: {
-            t: { values: ["2026-05-05T10:00:00Z"] },
+        type: "CoverageCollection",
+        coverages: [
+          {
+            type: "Coverage",
+            domain: {
+              axes: {
+                t: {
+                  values: [
+                    "2026-05-05T10:00:00Z",
+                    "2026-05-05T10:10:00Z",
+                    "2026-05-05T10:20:00Z",
+                  ],
+                },
+              },
+            },
+            ranges: {
+              ta: { values: [16.2, 16.8, 17.1] },
+              ff: { values: [5, 5.5, 6] },
+              dd: { values: [240, 242, 245] },
+              fx: { values: [7, 7.5, 8] },
+              R1H: { values: [0.4, 0.2, 0.1] },
+            },
           },
-        },
-        ranges: {
-          ta: { values: [16.2] },
-          ff: { values: [5] },
-          dd: { values: [240] },
-          rr: { values: [0.4] },
-        },
+        ],
       }),
     );
     const adapter = new KnmiAdapter({ mode: "live", apiKey: "test-key", fetcher });
@@ -122,12 +141,17 @@ describe("live-capable adapters", () => {
         headers: expect.objectContaining({ Authorization: "test-key" }),
       }),
     );
+    const requestedUrl = vi.mocked(fetcher).mock.calls[0][0] as string;
+    expect(requestedUrl).toContain("datetime=");
+    expect(requestedUrl).toContain("parameter-name=ta%2Cff%2Cdd%2Cfx%2CR1H");
+    expect(requestedUrl).not.toContain("rr");
     expect(normalized[0]).toMatchObject({
-      observedAt: new Date("2026-05-05T10:00:00.000Z"),
-      temperatureC: 16.2,
-      feelsLikeC: 16.2,
-      rainMm: 0.4,
-      windSpeedKmh: 18,
+      observedAt: new Date("2026-05-05T10:20:00.000Z"),
+      temperatureC: 17.1,
+      feelsLikeC: 17.1,
+      rainMm: 0.1,
+      windSpeedKmh: 21.6,
+      windGustKmh: 28.8,
       windDirection: "WSW",
       sourceName: "knmi",
     });
@@ -186,8 +210,8 @@ describe("live-capable adapters", () => {
         WaarnemingenLijst: [
           {
             Locatie: {
-              Code: "zijkanaal.h",
-              Naam: "Zijkanaal, H",
+              Code: "amsterdam.surinamekade",
+              Naam: "Amsterdam, Surinamekade",
             },
             MetingenLijst: [
               {
@@ -205,13 +229,16 @@ describe("live-capable adapters", () => {
     const normalized = await adapter.normalize(raw, cities[0]);
 
     expect(fetcher).toHaveBeenCalledWith(
-      expect.stringContaining("/ONLINEWAARNEMINGENSERVICES/OnlineWaarnemingen"),
-      expect.objectContaining({ method: "POST" }),
+      expect.stringContaining("/ONLINEWAARNEMINGENSERVICES/OphalenWaarnemingen"),
+      expect.objectContaining({
+        method: "POST",
+        body: expect.stringContaining('"Locatie":{"Code":"amsterdam.surinamekade"}'),
+      }),
     );
     expect(normalized[0]).toMatchObject({
       observedAt: new Date("2026-05-05T19:00:00.000Z"),
-      stationId: "zijkanaal.h",
-      stationName: "Zijkanaal, H",
+      stationId: "amsterdam.surinamekade",
+      stationName: "Amsterdam, Surinamekade",
       waterLevelCm: 12.4,
       trendLabel: "unknown",
       riskLabel: "normal",
