@@ -19,6 +19,6 @@ Completed sessions must be moved to `docs/iterations/archive/` and include the r
 
 - [x] Add source configuration, safe HTTP helper, and live-capable KNMI/Luchtmeetnet/Rijkswaterstaat adapters. Commit: `fbbc513`
 - [x] Add shared ingestion orchestration, live/mock CLI flags, all-city execution, and protected job routes. Commit: `7747aad`
-- [ ] Implement dashboard snapshot regeneration from latest stored source snapshots.
+- [x] Implement dashboard snapshot regeneration from latest stored source snapshots. Commit: `1cf98cd`
 - [ ] Extend public dashboard API/UI for all seeded cities, source freshness, stale, and missing states.
 - [ ] Update docs, run simplification/security/test-plan checks, and complete full validation.
