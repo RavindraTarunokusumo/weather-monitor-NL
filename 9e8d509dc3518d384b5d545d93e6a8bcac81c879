@@ -1,0 +1,6 @@
+Task: accept reference dashboard webpage spec
+Summary: Accepted the reference dashboard webpage spec, saved the implementation plan, and logged the active TODO session.
+Spec: docs/specs/reference-dashboard-webpage-ui.md
+Docs: docs/specs/reference-dashboard-webpage-ui.md, docs/superpowers/plans/2026-05-06-reference-dashboard-webpage-ui.md
+TODO: TODO.md Reference Dashboard Webpage UI session
+Validation: npm run typecheck; npm test; npx eslint AGENTS.md TODO.md docs --no-error-on-unmatched-pattern (npm run lint failed on existing generated .worktrees/.next files)
