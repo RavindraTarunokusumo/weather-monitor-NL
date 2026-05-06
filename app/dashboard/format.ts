@@ -7,7 +7,7 @@ export function formatNumber(value: number | null | undefined, digits = 0) {
 }
 
 export function formatTemperature(value: number | null | undefined) {
-  return typeof value === "number" ? `${value.toFixed(1)} deg` : "Unavailable";
+  return typeof value === "number" ? `${value.toFixed(1)}°C` : "Unavailable";
 }
 
 export function formatPercent(value: number | null | undefined) {

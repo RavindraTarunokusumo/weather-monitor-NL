@@ -68,7 +68,7 @@ function WeeklyCards({ dashboard }: { dashboard: DashboardResponse }) {
         <div className="weekly-day" key={item.day}>
           <strong>{item.day ?? "--"}</strong>
           <span>
-            {item.hi ?? "?"}/{item.lo ?? "?"} deg
+            {item.hi ?? "?"}/{item.lo ?? "?"}°C
           </span>
           <small>{item.rain ?? "?"}% rain</small>
         </div>

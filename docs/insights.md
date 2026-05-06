@@ -2,6 +2,15 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-06 - Reference Dashboard Webpage UI
+
+- What worked: writing failing response-shaping and component interaction tests before implementation kept the new dashboard fields, city switching, chart state, and local Q&A behavior grounded in the accepted spec.
+- What failed: `npm run lint` initially traversed generated `.worktrees` output, so validation needed an ignore-pattern fix before the standard lint script was useful.
+- Useful commands: `npm test -- tests/dashboard.test.ts`, `npm test -- app/dashboard/__tests__/DashboardShell.test.tsx`, `npx eslint app lib prisma tests scripts --no-error-on-unmatched-pattern`.
+- Scripts created: none.
+- Workflow improvement: when supplied UI assets arrive outside `public/`, copy only the needed files into a committed public asset tree and leave reference artifacts untouched unless the spec says otherwise.
+- Skill worth adding or updating: adapt the repo-local `test-plan-writer` skill context from its inherited trading-domain defaults to Dutch Weather Intelligence.
+
 ## 2026-05-03 - Production Bootstrap Debugging
 
 - What worked: `vercel logs --environment production --level error --expand` exposed the real failure quickly; the app was connected to Postgres, but Prisma raised `P2021` because the production schema had never been applied.

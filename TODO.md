@@ -22,5 +22,5 @@ Completed sessions must be moved to `docs/iterations/archive/` and include the r
 - [x] Copy supplied dashboard visual assets into the public asset tree. (`4b854fd`)
 - [x] Extend seeded dashboard data and API response shaping for the reference UI. (`080de22`)
 - [x] Add frontend test harness for React interaction tests. (`341c087`)
-- [ ] Build the reference-aligned dashboard page and components.
+- [x] Build the reference-aligned dashboard page and components. (`3639354`)
 - [ ] Update docs and run pre-PR validation.
