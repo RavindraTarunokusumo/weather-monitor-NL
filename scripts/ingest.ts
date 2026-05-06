@@ -8,17 +8,18 @@ import {
   regenerateDashboardSnapshot,
 } from "@/lib/dashboard-regeneration";
 import {
+  runAllSourcesIngestion,
   runAllIngestion,
   runIngestionForType,
   type IngestionType,
 } from "@/lib/ingestion/jobs";
 import type { AdapterMode } from "@/lib/ingestion/base";
 
-const VALID_TYPES = ["weather", "air-quality", "water", "dashboard"] as const;
+const VALID_TYPES = ["weather", "air-quality", "water", "all", "dashboard"] as const;
 
 function parseArgs() {
   const args = process.argv.slice(2);
-  const type = args[0] as IngestionType | "dashboard" | undefined;
+  const type = args[0] as IngestionType | "all" | "dashboard" | undefined;
   const cityIndex = args.indexOf("--city");
   const city = cityIndex !== -1 ? args[cityIndex + 1] : "amsterdam";
   const all = args.includes("--all");
@@ -31,7 +32,7 @@ async function main() {
   const { type, city: citySlug, all, mode } = parseArgs();
 
   if (!type || !(VALID_TYPES as readonly string[]).includes(type)) {
-    console.error("Usage: tsx scripts/ingest.ts <weather|air-quality|water|dashboard> [--city <slug>|--all] [--mock|--live]");
+    console.error("Usage: tsx scripts/ingest.ts <weather|air-quality|water|all|dashboard> [--city <slug>|--all] [--mock|--live]");
     process.exit(1);
   }
 
@@ -43,6 +44,8 @@ async function main() {
         ? all
           ? await regenerateAllDashboardSnapshots({ prisma })
           : await regenerateDashboardSnapshot({ prisma, citySlug })
+        : type === "all"
+          ? await runAllSourcesIngestion({ prisma, mode })
         : all
           ? await runAllIngestion({ prisma, type, mode })
           : await runIngestionForType({ prisma, type, citySlug, mode });

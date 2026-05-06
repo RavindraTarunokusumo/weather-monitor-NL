@@ -42,6 +42,11 @@ type RunAllOptions = {
   adapterOptions?: Omit<SourceAdapterOptions, "mode">;
 };
 
+export type AllSourcesIngestionResult = {
+  type: IngestionType;
+  results: CityIngestionResult[];
+};
+
 export function getIngestionMode(searchParams: URLSearchParams): AdapterMode {
   if (searchParams.get("mode") === "live" || searchParams.get("live") === "true") {
     return "live";
@@ -137,6 +142,29 @@ export async function runAllIngestion(options: RunAllOptions): Promise<CityInges
         adapterOptions: options.adapterOptions,
       }),
     );
+  }
+
+  return results;
+}
+
+export async function runAllSourcesIngestion(options: {
+  prisma: PrismaClient;
+  mode: AdapterMode;
+  adapterOptions?: Omit<SourceAdapterOptions, "mode">;
+}): Promise<AllSourcesIngestionResult[]> {
+  const types: IngestionType[] = ["weather", "air-quality", "water"];
+  const results: AllSourcesIngestionResult[] = [];
+
+  for (const type of types) {
+    results.push({
+      type,
+      results: await runAllIngestion({
+        prisma: options.prisma,
+        type,
+        mode: options.mode,
+        adapterOptions: options.adapterOptions,
+      }),
+    });
   }
 
   return results;

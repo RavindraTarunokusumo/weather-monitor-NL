@@ -3,6 +3,7 @@ import type { PrismaClient } from "@prisma/client";
 import {
   getIngestionMode,
   isAuthorizedJobRequest,
+  runAllSourcesIngestion,
   runAllIngestion,
   runWeatherIngestion,
 } from "@/lib/ingestion/jobs";
@@ -131,5 +132,27 @@ describe("ingestion job helpers", () => {
     expect(result).toHaveLength(2);
     expect(result.map((item) => item.city)).toEqual(["amsterdam", "utrecht"]);
     expect(prisma.weatherSnapshot.create).toHaveBeenCalledTimes(2);
+  });
+
+  it("runs all source types for all active cities", async () => {
+    const prisma = makePrismaStub();
+
+    const result = await runAllSourcesIngestion({
+      prisma,
+      mode: "mock",
+    });
+
+    expect(result.map((item) => item.type)).toEqual(["weather", "air-quality", "water"]);
+    expect(result.flatMap((item) => item.results.map((entry) => entry.city))).toEqual([
+      "amsterdam",
+      "utrecht",
+      "amsterdam",
+      "utrecht",
+      "amsterdam",
+      "utrecht",
+    ]);
+    expect(prisma.weatherSnapshot.create).toHaveBeenCalledTimes(2);
+    expect(prisma.airQualitySnapshot.create).toHaveBeenCalledTimes(2);
+    expect(prisma.waterSnapshot.create).toHaveBeenCalledTimes(2);
   });
 });
