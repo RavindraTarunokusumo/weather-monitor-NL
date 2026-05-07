@@ -48,8 +48,29 @@ const snapshot = {
     water_signal: {
       weekly_levels_cm: [14, 13, 14, 15, 14, 16, 15],
     },
+    source_status: {
+      weather: {
+        source: "knmi",
+        status: "fresh",
+        observed_at: "2026-05-03T09:50:00.000Z",
+        detail: null,
+      },
+      air_quality: {
+        source: "luchtmeetnet",
+        status: "fresh",
+        observed_at: "2026-05-03T09:00:00.000Z",
+        detail: null,
+      },
+      water: {
+        source: "rijkswaterstaat",
+        status: "stale",
+        observed_at: "2026-05-02T09:50:00.000Z",
+        detail: "Latest water observation is older than 24 hours.",
+      },
+    },
   },
   weatherSnapshot: {
+    observedAt: new Date("2026-05-03T09:50:00.000Z"),
     temperatureC: 16.2,
     feelsLikeC: 15.4,
     rainMm: 0.4,
@@ -63,6 +84,7 @@ const snapshot = {
     ingestedAt: new Date("2026-05-03T09:58:00.000Z"),
   },
   airQualitySnapshot: {
+    observedAt: new Date("2026-05-03T09:00:00.000Z"),
     aqiValue: 42,
     aqiLabel: "Good",
     pm25: 12,
@@ -76,6 +98,7 @@ const snapshot = {
     ingestedAt: new Date("2026-05-03T09:55:00.000Z"),
   },
   waterSnapshot: {
+    observedAt: new Date("2026-05-02T09:50:00.000Z"),
     stationName: "Amsterdam mock station",
     waterLevelCm: 14,
     trendLabel: "stable",
@@ -147,6 +170,13 @@ describe("buildDashboardResponse", () => {
     expect(response.source_freshness[0]).toEqual({
       source: "mock_knmi",
       updated_at: "2026-05-03T09:58:00.000Z",
+      observed_at: "2026-05-03T09:50:00.000Z",
+      status: "fresh",
+      detail: null,
+    });
+    expect(response.source_freshness[2]).toMatchObject({
+      status: "stale",
+      detail: "Latest water observation is older than 24 hours.",
     });
   });
 
@@ -175,9 +205,27 @@ describe("buildDashboardResponse", () => {
     expect(response.outlook.hourly).toEqual([]);
     expect(response.outlook.weekly).toEqual([]);
     expect(response.source_freshness).toEqual([
-      { source: "weather", updated_at: null },
-      { source: "air_quality", updated_at: null },
-      { source: "water", updated_at: null },
+      {
+        source: "weather",
+        updated_at: null,
+        observed_at: null,
+        status: "missing",
+        detail: "No weather snapshot is available for this city.",
+      },
+      {
+        source: "air_quality",
+        updated_at: null,
+        observed_at: null,
+        status: "missing",
+        detail: "No air quality snapshot is available for this city.",
+      },
+      {
+        source: "water",
+        updated_at: null,
+        observed_at: null,
+        status: "missing",
+        detail: "No water snapshot is available for this city.",
+      },
     ]);
   });
 });

@@ -14,6 +14,7 @@ const eslintConfig = [
   {
     ignores: [
       ".next/**",
+      ".worktrees/**",
       ".agents/**",
       ".codex/**",
       ".github/**",
@@ -21,12 +22,14 @@ const eslintConfig = [
       ".worktrees/**",
       "next-env.d.ts",
       "node_modules/**",
+      "next-env.d.ts",
       "coverage/**",
       "docs/iterations/**",
       "docs/superpowers/**",
       "dist/**",
       "build/**",
       "plugins/**",
+      "next-env.d.ts",
     ],
   },
 ];

@@ -81,3 +81,5 @@ jobs:
 
       - name: Validate Prisma schema
         run: npx prisma validate
+        env:
+          DATABASE_URL: postgresql://localhost:5432/placeholder

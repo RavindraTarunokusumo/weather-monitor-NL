@@ -16,6 +16,7 @@ type DashboardSnapshotForResponse = {
   worstOutdoorWindow: string | null;
   summaryPayload: unknown;
   weatherSnapshot: {
+    observedAt: SnapshotDate;
     temperatureC: number | null;
     feelsLikeC: number | null;
     rainMm: number | null;
@@ -29,6 +30,7 @@ type DashboardSnapshotForResponse = {
     ingestedAt: SnapshotDate;
   } | null;
   airQualitySnapshot: {
+    observedAt: SnapshotDate;
     aqiValue: number | null;
     aqiLabel: string | null;
     pm25: number | null;
@@ -42,6 +44,7 @@ type DashboardSnapshotForResponse = {
     ingestedAt: SnapshotDate;
   } | null;
   waterSnapshot: {
+    observedAt: SnapshotDate;
     stationName: string | null;
     waterLevelCm: number | null;
     trendLabel: string | null;
@@ -52,6 +55,13 @@ type DashboardSnapshotForResponse = {
   aiBriefings: Array<{
     briefingText: string;
   }>;
+};
+
+type SourceStatus = {
+  source?: unknown;
+  status?: unknown;
+  observed_at?: unknown;
+  detail?: unknown;
 };
 
 function toIsoString(value: SnapshotDate) {
@@ -96,6 +106,52 @@ function formatWeatherCode(value: string | null | undefined) {
 
   const label = value.split("_").join(" ");
   return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+function getSummarySourceStatus(summaryPayload: unknown, key: string): SourceStatus | null {
+  if (!summaryPayload || typeof summaryPayload !== "object") {
+    return null;
+  }
+
+  const sourceStatus = (summaryPayload as { source_status?: unknown }).source_status;
+
+  if (!sourceStatus || typeof sourceStatus !== "object") {
+    return null;
+  }
+
+  const status = (sourceStatus as Record<string, unknown>)[key];
+
+  return status && typeof status === "object" ? (status as SourceStatus) : null;
+}
+
+function buildSourceFreshnessItem(options: {
+  key: "weather" | "air_quality" | "water";
+  fallbackSource: string;
+  snapshot: { sourceName: string; observedAt: SnapshotDate; ingestedAt: SnapshotDate } | null;
+  summaryPayload: unknown;
+}) {
+  const summaryStatus = getSummarySourceStatus(options.summaryPayload, options.key);
+
+  if (!options.snapshot) {
+    return {
+      source: options.fallbackSource,
+      updated_at: null,
+      observed_at: null,
+      status: "missing",
+      detail: `No ${options.key.replace("_", " ")} snapshot is available for this city.`,
+    };
+  }
+
+  return {
+    source: options.snapshot.sourceName,
+    updated_at: toIsoString(options.snapshot.ingestedAt),
+    observed_at:
+      typeof summaryStatus?.observed_at === "string"
+        ? summaryStatus.observed_at
+        : toIsoString(options.snapshot.observedAt),
+    status: typeof summaryStatus?.status === "string" ? summaryStatus.status : "fresh",
+    detail: typeof summaryStatus?.detail === "string" ? summaryStatus.detail : null,
+  };
 }
 
 export function buildDashboardResponse(
@@ -155,18 +211,24 @@ export function buildDashboardResponse(
         : [],
     },
     source_freshness: [
-      {
-        source: snapshot.weatherSnapshot?.sourceName ?? "weather",
-        updated_at: toIsoString(snapshot.weatherSnapshot?.ingestedAt ?? null),
-      },
-      {
-        source: snapshot.airQualitySnapshot?.sourceName ?? "air_quality",
-        updated_at: toIsoString(snapshot.airQualitySnapshot?.ingestedAt ?? null),
-      },
-      {
-        source: snapshot.waterSnapshot?.sourceName ?? "water",
-        updated_at: toIsoString(snapshot.waterSnapshot?.ingestedAt ?? null),
-      },
+      buildSourceFreshnessItem({
+        key: "weather",
+        fallbackSource: "weather",
+        snapshot: snapshot.weatherSnapshot,
+        summaryPayload: snapshot.summaryPayload,
+      }),
+      buildSourceFreshnessItem({
+        key: "air_quality",
+        fallbackSource: "air_quality",
+        snapshot: snapshot.airQualitySnapshot,
+        summaryPayload: snapshot.summaryPayload,
+      }),
+      buildSourceFreshnessItem({
+        key: "water",
+        fallbackSource: "water",
+        snapshot: snapshot.waterSnapshot,
+        summaryPayload: snapshot.summaryPayload,
+      }),
     ],
     summary_payload: snapshot.summaryPayload,
     ui_summary: {

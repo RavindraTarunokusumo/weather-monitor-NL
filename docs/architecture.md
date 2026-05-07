@@ -4,11 +4,15 @@ Dutch Weather Intelligence is currently a single full-stack Next.js App Router a
 
 ## Entry Points
 
-- Frontend: `app/page.tsx`
-- Dashboard UI components: `app/dashboard/`
+- Frontend (SSR shell): `app/page.tsx`
+- Reference dashboard UI: `app/dashboard/`
+- Live dashboard components from the earlier public shell: `app/components/`
 - API routes: `app/api/*/route.ts`
 - Database client: `lib/db.ts`
 - Dashboard response shaping: `lib/dashboard.ts`
+- Shared dashboard types: `lib/types/dashboard.ts`
+- Client-side fetch helpers: `lib/api/dashboard-client.ts`
+- Display formatting utilities: `lib/utils/format.ts`
 - Persistence schema and seed: `prisma/`
 - Local infrastructure: `infra/docker/docker-compose.yml`
 
@@ -17,7 +21,7 @@ Dutch Weather Intelligence is currently a single full-stack Next.js App Router a
 1. Local PostgreSQL stores supported cities, source snapshots, dashboard snapshots, and mock briefings.
 2. Prisma exposes a type-safe database client for server-side Next.js code.
 3. Route Handlers serve health, city catalog, and dashboard JSON from the database.
-4. The homepage fetches `/api/dashboard?city=amsterdam` server-side and hands normalized data to the interactive dashboard shell.
+4. The homepage fetches `/api/dashboard?city=<slug>` server-side and hands normalized data to the interactive dashboard shell.
 5. The dashboard shell fetches `/api/cities` and same-app `/api/dashboard?city=<slug>` for city switching.
 6. Source freshness travels with weather, air-quality, and water snapshot data.
 
@@ -33,6 +37,8 @@ Dutch Weather Intelligence is currently a single full-stack Next.js App Router a
 - `components/`: top navigation, briefing hero, metric strip, outlook panel, Q&A panel, detail panels, and source freshness footer.
 - `__tests__/`: jsdom interaction tests for city switching, chart tabs, Q&A, and reload failures.
 
+The `app/components/` live-dashboard shell remains available from the public dashboard UI shell work, but the active homepage uses the reference dashboard UI so the image-backed hero, symbol panels, local Q&A, outlook views, and reference-aligned layout stay intact.
+
 ## Current API Surface
 
 ```http
@@ -43,13 +49,16 @@ GET /api/dashboard?city=<slug>
 
 ## Planned Background Jobs
 
-Future ingestion should use Vercel Cron calling protected Route Handlers under `app/api/jobs/*`.
-
-No live ingestion job exists in this milestone.
+Live ingestion can run through protected Route Handlers under `app/api/jobs/*` or local CLI commands.
+The routes require `CRON_SECRET` authorization and persist normalized snapshots before dashboard
+regeneration links the latest available weather, air-quality, and water data.
 
 ## External Integrations
 
-No external weather, water, air-quality, LLM, auth, billing, or VPS integrations are implemented in this foundation phase.
+- KNMI EDR API: near-real-time weather observations from the configured seeded-city stations.
+- Luchtmeetnet API: station pollutant measurements for Amsterdam, Utrecht, and Rotterdam.
+- Rijkswaterstaat ddapi20 WaterWebservices: WATHTE water-level observations from configured nearby locations.
+- No LLM, auth, billing, or VPS integrations are implemented in this foundation phase.
 
 ## Invariants
 

@@ -1,38 +1,31 @@
 import { prisma } from "@/lib/db";
-import { LuchtmeetnetAdapter } from "@/lib/ingestion/luchtmeetnet";
-import { runIngestionJob } from "@/lib/ingestion/run";
-import type { NormalizedAirQualityRecord, CityConfig } from "@/lib/ingestion/base";
-import type { PrismaClient } from "@prisma/client";
+import {
+  getIngestionMode,
+  isAuthorizedJobRequest,
+  runAirQualityIngestion,
+  runAllIngestion,
+} from "@/lib/ingestion/jobs";
 
 export async function POST(request: Request) {
   const { searchParams } = new URL(request.url);
+  const mode = getIngestionMode(searchParams);
   const citySlug = searchParams.get("city") ?? "amsterdam";
 
-  const city = await prisma.city.findUnique({ where: { slug: citySlug } });
-  if (!city) {
-    return Response.json({ error: "City not found", city: citySlug }, { status: 404 });
+  if (mode === "live" && !isAuthorizedJobRequest(request)) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const cityConfig: CityConfig = {
-    id: city.id,
-    slug: city.slug,
-    name: city.name,
-    latitude: city.latitude,
-    longitude: city.longitude,
-  };
+  try {
+    const result =
+      searchParams.get("all") === "true"
+        ? await runAllIngestion({ prisma, type: "air-quality", mode })
+        : await runAirQualityIngestion({ prisma, citySlug, mode });
 
-  const result = await runIngestionJob({
-    adapter: new LuchtmeetnetAdapter(),
-    city: cityConfig,
-    jobType: "ingest-air-quality",
-    store: async (records: NormalizedAirQualityRecord[], cfg: CityConfig, db: PrismaClient) => {
-      for (const r of records) {
-        await db.airQualitySnapshot.create({ data: { cityId: cfg.id, ...r } });
-      }
-      return { recordsStored: records.length };
-    },
-    prisma,
-  });
+    return Response.json(result);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown ingestion error";
+    const status = message.startsWith("City not found") ? 404 : 500;
 
-  return Response.json(result, { status: result.status === "success" ? 200 : 500 });
+    return Response.json({ error: message }, { status });
+  }
 }

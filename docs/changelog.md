@@ -12,6 +12,28 @@ Summary:
 - Migration notes: run Prisma migration and seed commands so all three city dashboards exist locally; the browser still calls only same-app API routes.
 - Related spec: `docs/specs/reference-dashboard-webpage-ui.md`.
 
+## 2026-05-06 - Live Data Pipeline Wiring
+
+Summary:
+
+- What changed: added live-capable KNMI, Luchtmeetnet, and Rijkswaterstaat ingestion adapters, explicit source configuration for Amsterdam/Utrecht/Rotterdam, shared ingestion jobs, all-source refresh command, dashboard snapshot regeneration, and source status metadata in `/api/dashboard`.
+- Follow-up fix: corrected KNMI EDR live requests to use supported `ta`, `ff`, `dd`, `fx`, and `R1H` parameters with CoverageCollection normalization, and corrected Rijkswaterstaat live requests to use `OphalenWaarnemingen` with current WATHTE locations for Amsterdam and Rotterdam.
+- Why: make the skeleton dashboard capable of showing latest stored source-backed weather, air-quality, and water signals without request-time external API calls.
+- User-visible impact: the public page can select Amsterdam, Utrecht, or Rotterdam and display stored live-backed values plus freshness/stale/missing source states after ingestion and regeneration commands run.
+- Migration notes: add server-only `KNMI_API_KEY` and `CRON_SECRET` to local/production environments; run `npm run ingest:all -- --live` followed by `npm run dashboard:regenerate -- --all` to refresh all seeded cities.
+- Related spec: `docs/specs/api-wiring-live-data-pipeline.md`.
+
+## 2026-05-04 - Public Dashboard UI Shell
+
+Summary:
+
+- What changed: replaced the bare server-rendered homepage with a full dashboard UI shell — sticky navy nav, city selector, auto-refresh, and per-domain display cards.
+- Why: deliver the first account-agnostic public dashboard that renders seeded backend data in a Dutch-inspired interface per `docs/specs/public-dashboard-ui-shell.md`.
+- User-visible impact: `http://localhost:3000` now shows a styled dashboard with briefing, current weather, cycle comfort, air quality, water signal, and source freshness cards; the city selector and 30-second auto-poll are functional.
+- Architecture notes: `app/page.tsx` is a pure SSR shell that passes initial data to `LiveDashboard` (a `'use client'` component). All display cards are pure components. Shared types live in `lib/types/dashboard.ts`; client fetch helpers in `lib/api/dashboard-client.ts`; formatting utilities in `lib/utils/format.ts`.
+- Migration notes: set `NEXT_PUBLIC_APP_NAME=Dutch Weather Intelligence` in your local `.env.local` for the nav title to render correctly.
+- Related spec: `docs/specs/public-dashboard-ui-shell.md`.
+
 ## 2026-05-03 - GitHub Actions CI and Bootstrap Pipelines
 
 Summary:
