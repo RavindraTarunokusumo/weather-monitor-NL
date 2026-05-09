@@ -2,6 +2,16 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-09 - Forecast Summary Trend Data Wiring
+
+- What worked: keeping forecast/warning/trend enrichment inside ingestion jobs preserved the public dashboard as a snapshot-only read path while still exposing live API fields for every city.
+- What worked: mocked provider tests covered Open-Meteo, KNMI warnings, Luchtmeetnet trends, Rijkswaterstaat trends, weekly water levels, and deterministic briefing fallback before live validation.
+- What failed: the current KNMI key can read EDR observations but returns forbidden for the warnings open-data dataset, so the UI must treat warning access failures as `unknown` instead of `none`.
+- Useful commands: `npm test -- tests/ingestion-live-adapters.test.ts tests/dashboard-regeneration.test.ts tests/dashboard.test.ts`, `npm run ingest:all -- --live`, `npm run dashboard:regenerate -- --all`, `npm run build`.
+- Scripts created: none.
+- Workflow improvement: after `npm run build`, rerun live ingestion and dashboard regeneration because the build `postbuild` seed step replaces the current local dashboard data.
+- Skill worth adding or updating: adapt the repo-local `security-review` and `test-plan-writer` skills from inherited trading language to this weather-monitoring product.
+
 ## 2026-05-06 - Reference Dashboard Webpage UI
 
 - What worked: writing failing response-shaping and component interaction tests before implementation kept the new dashboard fields, city switching, chart state, and local Q&A behavior grounded in the accepted spec.

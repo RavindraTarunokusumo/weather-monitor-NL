@@ -12,16 +12,6 @@ Completed sessions must be moved to `docs/iterations/archive/` and include the r
 
 ## Active Session
 
-<!-- forecast-summary-trend-data-wiring — spec: docs/specs/forecast-summary-trend-data-wiring.md -->
-
-- [x] Task 1: Accept the data wiring spec and keep implementation scope tied to `docs/specs/forecast-summary-trend-data-wiring.md`.
-- [x] Task 2: Add forecast, warning, air-trend, water-trend, weekly-level, and deterministic summary tests.
-- [x] Task 3: Enrich live weather ingestion with Open-Meteo forecast payloads and KNMI warning normalization.
-- [x] Task 4: Derive Luchtmeetnet air trends and Rijkswaterstaat water trends/weekly levels in source adapters.
-- [x] Task 5: Regenerate dashboard snapshots with outlook, UI summary, source status, and deterministic briefing fallback.
-- [x] Task 6: Update commands/docs and run validation.
-- [ ] Task 7: Prepare commit/PR with the active spec path.
-
 <!-- public-dashboard-ui-shell — spec: docs/specs/public-dashboard-ui-shell.md -->
 
 - [x] Task 1: Shared types (`lib/types/dashboard.ts`). Commit: `f2c633f`
