@@ -18,6 +18,7 @@ export type NormalizedWeatherRecord = {
   weatherCode: string | null;
   warningLevel: string | null;
   sourceName: string;
+  sourcePayload?: Prisma.InputJsonObject;
 };
 
 export type NormalizedAirQualityRecord = {
@@ -32,6 +33,7 @@ export type NormalizedAirQualityRecord = {
   mainPollutant: string | null;
   trendLabel: string | null;
   sourceName: string;
+  sourcePayload?: Prisma.InputJsonObject;
 };
 
 export type NormalizedWaterRecord = {
@@ -42,6 +44,7 @@ export type NormalizedWaterRecord = {
   trendLabel: string | null;
   riskLabel: string | null;
   sourceName: string;
+  sourcePayload?: Prisma.InputJsonObject;
 };
 
 export type AdapterMode = "mock" | "live";
@@ -53,6 +56,8 @@ export type SourceAdapterOptions = {
   fetcher?: JsonFetcher;
   baseUrl?: string;
   apiKey?: string;
+  forecastBaseUrl?: string;
+  openDataBaseUrl?: string;
 };
 
 export abstract class SourceAdapter<T> {
@@ -60,3 +65,4 @@ export abstract class SourceAdapter<T> {
   abstract fetch(city: CityConfig): Promise<Record<string, unknown>[]>;
   abstract normalize(rawRecords: Record<string, unknown>[], city: CityConfig): Promise<T[]>;
 }
+import type { Prisma } from "@prisma/client";

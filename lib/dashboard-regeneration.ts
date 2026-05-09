@@ -22,6 +22,9 @@ type WeatherSnapshot = Snapshot & {
   windSpeedKmh: number | null;
   windGustKmh: number | null;
   windDirection: string | null;
+  weatherCode: string | null;
+  warningLevel: string | null;
+  sourcePayload: unknown;
 };
 
 type AirQualitySnapshot = Snapshot & {
@@ -29,6 +32,7 @@ type AirQualitySnapshot = Snapshot & {
   aqiLabel: string | null;
   mainPollutant: string | null;
   trendLabel: string | null;
+  sourcePayload: unknown;
 };
 
 type WaterSnapshot = Snapshot & {
@@ -36,6 +40,7 @@ type WaterSnapshot = Snapshot & {
   waterLevelCm: number | null;
   trendLabel: string | null;
   riskLabel: string | null;
+  sourcePayload: unknown;
 };
 
 type SourceStatus = {
@@ -99,26 +104,44 @@ async function regenerateForCity(options: {
   force: boolean;
 }) {
   const { prisma, city, now, force } = options;
-  const [weather, airQuality, water] = await Promise.all([
+  const [weather, enrichedWeather, airQuality, water, enrichedWater] = await Promise.all([
     findPreferredSourceSnapshot<WeatherSnapshot>(prisma.weatherSnapshot, city.id),
+    findLatestEnrichedWeatherSnapshot(prisma.weatherSnapshot, city.id),
     findPreferredSourceSnapshot<AirQualitySnapshot>(prisma.airQualitySnapshot, city.id),
     findPreferredSourceSnapshot<WaterSnapshot>(prisma.waterSnapshot, city.id),
+    findLatestEnrichedWaterSnapshot(prisma.waterSnapshot, city.id),
   ]);
+  const weatherForSummary = mergeWeatherMetadata(weather, enrichedWeather);
+  const waterForSummary = mergeWaterMetadata(water, enrichedWater);
   const sourceStatus = {
     weather: buildSourceStatus("weather", weather, now, 2),
     air_quality: buildSourceStatus("air quality", airQuality, now, 6),
     water: buildSourceStatus("water", water, now, 24),
   };
-  const comfort = computeCycleComfort(weather, airQuality);
+  const comfort = computeCycleComfort(weatherForSummary, airQuality);
+  const forecast = extractForecast(weatherForSummary?.sourcePayload);
+  const weeklyLevels = extractWeeklyLevels(waterForSummary?.sourcePayload);
+  const uiSummary = buildUiSummary({
+    weather: weatherForSummary,
+    airQuality,
+    water: waterForSummary,
+    forecast,
+    sourceStatus,
+  });
   const summaryPayload = {
     source_status: sourceStatus,
     current: {
       temperature_c: weather?.temperatureC ?? null,
       rain_mm: weather?.rainMm ?? null,
+      rain_probability: weatherForSummary?.rainProbability ?? null,
       wind_speed_kmh: weather?.windSpeedKmh ?? null,
       wind_gust_kmh: weather?.windGustKmh ?? null,
       wind_direction: weather?.windDirection ?? null,
+      weather_code: weatherForSummary?.weatherCode ?? null,
+      warning_level: weatherForSummary?.warningLevel ?? null,
     },
+    ui_summary: uiSummary,
+    outlook: forecast,
     cycle_comfort: {
       score: comfort.score,
       category: comfort.label,
@@ -130,9 +153,10 @@ async function regenerateForCity(options: {
       trend: airQuality?.trendLabel ?? null,
     },
     water_signal: {
-      station: water?.stationName ?? null,
-      trend: water?.trendLabel ?? null,
-      risk_label: water?.riskLabel ?? null,
+      station: water?.stationName ?? waterForSummary?.stationName ?? null,
+      trend: waterForSummary?.trendLabel ?? null,
+      risk_label: waterForSummary?.riskLabel ?? null,
+      weekly_levels_cm: weeklyLevels,
     },
   };
   const stateHash = hashState({
@@ -141,6 +165,9 @@ async function regenerateForCity(options: {
     waterSnapshotId: water?.id ?? null,
     comfort,
     sourceStatus,
+    forecast,
+    uiSummary,
+    weeklyLevels,
   });
   const existing = await prisma.dashboardSnapshot.findFirst({
     where: { cityId: city.id, stateHash },
@@ -171,7 +198,7 @@ async function regenerateForCity(options: {
       waterSnapshotId: water?.id ?? null,
       cycleComfortScore: comfort.score,
       cycleComfortLabel: comfort.label,
-      bestOutdoorWindow: comfort.score === null ? null : "10:00-16:00",
+      bestOutdoorWindow: uiSummary.best_window,
       worstOutdoorWindow: comfort.score === null ? null : "18:00-21:00",
       summaryPayload: summaryPayload as Prisma.InputJsonObject,
     },
@@ -226,6 +253,124 @@ async function findPreferredSourceSnapshot<T extends Snapshot>(
     where: { cityId },
     orderBy,
   });
+}
+
+async function findLatestEnrichedWeatherSnapshot(
+  delegate: {
+    findMany: (args: {
+      where: {
+        cityId: string;
+        sourceName: { not: { startsWith: string } };
+      };
+      orderBy: Array<{ observedAt: "desc" } | { ingestedAt: "desc" }>;
+      take: number;
+    }) => Promise<WeatherSnapshot[]>;
+  },
+  cityId: string,
+) {
+  const candidates = await delegate.findMany({
+    where: { cityId, sourceName: { not: { startsWith: "mock_" } } },
+    orderBy: [{ observedAt: "desc" }, { ingestedAt: "desc" }],
+    take: 12,
+  });
+
+  return candidates.find(hasWeatherMetadata) ?? null;
+}
+
+async function findLatestEnrichedWaterSnapshot(
+  delegate: {
+    findMany: (args: {
+      where: {
+        cityId: string;
+        sourceName: { not: { startsWith: string } };
+      };
+      orderBy: Array<{ observedAt: "desc" } | { ingestedAt: "desc" }>;
+      take: number;
+    }) => Promise<WaterSnapshot[]>;
+  },
+  cityId: string,
+) {
+  const candidates = await delegate.findMany({
+    where: { cityId, sourceName: { not: { startsWith: "mock_" } } },
+    orderBy: [{ observedAt: "desc" }, { ingestedAt: "desc" }],
+    take: 12,
+  });
+
+  return candidates.find(hasWaterMetadata) ?? null;
+}
+
+function hasWeatherMetadata(snapshot: WeatherSnapshot | null) {
+  if (!snapshot) {
+    return false;
+  }
+
+  const forecast = extractForecast(snapshot.sourcePayload);
+  return (
+    forecast.hourly.length > 0 ||
+    forecast.weekly.length > 0 ||
+    snapshot.weatherCode !== null ||
+    snapshot.warningLevel !== null ||
+    snapshot.rainProbability !== null
+  );
+}
+
+function mergeWeatherMetadata(
+  current: WeatherSnapshot | null,
+  enriched: WeatherSnapshot | null,
+): WeatherSnapshot | null {
+  if (!current) {
+    return enriched;
+  }
+
+  if (!enriched || current.id === enriched.id) {
+    return current;
+  }
+
+  return {
+    ...current,
+    rainProbability: current.rainProbability ?? enriched.rainProbability,
+    weatherCode: current.weatherCode ?? enriched.weatherCode,
+    warningLevel: current.warningLevel ?? enriched.warningLevel,
+    sourcePayload: current.sourcePayload ?? enriched.sourcePayload,
+  };
+}
+
+function hasWaterMetadata(snapshot: WaterSnapshot | null) {
+  if (!snapshot) {
+    return false;
+  }
+
+  return (
+    extractWeeklyLevels(snapshot.sourcePayload).length > 0 ||
+    (snapshot.trendLabel !== null && snapshot.trendLabel !== "unknown") ||
+    (snapshot.riskLabel !== null && snapshot.riskLabel !== "normal")
+  );
+}
+
+function mergeWaterMetadata(
+  current: WaterSnapshot | null,
+  enriched: WaterSnapshot | null,
+): WaterSnapshot | null {
+  if (!current) {
+    return enriched;
+  }
+
+  if (!enriched || current.id === enriched.id) {
+    return current;
+  }
+
+  return {
+    ...current,
+    trendLabel:
+      current.trendLabel && current.trendLabel !== "unknown"
+        ? current.trendLabel
+        : enriched.trendLabel,
+    riskLabel: current.riskLabel ?? enriched.riskLabel,
+    sourcePayload:
+      extractWeeklyLevels(current.sourcePayload).length > 0
+        ? current.sourcePayload
+        : enriched.sourcePayload,
+  };
 }
 
 function buildSourceStatus(
@@ -299,4 +444,145 @@ function hashState(value: unknown) {
 
 function toDate(value: Date | string) {
   return value instanceof Date ? value : new Date(value);
+}
+
+function extractForecast(sourcePayload: unknown) {
+  const payload = asRecord(sourcePayload);
+  const forecast = asRecord(payload?.forecast);
+
+  return {
+    hourly: readRecordArray(forecast, "hourly"),
+    weekly: readRecordArray(forecast, "weekly"),
+  };
+}
+
+function extractWeeklyLevels(sourcePayload: unknown) {
+  const payload = asRecord(sourcePayload);
+  const value = payload?.weekly_levels_cm;
+  return Array.isArray(value) && value.every((item) => typeof item === "number") ? value : [];
+}
+
+function buildUiSummary(options: {
+  weather: WeatherSnapshot | null;
+  airQuality: AirQualitySnapshot | null;
+  water: WaterSnapshot | null;
+  forecast: { hourly: Record<string, unknown>[]; weekly: Record<string, unknown>[] };
+  sourceStatus: Record<string, SourceStatus>;
+}) {
+  const { weather, airQuality, water, forecast, sourceStatus } = options;
+  const bestWindow = pickBestWindow(forecast.hourly);
+  const warning = asRecord(asRecord(weather?.sourcePayload)?.warning);
+  const warningLevel = weather?.warningLevel ?? readString(warning, "level");
+  const warningRegion = readString(warning, "region");
+  const mainRisk = pickMainRisk({ warningLevel, weather, airQuality, water });
+  const riskDetail =
+    warningLevel && warningLevel !== "none" && warningLevel !== "unknown"
+      ? `${capitalize(warningLevel)} weather warning is active${warningRegion ? ` for ${warningRegion}` : ""}.`
+      : buildNonWarningRiskDetail(weather, airQuality, water);
+
+  return {
+    best_window: bestWindow,
+    outdoor_window_detail: bestWindow
+      ? `Best available outdoor window starts around ${bestWindow}.`
+      : sourceStatus.weather.detail ?? "Weather outlook data is unavailable.",
+    main_risk: mainRisk,
+    risk_detail: riskDetail,
+    changed: "New live snapshot",
+    changed_detail: "Dashboard regenerated from the latest available source snapshots.",
+  };
+}
+
+function pickBestWindow(hourly: Record<string, unknown>[]) {
+  if (hourly.length === 0) {
+    return null;
+  }
+
+  const scored = hourly
+    .map((item) => {
+      const hour = readString(item, "h");
+      const rain = readNumber(item, "rain") ?? 0;
+      const wind = readNumber(item, "wind") ?? 0;
+      const temp = readNumber(item, "temp") ?? 15;
+      const hourNumber = hour ? Number(hour) : null;
+      const daytimePenalty = hourNumber !== null && (hourNumber < 7 || hourNumber > 21) ? 40 : 0;
+      const tempPenalty = temp < 8 || temp > 28 ? 20 : 0;
+      return { hour, score: rain + wind + daytimePenalty + tempPenalty };
+    })
+    .filter((item): item is { hour: string; score: number } => item.hour !== null)
+    .sort((a, b) => a.score - b.score);
+
+  return scored[0]?.hour ? `${scored[0].hour}:00` : null;
+}
+
+function pickMainRisk(options: {
+  warningLevel: string | null;
+  weather: WeatherSnapshot | null;
+  airQuality: AirQualitySnapshot | null;
+  water: WaterSnapshot | null;
+}) {
+  const warningLevel = options.warningLevel;
+  if (warningLevel && warningLevel !== "none" && warningLevel !== "unknown") {
+    return `${capitalize(warningLevel)} weather warning`;
+  }
+
+  if ((options.weather?.rainProbability ?? 0) >= 0.6 || (options.weather?.rainMm ?? 0) > 2) {
+    return "Rain risk";
+  }
+
+  if ((options.weather?.windGustKmh ?? 0) >= 45) {
+    return "Wind gusts";
+  }
+
+  if ((options.airQuality?.aqiValue ?? 0) > 100) {
+    return "Reduced air quality";
+  }
+
+  if (options.water?.trendLabel && options.water.trendLabel !== "stable" && options.water.trendLabel !== "unknown") {
+    return `Water level ${options.water.trendLabel}`;
+  }
+
+  return "No known risk";
+}
+
+function buildNonWarningRiskDetail(
+  weather: WeatherSnapshot | null,
+  airQuality: AirQualitySnapshot | null,
+  water: WaterSnapshot | null,
+) {
+  const details = [
+    weather?.rainProbability !== null && weather?.rainProbability !== undefined
+      ? `Rain probability ${Math.round(weather.rainProbability * 100)}%.`
+      : null,
+    airQuality?.trendLabel ? `Air quality trend ${airQuality.trendLabel}.` : null,
+    water?.trendLabel ? `Water level trend ${water.trendLabel}.` : null,
+  ].filter((item): item is string => item !== null);
+
+  return details.length > 0 ? details.join(" ") : "No elevated source-backed risk is available.";
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function readRecordArray(record: Record<string, unknown> | null, key: string) {
+  const value = record?.[key];
+  return Array.isArray(value) && value.every((item) => asRecord(item) !== null)
+    ? (value as Record<string, unknown>[])
+    : [];
+}
+
+function readString(record: Record<string, unknown> | null, key: string) {
+  const value = record?.[key];
+  return typeof value === "string" ? value : null;
+}
+
+function readNumber(record: Record<string, unknown> | null, key: string) {
+  const value = record?.[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function capitalize(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }

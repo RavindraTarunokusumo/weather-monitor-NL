@@ -157,6 +157,121 @@ describe("live-capable adapters", () => {
     });
   });
 
+  it("enriches live KNMI weather with forecast outlook and official warning data", async () => {
+    const fetcher = vi.fn().mockImplementation((input: string) => {
+      if (input.includes("/edr/")) {
+        return Promise.resolve(
+          jsonResponse({
+            type: "CoverageCollection",
+            coverages: [
+              {
+                domain: { axes: { t: { values: ["2026-05-05T10:20:00Z"] } } },
+                ranges: {
+                  ta: { values: [17.1] },
+                  ff: { values: [6] },
+                  dd: { values: [245] },
+                  fx: { values: [8] },
+                  R1H: { values: [0.1] },
+                },
+              },
+            ],
+          }),
+        );
+      }
+
+      if (input.includes("api.open-meteo.com")) {
+        return Promise.resolve(
+          jsonResponse({
+            hourly: {
+              time: [
+                "2026-05-05T12:00",
+                "2026-05-05T15:00",
+                "2026-05-05T18:00",
+              ],
+              temperature_2m: [17, 18, 16],
+              precipitation_probability: [20, null, 80],
+              precipitation: [0, 0.2, 2.4],
+              weather_code: [2, 3, 61],
+              wind_speed_10m: [18, 20, 26],
+              wind_gusts_10m: [30, 34, 48],
+            },
+            daily: {
+              time: [
+                "2026-05-05",
+                "2026-05-06",
+                "2026-05-07",
+                "2026-05-08",
+                "2026-05-09",
+                "2026-05-10",
+                "2026-05-11",
+              ],
+              temperature_2m_max: [18, 17, 16, 16, 15, 15, 14],
+              temperature_2m_min: [10, 11, 10, 9, 8, 8, 7],
+              precipitation_probability_max: [80, null, 30, 20, 40, 60, 70],
+              precipitation_sum: [2.6, 1.2, 0.2, 0, 0.4, 1.3, 2.1],
+              weather_code: [61, 3, 2, 1, 3, 61, 63],
+            },
+          }),
+        );
+      }
+
+      if (input.endsWith("/files/warnings.json/url")) {
+        return Promise.resolve(
+          jsonResponse({
+            temporaryDownloadUrl: "https://download.test/warnings.json",
+          }),
+        );
+      }
+
+      if (input.includes("/datasets/waarschuwingen_nederland_48h/")) {
+        return Promise.resolve(
+          jsonResponse({
+            files: [{ filename: "warnings.json" }],
+          }),
+        );
+      }
+
+      return Promise.resolve(
+        jsonResponse({
+          warnings: [{ region: "Noord-Holland", level: "yellow" }],
+        }),
+      );
+    });
+    const adapter = new KnmiAdapter({ mode: "live", apiKey: "test-key", fetcher });
+
+    const raw = await adapter.fetch(cities[0]);
+    const normalized = await adapter.normalize(raw, cities[0]);
+
+    expect(normalized[0]).toMatchObject({
+      rainProbability: 0.2,
+      weatherCode: "partly_cloudy",
+      warningLevel: "yellow",
+    });
+    const forecastRequest = fetcher.mock.calls.find(([input]) =>
+      input.toString().includes("api.open-meteo.com"),
+    )?.[0];
+    expect(forecastRequest?.toString()).toContain("forecast_hours=60");
+    expect(forecastRequest?.toString()).toContain("precipitation_probability");
+    expect(normalized[0].sourcePayload).toMatchObject({
+      forecast: {
+        provider: "open-meteo",
+        hourly: [
+          { h: "12", rain: 20, wind: 18, temp: 17 },
+          { h: "15", rain: null, wind: 20, temp: 18 },
+          { h: "18", rain: 80, wind: 26, temp: 16 },
+        ],
+        weekly: expect.arrayContaining([
+          { day: "Tue", hi: 18, lo: 10, rain: 80 },
+          { day: "Wed", hi: 17, lo: 11, rain: null },
+        ]),
+      },
+      warning: {
+        level: "yellow",
+        region: "Noord-Holland",
+      },
+    });
+  });
+
   it("fetches and normalizes latest Luchtmeetnet pollutant values", async () => {
     const fetcher = vi.fn().mockResolvedValue(
       jsonResponse({
@@ -200,6 +315,7 @@ describe("live-capable adapters", () => {
       no2: 9.3,
       mainPollutant: "PM10",
       aqiLabel: "Good",
+      trendLabel: "falling",
       sourceName: "luchtmeetnet",
     });
   });
@@ -215,8 +331,36 @@ describe("live-capable adapters", () => {
             },
             MetingenLijst: [
               {
+                Tijdstip: "2026-04-29T20:00:00.000+01:00",
+                Meetwaarde: { Waarde_Numeriek: 10 },
+              },
+              {
+                Tijdstip: "2026-04-30T20:00:00.000+01:00",
+                Meetwaarde: { Waarde_Numeriek: 12 },
+              },
+              {
+                Tijdstip: "2026-05-01T20:00:00.000+01:00",
+                Meetwaarde: { Waarde_Numeriek: 14 },
+              },
+              {
+                Tijdstip: "2026-05-02T20:00:00.000+01:00",
+                Meetwaarde: { Waarde_Numeriek: 15 },
+              },
+              {
+                Tijdstip: "2026-05-03T20:00:00.000+01:00",
+                Meetwaarde: { Waarde_Numeriek: 16 },
+              },
+              {
+                Tijdstip: "2026-05-05T14:00:00.000+01:00",
+                Meetwaarde: { Waarde_Numeriek: 11 },
+              },
+              {
+                Tijdstip: "2026-05-04T20:00:00.000+01:00",
+                Meetwaarde: { Waarde_Numeriek: 17 },
+              },
+              {
                 Tijdstip: "2026-05-05T20:00:00.000+01:00",
-                Meetwaarde: { Waarde_Numeriek: 12.4 },
+                Meetwaarde: { Waarde_Numeriek: 18 },
               },
             ],
           },
@@ -235,14 +379,20 @@ describe("live-capable adapters", () => {
         body: expect.stringContaining('"Locatie":{"Code":"amsterdam.surinamekade"}'),
       }),
     );
+    const body = JSON.parse(String(vi.mocked(fetcher).mock.calls[0][1]?.body));
+    expect(body.AquoPlusWaarnemingMetadata.AquoMetadata.ProcesType).toBe("meting");
+    expect(body.AquoPlusWaarnemingMetadata.WaarnemingMetadata.KwaliteitswaardecodeLijst).toContain("00");
     expect(normalized[0]).toMatchObject({
       observedAt: new Date("2026-05-05T19:00:00.000Z"),
       stationId: "amsterdam.surinamekade",
       stationName: "Amsterdam, Surinamekade",
-      waterLevelCm: 12.4,
-      trendLabel: "unknown",
+      waterLevelCm: 18,
+      trendLabel: "rising",
       riskLabel: "normal",
       sourceName: "rijkswaterstaat",
+    });
+    expect(normalized[0].sourcePayload).toMatchObject({
+      weekly_levels_cm: [10, 12, 14, 15, 16, 17, 18],
     });
   });
 });

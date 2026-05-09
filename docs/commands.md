@@ -56,7 +56,7 @@ npm run ingest:all
 npm run dashboard:regenerate -- --all
 ```
 
-Live ingestion is server-side only. Set `KNMI_API_KEY` in `.env.local` before running live weather ingestion. Do not commit real keys.
+Live ingestion is server-side only. Set `KNMI_API_KEY` in `.env.local` before running live weather ingestion. Weather ingestion also calls Open-Meteo for point forecasts and KNMI Open Data for official warning files. Do not commit real keys.
 
 ```bash
 npm run ingest:weather -- --city amsterdam --live
@@ -96,6 +96,8 @@ CRON_SECRET="replace_me"
 KNMI_API_KEY="replace_me"
 LIVE_INGESTION_ENABLED="false"
 KNMI_API_BASE_URL="https://api.dataplatform.knmi.nl/edr/v1"
+KNMI_OPEN_DATA_API_BASE_URL="https://api.dataplatform.knmi.nl/open-data/v1"
+OPEN_METEO_API_BASE_URL="https://api.open-meteo.com/v1/forecast"
 LUCHTMEETNET_API_BASE_URL="https://api.luchtmeetnet.nl"
 RIJKSWATERSTAAT_API_BASE_URL="https://ddapi20-waterwebservices.rijkswaterstaat.nl"
 ```

@@ -2,6 +2,16 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-05-09 - Forecast Summary and Trend Data Wiring
+
+Summary:
+
+- What changed: accepted the forecast summary/trend wiring spec, enriched live KNMI weather snapshots with Open-Meteo forecast outlooks and official KNMI warning data, derived Luchtmeetnet air trends, derived Rijkswaterstaat water trends and weekly levels, and regenerated dashboard summaries/outlooks from stored snapshot metadata.
+- Why: fill the highest-value live data gaps before further UI design work, especially empty outlook panels, null briefing summary fields, unknown source trends, and missing warning/condition labels.
+- User-visible impact: after live ingestion and dashboard regeneration, `/api/dashboard?city=<slug>` can return hourly/weekly outlook data, deterministic briefing fallback text, UI summary fields, weather condition/warning labels, air trend, water trend, and weekly water levels for Amsterdam, Utrecht, and Rotterdam.
+- Migration notes: no schema migration is required; new compact provider metadata is stored in existing `sourcePayload` JSON columns. Weather live ingestion needs `KNMI_API_KEY`; optional override variables are `OPEN_METEO_API_BASE_URL` and `KNMI_OPEN_DATA_API_BASE_URL`.
+- Related spec: `docs/specs/forecast-summary-trend-data-wiring.md`.
+
 ## 2026-05-06 - Reference Dashboard Webpage UI
 
 Summary:
