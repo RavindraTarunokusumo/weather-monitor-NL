@@ -311,9 +311,14 @@ async function seedCity(seed: CitySeed, observedAt: Date) {
   });
 
   const stateHash = `mock-${seed.slug}-v2`;
+  const mockStateHashPrefix = `mock-${seed.slug}-`;
 
-  await prisma.aiBriefing.deleteMany({ where: { cityId: city.id, stateHash } });
-  await prisma.dashboardSnapshot.deleteMany({ where: { cityId: city.id, stateHash } });
+  await prisma.aiBriefing.deleteMany({
+    where: { cityId: city.id, stateHash: { startsWith: mockStateHashPrefix } },
+  });
+  await prisma.dashboardSnapshot.deleteMany({
+    where: { cityId: city.id, stateHash: { startsWith: mockStateHashPrefix } },
+  });
   await prisma.weatherSnapshot.deleteMany({ where: { cityId: city.id, sourceName: "mock_knmi" } });
   await prisma.airQualitySnapshot.deleteMany({
     where: { cityId: city.id, sourceName: "mock_luchtmeetnet" },
