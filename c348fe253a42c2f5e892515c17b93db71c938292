@@ -1,0 +1,6 @@
+Task: Address PR 6 Copilot code review feedback
+Summary: Fix seed cleanup FK risk, unsupported city server error copy, weekly card keys, and city picker ARIA semantics.
+Spec: docs/specs/reference-dashboard-webpage-ui.md
+Docs: N/A
+TODO: PR 6 review threads from copilot-pull-request-reviewer
+Validation: npm test -- app/dashboard/__tests__/DashboardShell.test.tsx tests/dashboard.test.ts tests/dashboard-regeneration.test.ts; npm run typecheck; npm test; npm run lint; npx prisma validate; npm run build
