@@ -64,8 +64,8 @@ function WeeklyCards({ dashboard }: { dashboard: DashboardResponse }) {
 
   return (
     <div className="weekly-grid">
-      {data.map((item) => (
-        <div className="weekly-day" key={item.day}>
+      {data.map((item, index) => (
+        <div className="weekly-day" key={`${item.day ?? "day"}-${index}`}>
           <strong>{item.day ?? "--"}</strong>
           <span>
             {item.hi ?? "?"}/{item.lo ?? "?"}°C

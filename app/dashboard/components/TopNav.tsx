@@ -38,6 +38,7 @@ export function TopNav({
             className="city-picker-button"
             aria-label="Select city"
             aria-expanded={cityMenuOpen}
+            aria-haspopup="menu"
             onClick={onToggleCityMenu}
           >
             <span aria-hidden="true">⌖</span>
@@ -45,13 +46,13 @@ export function TopNav({
             <span aria-hidden="true">⌄</span>
           </button>
           {cityMenuOpen ? (
-            <div className="city-menu" role="listbox" aria-label="Cities">
+            <div className="city-menu" role="menu" aria-label="Cities">
               {cities.map((city) => (
                 <button
                   key={city.slug}
                   type="button"
-                  role="option"
-                  aria-selected={city.slug === dashboard.city.slug}
+                  role="menuitemradio"
+                  aria-checked={city.slug === dashboard.city.slug}
                   onClick={() => onSelectCity(city)}
                 >
                   {city.name}

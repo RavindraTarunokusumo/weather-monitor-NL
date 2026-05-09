@@ -4,6 +4,15 @@ import type { DashboardResponse } from "./dashboard/types";
 
 export const dynamic = "force-dynamic";
 
+class DashboardLoadError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+  }
+}
+
 async function getBaseUrl(): Promise<string> {
   const headerList = await headers();
   const host = headerList.get("host") ?? "localhost:3000";
@@ -19,7 +28,7 @@ async function getServerDashboard(city: string): Promise<DashboardResponse> {
   );
 
   if (!res.ok) {
-    throw new Error(`Dashboard API returned ${res.status}`);
+    throw new DashboardLoadError(`Dashboard API returned ${res.status}`, res.status);
   }
 
   return res.json() as Promise<DashboardResponse>;
@@ -36,15 +45,21 @@ export default async function Home({
     const dashboard = await getServerDashboard(params?.city ?? "amsterdam");
     return <DashboardShell initialDashboard={dashboard} />;
   } catch (error) {
+    const isUnsupportedCity = error instanceof DashboardLoadError && error.status === 404;
+
     return (
       <main className="dashboard-page">
         <div className="dashboard-error">
-          <p className="eyebrow">Dashboard unavailable</p>
-          <h1>Dashboard data could not be loaded</h1>
-          <p>
-            Start PostgreSQL, run the Prisma migration, ingest source data, regenerate dashboard
-            snapshots, then refresh this page.
-          </p>
+          <p className="eyebrow">{isUnsupportedCity ? "Unsupported city" : "Dashboard unavailable"}</p>
+          <h1>{isUnsupportedCity ? "This city is not available" : "Dashboard data could not be loaded"}</h1>
+          {isUnsupportedCity ? (
+            <p>Choose Amsterdam, Rotterdam, or Utrecht to view the dashboard.</p>
+          ) : (
+            <p>
+              Start PostgreSQL, run the Prisma migration, ingest source data, regenerate dashboard
+              snapshots, then refresh this page.
+            </p>
+          )}
           <p>{error instanceof Error ? error.message : "Unknown error"}</p>
         </div>
       </main>

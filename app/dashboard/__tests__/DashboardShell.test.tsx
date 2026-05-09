@@ -104,7 +104,7 @@ describe("DashboardShell", () => {
 
     expect(screen.getByRole("heading", { name: /amsterdam/i })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /select city/i }));
-    await user.click(await screen.findByRole("option", { name: /utrecht/i }));
+    await user.click(await screen.findByRole("menuitemradio", { name: /utrecht/i }));
     expect(await screen.findByRole("heading", { name: /utrecht/i })).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "7D" }));
@@ -135,7 +135,7 @@ describe("DashboardShell", () => {
     render(<DashboardShell initialDashboard={amsterdamDashboard} />);
 
     await user.click(screen.getByRole("button", { name: /select city/i }));
-    await user.click(await screen.findByRole("option", { name: /utrecht/i }));
+    await user.click(await screen.findByRole("menuitemradio", { name: /utrecht/i }));
     expect(await screen.findByText(/dashboard data could not be loaded/i)).toBeInTheDocument();
   });
 });
