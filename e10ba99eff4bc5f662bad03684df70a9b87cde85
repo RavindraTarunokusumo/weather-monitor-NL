@@ -1,0 +1,6 @@
+Task: Bound 24-hour outlook chart
+Summary: Limited the 24H dashboard chart to the first 24 hourly forecast entries and changed the chart grid to a single horizontal row so multi-day forecast arrays do not stack into the panel.
+Spec: docs/specs/reference-dashboard-webpage-ui.md
+Docs: docs/insights.md
+TODO: TODO.md Active Session / Keep the 24-hour outlook chart to a single 24-entry row
+Validation: npm test -- app/dashboard/__tests__/DashboardShell.test.tsx; npm run lint; npm run typecheck; npm test; DATABASE_URL=placeholder npx prisma validate; DATABASE_URL=placeholder npx prisma generate && npx next build
