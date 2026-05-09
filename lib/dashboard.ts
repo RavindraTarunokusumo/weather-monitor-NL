@@ -108,6 +108,19 @@ function formatWeatherCode(value: string | null | undefined) {
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
+function buildBriefingFallback(uiSummary: JsonRecord | null) {
+  const bestWindow = readString(uiSummary, "best_window");
+  const mainRisk = readString(uiSummary, "main_risk");
+  const changed = readString(uiSummary, "changed");
+  const parts = [
+    bestWindow ? `Best outdoor window: ${bestWindow}.` : null,
+    mainRisk ? `Main risk: ${mainRisk}.` : null,
+    changed ? `What changed: ${changed}.` : null,
+  ].filter((item): item is string => item !== null);
+
+  return parts.length > 0 ? parts.join(" ") : null;
+}
+
 function getSummarySourceStatus(summaryPayload: unknown, key: string): SourceStatus | null {
   if (!summaryPayload || typeof summaryPayload !== "object") {
     return null;
@@ -170,7 +183,7 @@ export function buildDashboardResponse(
       timezone: city.timezone,
     },
     generated_at: toIsoString(snapshot.generatedAt),
-    briefing: snapshot.aiBriefings[0]?.briefingText ?? null,
+    briefing: snapshot.aiBriefings[0]?.briefingText ?? buildBriefingFallback(uiSummary),
     current: {
       temperature_c: snapshot.weatherSnapshot?.temperatureC ?? null,
       feels_like_c: snapshot.weatherSnapshot?.feelsLikeC ?? null,

@@ -107,6 +107,7 @@ export class LuchtmeetnetAdapter extends SourceAdapter<NormalizedAirQualityRecor
     };
     const mainPollutant = pickMainPollutant(pollutants);
     const aqiValue = mainPollutant ? pollutants[mainPollutant] : null;
+    const trend = mainPollutant ? derivePollutantTrend(rawRecords, mainPollutant, latestTimestamp) : "unknown";
 
     return [
       {
@@ -119,8 +120,14 @@ export class LuchtmeetnetAdapter extends SourceAdapter<NormalizedAirQualityRecor
         o3: pollutants.O3,
         so2: pollutants.SO2,
         mainPollutant,
-        trendLabel: "unknown",
+        trendLabel: trend,
         sourceName: this.sourceName,
+        sourcePayload: {
+          trend_basis: {
+            pollutant: mainPollutant,
+            latest_timestamp: latestTimestamp,
+          },
+        },
       },
     ];
   }
@@ -154,4 +161,68 @@ function labelAirQuality(value: number | null) {
   }
 
   return "Poor";
+}
+
+function derivePollutantTrend(
+  rawRecords: Record<string, unknown>[],
+  pollutant: PollutantKey,
+  latestTimestamp: string,
+) {
+  const latestDate = new Date(latestTimestamp);
+  const latestValue = findPollutantValueAt(rawRecords, pollutant, latestTimestamp);
+
+  if (latestValue === null) {
+    return "unknown";
+  }
+
+  const candidates = rawRecords
+    .filter((record) => {
+      const formula = typeof record.formula === "string" ? record.formula.toUpperCase() : null;
+      const timestamp = typeof record.timestamp_measured === "string" ? record.timestamp_measured : null;
+      return formula === pollutant && timestamp !== null && timestamp !== latestTimestamp;
+    })
+    .map((record) => ({
+      timestamp: String(record.timestamp_measured),
+      value: typeof record.value === "number" && Number.isFinite(record.value) ? record.value : null,
+    }))
+    .filter((item): item is { timestamp: string; value: number } => item.value !== null)
+    .filter((item) => {
+      const date = new Date(item.timestamp);
+      const ageHours = (latestDate.getTime() - date.getTime()) / 3_600_000;
+      return ageHours > 0 && ageHours <= 24;
+    })
+    .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+  if (candidates.length === 0) {
+    return "unknown";
+  }
+
+  const targetTime = latestDate.getTime() - 6 * 3_600_000;
+  const reference = candidates.reduce((best, candidate) => {
+    const bestDistance = Math.abs(new Date(best.timestamp).getTime() - targetTime);
+    const candidateDistance = Math.abs(new Date(candidate.timestamp).getTime() - targetTime);
+    return candidateDistance < bestDistance ? candidate : best;
+  }, candidates[0]);
+  const deltaRatio = reference.value === 0 ? 0 : (latestValue - reference.value) / Math.abs(reference.value);
+
+  if (deltaRatio >= 0.1) {
+    return "rising";
+  }
+  if (deltaRatio <= -0.1) {
+    return "falling";
+  }
+  return "stable";
+}
+
+function findPollutantValueAt(
+  rawRecords: Record<string, unknown>[],
+  pollutant: PollutantKey,
+  timestamp: string,
+) {
+  const record = rawRecords.find((item) => {
+    const formula = typeof item.formula === "string" ? item.formula.toUpperCase() : null;
+    return formula === pollutant && item.timestamp_measured === timestamp;
+  });
+  const value = record?.value;
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }

@@ -22,6 +22,9 @@ type WeatherSnapshot = Snapshot & {
   windSpeedKmh: number | null;
   windGustKmh: number | null;
   windDirection: string | null;
+  weatherCode: string | null;
+  warningLevel: string | null;
+  sourcePayload: unknown;
 };
 
 type AirQualitySnapshot = Snapshot & {
@@ -29,6 +32,7 @@ type AirQualitySnapshot = Snapshot & {
   aqiLabel: string | null;
   mainPollutant: string | null;
   trendLabel: string | null;
+  sourcePayload: unknown;
 };
 
 type WaterSnapshot = Snapshot & {
@@ -36,6 +40,7 @@ type WaterSnapshot = Snapshot & {
   waterLevelCm: number | null;
   trendLabel: string | null;
   riskLabel: string | null;
+  sourcePayload: unknown;
 };
 
 type SourceStatus = {
@@ -110,15 +115,29 @@ async function regenerateForCity(options: {
     water: buildSourceStatus("water", water, now, 24),
   };
   const comfort = computeCycleComfort(weather, airQuality);
+  const forecast = extractForecast(weather?.sourcePayload);
+  const weeklyLevels = extractWeeklyLevels(water?.sourcePayload);
+  const uiSummary = buildUiSummary({
+    weather,
+    airQuality,
+    water,
+    forecast,
+    sourceStatus,
+  });
   const summaryPayload = {
     source_status: sourceStatus,
     current: {
       temperature_c: weather?.temperatureC ?? null,
       rain_mm: weather?.rainMm ?? null,
+      rain_probability: weather?.rainProbability ?? null,
       wind_speed_kmh: weather?.windSpeedKmh ?? null,
       wind_gust_kmh: weather?.windGustKmh ?? null,
       wind_direction: weather?.windDirection ?? null,
+      weather_code: weather?.weatherCode ?? null,
+      warning_level: weather?.warningLevel ?? null,
     },
+    ui_summary: uiSummary,
+    outlook: forecast,
     cycle_comfort: {
       score: comfort.score,
       category: comfort.label,
@@ -133,6 +152,7 @@ async function regenerateForCity(options: {
       station: water?.stationName ?? null,
       trend: water?.trendLabel ?? null,
       risk_label: water?.riskLabel ?? null,
+      weekly_levels_cm: weeklyLevels,
     },
   };
   const stateHash = hashState({
@@ -141,6 +161,9 @@ async function regenerateForCity(options: {
     waterSnapshotId: water?.id ?? null,
     comfort,
     sourceStatus,
+    forecast,
+    uiSummary,
+    weeklyLevels,
   });
   const existing = await prisma.dashboardSnapshot.findFirst({
     where: { cityId: city.id, stateHash },
@@ -171,7 +194,7 @@ async function regenerateForCity(options: {
       waterSnapshotId: water?.id ?? null,
       cycleComfortScore: comfort.score,
       cycleComfortLabel: comfort.label,
-      bestOutdoorWindow: comfort.score === null ? null : "10:00-16:00",
+      bestOutdoorWindow: uiSummary.best_window,
       worstOutdoorWindow: comfort.score === null ? null : "18:00-21:00",
       summaryPayload: summaryPayload as Prisma.InputJsonObject,
     },
@@ -299,4 +322,145 @@ function hashState(value: unknown) {
 
 function toDate(value: Date | string) {
   return value instanceof Date ? value : new Date(value);
+}
+
+function extractForecast(sourcePayload: unknown) {
+  const payload = asRecord(sourcePayload);
+  const forecast = asRecord(payload?.forecast);
+
+  return {
+    hourly: readRecordArray(forecast, "hourly"),
+    weekly: readRecordArray(forecast, "weekly"),
+  };
+}
+
+function extractWeeklyLevels(sourcePayload: unknown) {
+  const payload = asRecord(sourcePayload);
+  const value = payload?.weekly_levels_cm;
+  return Array.isArray(value) && value.every((item) => typeof item === "number") ? value : [];
+}
+
+function buildUiSummary(options: {
+  weather: WeatherSnapshot | null;
+  airQuality: AirQualitySnapshot | null;
+  water: WaterSnapshot | null;
+  forecast: { hourly: Record<string, unknown>[]; weekly: Record<string, unknown>[] };
+  sourceStatus: Record<string, SourceStatus>;
+}) {
+  const { weather, airQuality, water, forecast, sourceStatus } = options;
+  const bestWindow = pickBestWindow(forecast.hourly);
+  const warning = asRecord(asRecord(weather?.sourcePayload)?.warning);
+  const warningLevel = weather?.warningLevel ?? readString(warning, "level");
+  const warningRegion = readString(warning, "region");
+  const mainRisk = pickMainRisk({ warningLevel, weather, airQuality, water });
+  const riskDetail =
+    warningLevel && warningLevel !== "none" && warningLevel !== "unknown"
+      ? `${capitalize(warningLevel)} weather warning is active${warningRegion ? ` for ${warningRegion}` : ""}.`
+      : buildNonWarningRiskDetail(weather, airQuality, water);
+
+  return {
+    best_window: bestWindow,
+    outdoor_window_detail: bestWindow
+      ? `Best available outdoor window starts around ${bestWindow}.`
+      : sourceStatus.weather.detail ?? "Weather outlook data is unavailable.",
+    main_risk: mainRisk,
+    risk_detail: riskDetail,
+    changed: "New live snapshot",
+    changed_detail: "Dashboard regenerated from the latest available source snapshots.",
+  };
+}
+
+function pickBestWindow(hourly: Record<string, unknown>[]) {
+  if (hourly.length === 0) {
+    return null;
+  }
+
+  const scored = hourly
+    .map((item) => {
+      const hour = readString(item, "h");
+      const rain = readNumber(item, "rain") ?? 0;
+      const wind = readNumber(item, "wind") ?? 0;
+      const temp = readNumber(item, "temp") ?? 15;
+      const hourNumber = hour ? Number(hour) : null;
+      const daytimePenalty = hourNumber !== null && (hourNumber < 7 || hourNumber > 21) ? 40 : 0;
+      const tempPenalty = temp < 8 || temp > 28 ? 20 : 0;
+      return { hour, score: rain + wind + daytimePenalty + tempPenalty };
+    })
+    .filter((item): item is { hour: string; score: number } => item.hour !== null)
+    .sort((a, b) => a.score - b.score);
+
+  return scored[0]?.hour ? `${scored[0].hour}:00` : null;
+}
+
+function pickMainRisk(options: {
+  warningLevel: string | null;
+  weather: WeatherSnapshot | null;
+  airQuality: AirQualitySnapshot | null;
+  water: WaterSnapshot | null;
+}) {
+  const warningLevel = options.warningLevel;
+  if (warningLevel && warningLevel !== "none" && warningLevel !== "unknown") {
+    return `${capitalize(warningLevel)} weather warning`;
+  }
+
+  if ((options.weather?.rainProbability ?? 0) >= 0.6 || (options.weather?.rainMm ?? 0) > 2) {
+    return "Rain risk";
+  }
+
+  if ((options.weather?.windGustKmh ?? 0) >= 45) {
+    return "Wind gusts";
+  }
+
+  if ((options.airQuality?.aqiValue ?? 0) > 100) {
+    return "Reduced air quality";
+  }
+
+  if (options.water?.trendLabel && options.water.trendLabel !== "stable" && options.water.trendLabel !== "unknown") {
+    return `Water level ${options.water.trendLabel}`;
+  }
+
+  return "No known risk";
+}
+
+function buildNonWarningRiskDetail(
+  weather: WeatherSnapshot | null,
+  airQuality: AirQualitySnapshot | null,
+  water: WaterSnapshot | null,
+) {
+  const details = [
+    weather?.rainProbability !== null && weather?.rainProbability !== undefined
+      ? `Rain probability ${Math.round(weather.rainProbability * 100)}%.`
+      : null,
+    airQuality?.trendLabel ? `Air quality trend ${airQuality.trendLabel}.` : null,
+    water?.trendLabel ? `Water level trend ${water.trendLabel}.` : null,
+  ].filter((item): item is string => item !== null);
+
+  return details.length > 0 ? details.join(" ") : "No elevated source-backed risk is available.";
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function readRecordArray(record: Record<string, unknown> | null, key: string) {
+  const value = record?.[key];
+  return Array.isArray(value) && value.every((item) => asRecord(item) !== null)
+    ? (value as Record<string, unknown>[])
+    : [];
+}
+
+function readString(record: Record<string, unknown> | null, key: string) {
+  const value = record?.[key];
+  return typeof value === "string" ? value : null;
+}
+
+function readNumber(record: Record<string, unknown> | null, key: string) {
+  const value = record?.[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function capitalize(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }

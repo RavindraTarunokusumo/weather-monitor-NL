@@ -189,7 +189,9 @@ describe("buildDashboardResponse", () => {
       aiBriefings: [],
     });
 
-    expect(response.briefing).toBeNull();
+    expect(response.briefing).toBe(
+      "Best outdoor window: 10:00-16:00. Main risk: Evening showers and gusts. What changed: Warmer than yesterday.",
+    );
     expect(response.current.temperature_c).toBeNull();
     expect(response.current.condition_label).toBeNull();
     expect(response.air_quality.aqi_value).toBeNull();
@@ -227,5 +229,16 @@ describe("buildDashboardResponse", () => {
         detail: "No water snapshot is available for this city.",
       },
     ]);
+  });
+
+  it("returns a deterministic briefing fallback from ui summary when no AI briefing exists", () => {
+    const response = buildDashboardResponse(city, {
+      ...snapshot,
+      aiBriefings: [],
+    });
+
+    expect(response.briefing).toBe(
+      "Best outdoor window: 10:00-16:00. Main risk: Evening showers and gusts. What changed: Warmer than yesterday.",
+    );
   });
 });

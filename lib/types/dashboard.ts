@@ -12,6 +12,7 @@ export type DashboardCurrent = {
   wind_speed_kmh: number | null;
   wind_gust_kmh: number | null;
   wind_direction: string | null;
+  condition_label?: string | null;
   warning_level: string | null;
 };
 
@@ -27,6 +28,13 @@ export type DashboardAirQuality = {
   label: string | null;
   main_pollutant: string | null;
   trend: string | null;
+  pollutants?: {
+    pm25: number | null;
+    pm10: number | null;
+    no2: number | null;
+    o3: number | null;
+    so2: number | null;
+  };
 };
 
 export type DashboardWaterSignal = {
@@ -34,6 +42,7 @@ export type DashboardWaterSignal = {
   water_level_cm: number | null;
   trend: string | null;
   risk_label: string | null;
+  weekly_levels_cm?: number[];
 };
 
 export type DashboardFreshnessEntry = {
@@ -54,6 +63,18 @@ export type DashboardResponse = {
   water_signal: DashboardWaterSignal;
   source_freshness: DashboardFreshnessEntry[];
   summary_payload: unknown;
+  ui_summary?: {
+    best_window: string | null;
+    main_risk: string | null;
+    changed: string | null;
+    outdoor_window_detail: string | null;
+    risk_detail: string | null;
+    changed_detail: string | null;
+  };
+  outlook?: {
+    hourly: Array<Record<string, unknown>>;
+    weekly: Array<Record<string, unknown>>;
+  };
 };
 
 export type CityListEntry = {

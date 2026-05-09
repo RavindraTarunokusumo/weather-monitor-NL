@@ -32,10 +32,31 @@ const weather = {
   windSpeedKmh: 18,
   windGustKmh: 28,
   windDirection: "WSW",
-  weatherCode: null,
-  warningLevel: null,
+  weatherCode: "partly_cloudy",
+  warningLevel: "yellow",
   sourceName: "knmi",
-  sourcePayload: null,
+  sourcePayload: {
+    forecast: {
+      hourly: [
+        { h: "09", rain: 10, wind: 14, temp: 16 },
+        { h: "12", rain: 15, wind: 18, temp: 18 },
+        { h: "15", rain: 60, wind: 24, temp: 17 },
+      ],
+      weekly: [
+        { day: "Wed", hi: 18, lo: 10, rain: 60 },
+        { day: "Thu", hi: 17, lo: 11, rain: 30 },
+        { day: "Fri", hi: 16, lo: 10, rain: 20 },
+        { day: "Sat", hi: 15, lo: 9, rain: 40 },
+        { day: "Sun", hi: 15, lo: 8, rain: 50 },
+        { day: "Mon", hi: 14, lo: 8, rain: 70 },
+        { day: "Tue", hi: 14, lo: 7, rain: 80 },
+      ],
+    },
+    warning: {
+      level: "yellow",
+      region: "Noord-Holland",
+    },
+  },
 };
 
 const air = {
@@ -51,7 +72,7 @@ const air = {
   o3: null,
   so2: null,
   mainPollutant: "PM10",
-  trendLabel: "unknown",
+  trendLabel: "falling",
   sourceName: "luchtmeetnet",
   sourcePayload: null,
 };
@@ -64,10 +85,12 @@ const water = {
   observedAt: new Date("2026-05-06T08:45:00.000Z"),
   ingestedAt: new Date("2026-05-06T08:46:00.000Z"),
   waterLevelCm: 12.4,
-  trendLabel: "unknown",
+  trendLabel: "rising",
   riskLabel: "normal",
   sourceName: "rijkswaterstaat",
-  sourcePayload: null,
+  sourcePayload: {
+    weekly_levels_cm: [9, 10, 10, 11, 12, 12, 13],
+  },
 };
 
 function makePrismaStub(overrides: {
@@ -127,6 +150,25 @@ describe("regenerateDashboardSnapshot", () => {
         weather: { status: "fresh", source: "knmi" },
         air_quality: { status: "fresh", source: "luchtmeetnet" },
         water: { status: "fresh", source: "rijkswaterstaat" },
+      },
+      ui_summary: {
+        best_window: expect.any(String),
+        main_risk: "Yellow weather warning",
+        changed: expect.any(String),
+        outdoor_window_detail: expect.any(String),
+        risk_detail: expect.stringContaining("Noord-Holland"),
+        changed_detail: expect.any(String),
+      },
+      outlook: {
+        hourly: [
+          { h: "09", rain: 10, wind: 14, temp: 16 },
+          { h: "12", rain: 15, wind: 18, temp: 18 },
+          { h: "15", rain: 60, wind: 24, temp: 17 },
+        ],
+        weekly: expect.arrayContaining([{ day: "Wed", hi: 18, lo: 10, rain: 60 }]),
+      },
+      water_signal: {
+        weekly_levels_cm: [9, 10, 10, 11, 12, 12, 13],
       },
     });
   });
