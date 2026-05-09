@@ -12,6 +12,10 @@ Completed sessions must be moved to `docs/iterations/archive/` and include the r
 
 ## Active Session
 
+<!-- reference-dashboard-webpage-ui — spec: docs/specs/reference-dashboard-webpage-ui.md -->
+
+- [ ] Task: Keep the 24-hour outlook chart to a single 24-entry row when forecast ingestion returns more than one day of hourly data.
+
 <!-- forecast-summary-trend-data-wiring — spec: docs/specs/forecast-summary-trend-data-wiring.md -->
 
 - [x] Task: Preserve enriched weather and water metadata when the newest live rows contain observations only. Commit: `57c4e9d`

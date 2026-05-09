@@ -40,10 +40,11 @@ function HourlyChart({ dashboard }: { dashboard: DashboardResponse }) {
     return <div className="empty-state">Hourly outlook data is unavailable.</div>;
   }
 
-  const maxRain = Math.max(...data.map((item) => item.rain ?? 0), 1);
+  const visibleData = data.slice(0, 24);
+  const maxRain = Math.max(...visibleData.map((item) => item.rain ?? 0), 1);
   return (
     <div className="hourly-bars" aria-label="24-hour rain bars">
-      {data.map((item, index) => (
+      {visibleData.map((item, index) => (
         <div className="hourly-column" key={`${item.h}-${index}`}>
           <div
             className="rain-bar"

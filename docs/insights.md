@@ -2,6 +2,14 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-10 - 24-Hour Outlook UI Bound
+
+- What worked: a focused component regression test caught the visual overflow by proving the `24H` tab only renders the first 24 hourly forecast entries.
+- What failed: forecast ingestion can return more than one day of hourly data, so UI chart components must bound display series explicitly instead of assuming API arrays already match the selected tab.
+- Useful commands: `npm test -- app/dashboard/__tests__/DashboardShell.test.tsx`, `npm run lint`, `npm run typecheck`, `npm test`, `npx prisma validate`, `npx next build`.
+- Scripts created: none.
+- Workflow improvement: in worktrees without `.env`, pass a placeholder `DATABASE_URL` for Prisma schema validation and Next production compile checks.
+
 ## 2026-05-09 - Forecast Summary Trend Data Wiring
 
 - What worked: keeping forecast/warning/trend enrichment inside ingestion jobs preserved the public dashboard as a snapshot-only read path while still exposing live API fields for every city.
