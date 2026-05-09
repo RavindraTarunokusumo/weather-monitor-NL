@@ -33,6 +33,12 @@ Record reusable lessons from completed sessions.
 - Scripts created: `npm run ingest:all` and `npm run dashboard:regenerate` now route through `scripts/ingest.ts`.
 - Workflow improvement: when a spec requires "live" data, keep provider API keys out of docs and use injected fetch clients so tests prove parsing without touching real services.
 
+- What worked: API smoke checks by city caught that Rotterdam and Utrecht still had empty `weekly_levels_cm` even after Amsterdam looked correct.
+- What failed: treating `riskLabel: "normal"` as enriched water metadata caused observation-only water rows to mask older rows with weekly levels and trend details.
+- Useful commands: `npm run ingest:all -- --live`, `npm run dashboard:regenerate -- --all`, and city-by-city `/api/dashboard?city=<slug>` checks for forecast counts and source freshness.
+- Workflow improvement: worktree dev servers need the original repo env loaded explicitly when `.env`/`.env.local` are not present in the worktree.
+- Windows note: stop the Next dev server before `npm run build`; otherwise Prisma client generation can lock `query_engine-windows.dll.node`.
+
 ## 2026-05-03 - Production Bootstrap Debugging
 
 - What worked: `vercel logs --environment production --level error --expand` exposed the real failure quickly; the app was connected to Postgres, but Prisma raised `P2021` because the production schema had never been applied.

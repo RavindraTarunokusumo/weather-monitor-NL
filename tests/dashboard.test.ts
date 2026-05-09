@@ -241,4 +241,56 @@ describe("buildDashboardResponse", () => {
       "Best outdoor window: 10:00-16:00. Main risk: Evening showers and gusts. What changed: Warmer than yesterday.",
     );
   });
+
+  it("uses summary current metadata when the linked weather row has observation-only fields", () => {
+    const response = buildDashboardResponse(city, {
+      ...snapshot,
+      summaryPayload: {
+        ...(snapshot.summaryPayload as Record<string, unknown>),
+        current: {
+          weather_code: "partly_cloudy",
+          warning_level: "yellow",
+          rain_probability: 0.1,
+        },
+      },
+      weatherSnapshot: {
+        ...snapshot.weatherSnapshot,
+        weatherCode: null,
+        warningLevel: null,
+        rainProbability: null,
+      },
+    });
+
+    expect(response.current).toMatchObject({
+      condition_label: "Partly cloudy",
+      warning_level: "yellow",
+      rain_probability: 0.1,
+    });
+  });
+
+  it("uses summary water metadata when the linked water row has observation-only fields", () => {
+    const response = buildDashboardResponse(city, {
+      ...snapshot,
+      summaryPayload: {
+        ...(snapshot.summaryPayload as Record<string, unknown>),
+        water_signal: {
+          trend: "rising",
+          risk_label: "normal",
+          weekly_levels_cm: [9, 10, 10, 11, 12, 12, 13],
+        },
+      },
+      waterSnapshot: {
+        ...snapshot.waterSnapshot,
+        trendLabel: "unknown",
+        riskLabel: null,
+      },
+    });
+
+    expect(response.water_signal).toMatchObject({
+      water_level_cm: 14,
+      trend: "rising",
+      risk_label: "normal",
+      weekly_levels_cm: [9, 10, 10, 11, 12, 12, 13],
+    });
+  });
 });

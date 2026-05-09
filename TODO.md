@@ -12,6 +12,11 @@ Completed sessions must be moved to `docs/iterations/archive/` and include the r
 
 ## Active Session
 
+<!-- forecast-summary-trend-data-wiring — spec: docs/specs/forecast-summary-trend-data-wiring.md -->
+
+- [x] Task: Preserve enriched weather and water metadata when the newest live rows contain observations only. Commit: `pending`
+- [x] Task: Hide unavailable pollutant rows from the dashboard detail panel. Commit: `pending`
+
 <!-- public-dashboard-ui-shell — spec: docs/specs/public-dashboard-ui-shell.md -->
 
 - [x] Task 1: Shared types (`lib/types/dashboard.ts`). Commit: `f2c633f`

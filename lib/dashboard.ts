@@ -85,6 +85,11 @@ function readString(record: JsonRecord | null, key: string) {
   return typeof value === "string" ? value : null;
 }
 
+function readNumber(record: JsonRecord | null, key: string) {
+  const value = record?.[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
 function readNumberArray(record: JsonRecord | null, key: string) {
   const value = record?.[key];
   return Array.isArray(value) && value.every((item) => typeof item === "number")
@@ -174,7 +179,12 @@ export function buildDashboardResponse(
   const summaryPayload = asRecord(snapshot.summaryPayload);
   const uiSummary = asRecord(summaryPayload?.ui_summary);
   const outlook = asRecord(summaryPayload?.outlook);
+  const currentSummary = asRecord(summaryPayload?.current);
   const waterSignalSummary = asRecord(summaryPayload?.water_signal);
+  const weatherCode =
+    snapshot.weatherSnapshot?.weatherCode ?? readString(currentSummary, "weather_code");
+  const summaryWaterTrend = readString(waterSignalSummary, "trend");
+  const summaryWaterRisk = readString(waterSignalSummary, "risk_label");
 
   return {
     city: {
@@ -188,12 +198,14 @@ export function buildDashboardResponse(
       temperature_c: snapshot.weatherSnapshot?.temperatureC ?? null,
       feels_like_c: snapshot.weatherSnapshot?.feelsLikeC ?? null,
       rain_mm: snapshot.weatherSnapshot?.rainMm ?? null,
-      rain_probability: snapshot.weatherSnapshot?.rainProbability ?? null,
+      rain_probability:
+        snapshot.weatherSnapshot?.rainProbability ?? readNumber(currentSummary, "rain_probability"),
       wind_speed_kmh: snapshot.weatherSnapshot?.windSpeedKmh ?? null,
       wind_gust_kmh: snapshot.weatherSnapshot?.windGustKmh ?? null,
       wind_direction: snapshot.weatherSnapshot?.windDirection ?? null,
-      condition_label: formatWeatherCode(snapshot.weatherSnapshot?.weatherCode),
-      warning_level: snapshot.weatherSnapshot?.warningLevel ?? null,
+      condition_label: formatWeatherCode(weatherCode),
+      warning_level:
+        snapshot.weatherSnapshot?.warningLevel ?? readString(currentSummary, "warning_level"),
     },
     cycle_comfort: {
       score: snapshot.cycleComfortScore,
@@ -217,8 +229,11 @@ export function buildDashboardResponse(
     water_signal: {
       station_name: snapshot.waterSnapshot?.stationName ?? null,
       water_level_cm: snapshot.waterSnapshot?.waterLevelCm ?? null,
-      trend: snapshot.waterSnapshot?.trendLabel ?? null,
-      risk_label: snapshot.waterSnapshot?.riskLabel ?? null,
+      trend:
+        snapshot.waterSnapshot?.trendLabel && snapshot.waterSnapshot.trendLabel !== "unknown"
+          ? snapshot.waterSnapshot.trendLabel
+          : summaryWaterTrend,
+      risk_label: snapshot.waterSnapshot?.riskLabel ?? summaryWaterRisk,
       weekly_levels_cm: snapshot.waterSnapshot
         ? readNumberArray(waterSignalSummary, "weekly_levels_cm")
         : [],

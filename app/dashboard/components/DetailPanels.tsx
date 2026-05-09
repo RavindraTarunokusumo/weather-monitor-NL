@@ -10,6 +10,13 @@ export function DetailPanels({ dashboard }: DetailPanelsProps) {
   const score = dashboard.cycle_comfort.score ?? 0;
   const circumference = 2 * Math.PI * 42;
   const offset = circumference - (Math.min(Math.max(score, 0), 100) / 100) * circumference;
+  const pollutants = [
+    ["PM2.5", dashboard.air_quality.pollutants.pm25],
+    ["PM10", dashboard.air_quality.pollutants.pm10],
+    ["NO2", dashboard.air_quality.pollutants.no2],
+    ["O3", dashboard.air_quality.pollutants.o3],
+    ["SO2", dashboard.air_quality.pollutants.so2],
+  ].filter((item): item is [string, number] => typeof item[1] === "number");
 
   return (
     <div className="detail-panels">
@@ -44,18 +51,14 @@ export function DetailPanels({ dashboard }: DetailPanelsProps) {
           <span>US AQI</span>
         </div>
         <div className="pollutant-grid">
-          {[
-            ["PM2.5", dashboard.air_quality.pollutants.pm25],
-            ["PM10", dashboard.air_quality.pollutants.pm10],
-            ["NO2", dashboard.air_quality.pollutants.no2],
-            ["O3", dashboard.air_quality.pollutants.o3],
-            ["SO2", dashboard.air_quality.pollutants.so2],
-          ].map(([label, value]) => (
-            <div key={label}>
-              <span>{label}</span>
-              <strong>{formatNumber(value as number | null)}</strong>
-            </div>
-          ))}
+          {pollutants.length > 0
+            ? pollutants.map(([label, value]) => (
+                <div key={label}>
+                  <span>{label}</span>
+                  <strong>{formatNumber(value)}</strong>
+                </div>
+              ))
+            : <div className="empty-state">Pollutant data unavailable.</div>}
         </div>
         <p>{fallbackLabel(dashboard.air_quality.label, "Air quality unavailable")} air quality.</p>
       </section>
