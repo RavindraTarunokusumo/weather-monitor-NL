@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { PrismaClient } from "@prisma/client";
+import type { Mock } from "vitest";
 import {
   regenerateAllDashboardSnapshots,
   regenerateDashboardSnapshot,
@@ -94,6 +95,7 @@ function makePrismaStub(overrides: {
     },
     dashboardSnapshot: {
       findFirst: vi.fn().mockResolvedValue(overrides.existingDashboard ?? null),
+      update: vi.fn().mockResolvedValue({}),
       create: vi.fn().mockResolvedValue({ id: "dashboard-1", stateHash: "created-hash" }),
     },
   } as unknown as PrismaClient;
@@ -153,6 +155,60 @@ describe("regenerateDashboardSnapshot", () => {
     });
   });
 
+  it("prefers live source snapshots over newer mock snapshots", async () => {
+    const mockWeather = {
+      ...weather,
+      id: "weather-mock-newer",
+      observedAt: new Date("2026-05-06T09:59:00.000Z"),
+      sourceName: "mock_knmi",
+    };
+    const mockAir = {
+      ...air,
+      id: "air-mock-newer",
+      observedAt: new Date("2026-05-06T09:59:00.000Z"),
+      sourceName: "mock_luchtmeetnet",
+    };
+    const mockWater = {
+      ...water,
+      id: "water-mock-newer",
+      observedAt: new Date("2026-05-06T09:59:00.000Z"),
+      sourceName: "mock_rijkswaterstaat",
+    };
+    const prisma = makePrismaStub({
+      weather: mockWeather,
+      air: mockAir,
+      water: mockWater,
+    });
+
+    (prisma.weatherSnapshot.findFirst as unknown as Mock).mockImplementation(({ where }) =>
+      Promise.resolve("sourceName" in where ? weather : mockWeather),
+    );
+    (prisma.airQualitySnapshot.findFirst as unknown as Mock).mockImplementation(({ where }) =>
+      Promise.resolve("sourceName" in where ? air : mockAir),
+    );
+    (prisma.waterSnapshot.findFirst as unknown as Mock).mockImplementation(({ where }) =>
+      Promise.resolve("sourceName" in where ? water : mockWater),
+    );
+
+    await regenerateDashboardSnapshot({ prisma, citySlug: "amsterdam", now });
+
+    expect(prisma.dashboardSnapshot.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        weatherSnapshotId: "weather-1",
+        airQualitySnapshotId: "air-1",
+        waterSnapshotId: "water-1",
+      }),
+    });
+    const data = vi.mocked(prisma.dashboardSnapshot.create).mock.calls[0][0].data;
+    expect(data.summaryPayload).toMatchObject({
+      source_status: {
+        weather: { source: "knmi" },
+        air_quality: { source: "luchtmeetnet" },
+        water: { source: "rijkswaterstaat" },
+      },
+    });
+  });
+
   it("does not create a duplicate dashboard snapshot for an unchanged state hash", async () => {
     const firstPrisma = makePrismaStub();
     const first = await regenerateDashboardSnapshot({ prisma: firstPrisma, citySlug: "amsterdam", now });
@@ -175,6 +231,10 @@ describe("regenerateDashboardSnapshot", () => {
       stateHash: createdData.stateHash,
     });
     expect(secondPrisma.dashboardSnapshot.create).not.toHaveBeenCalled();
+    expect(secondPrisma.dashboardSnapshot.update).toHaveBeenCalledWith({
+      where: { id: "dashboard-existing" },
+      data: { generatedAt: now },
+    });
   });
 });
 

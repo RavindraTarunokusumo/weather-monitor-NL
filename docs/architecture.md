@@ -5,8 +5,8 @@ Dutch Weather Intelligence is currently a single full-stack Next.js App Router a
 ## Entry Points
 
 - Frontend (SSR shell): `app/page.tsx`
-- Client dashboard: `app/components/live-dashboard.tsx`
-- Display components: `app/components/`
+- Reference dashboard UI: `app/dashboard/`
+- Live dashboard components from the earlier public shell: `app/components/`
 - API routes: `app/api/*/route.ts`
 - Database client: `lib/db.ts`
 - Dashboard response shaping: `lib/dashboard.ts`
@@ -21,29 +21,30 @@ Dutch Weather Intelligence is currently a single full-stack Next.js App Router a
 1. Local PostgreSQL stores supported cities, source snapshots, dashboard snapshots, and mock briefings.
 2. Prisma exposes a type-safe database client for server-side Next.js code.
 3. Route Handlers serve health, city catalog, and dashboard JSON from the database.
-4. `app/page.tsx` runs on the server: fetches initial dashboard data and the city list, then renders `LiveDashboard` with that data as props.
-5. `LiveDashboard` is a `'use client'` component that owns city-selection state and auto-polls the dashboard API every 30 seconds. It composes all display cards.
-6. Pure display components (`briefing-card`, `weather-card`, `cycle-comfort-card`, `air-quality-card`, `water-signal-card`, `source-freshness`) receive typed props and contain no fetch or business logic.
-7. Source freshness travels with weather, air-quality, and water snapshot data and is rendered with Dutch locale formatting.
+4. The homepage fetches `/api/dashboard?city=<slug>` server-side and hands normalized data to the interactive dashboard shell.
+5. The dashboard shell fetches `/api/cities` and same-app `/api/dashboard?city=<slug>` for city switching.
+6. Source freshness travels with weather, air-quality, and water snapshot data.
 
-## LiveDashboard Pattern
+## Frontend Boundary
 
-`LiveDashboard` is the single stateful client component. It:
+`app/page.tsx` is the server entry point. It performs the initial same-app dashboard fetch and renders `DashboardShell`.
 
-- Accepts initial data from the SSR parent to avoid a client-side loading flash.
-- Exposes a city selector dropdown; changing city triggers a fresh `getDashboard()` call.
-- Auto-refreshes every 30 seconds via `setInterval`.
-- Provides a manual Refresh button.
-- Passes shaped data down to pure display-only card components.
+`app/dashboard/` contains the public dashboard UI:
 
-All business logic (score calculation, risk categories) stays server-side. Cards display only what they receive.
+- `types.ts`: normalized dashboard and city response types.
+- `format.ts`: display formatting and fallback labels.
+- `qa.ts`: local source-grounded mock Q&A helper.
+- `components/`: top navigation, briefing hero, metric strip, outlook panel, Q&A panel, detail panels, and source freshness footer.
+- `__tests__/`: jsdom interaction tests for city switching, chart tabs, Q&A, and reload failures.
+
+The `app/components/` live-dashboard shell remains available from the public dashboard UI shell work, but the active homepage uses the reference dashboard UI so the image-backed hero, symbol panels, local Q&A, outlook views, and reference-aligned layout stay intact.
 
 ## Current API Surface
 
 ```http
 GET /api/health
 GET /api/cities
-GET /api/dashboard?city=amsterdam
+GET /api/dashboard?city=<slug>
 ```
 
 ## Planned Background Jobs
@@ -64,4 +65,4 @@ regeneration links the latest available weather, air-quality, and water data.
 - The product is an interpretation layer, not an official warning system.
 - Seeded data must be distinguishable from live source data.
 - AI may explain source-backed facts in later milestones but must not invent forecasts.
-- Amsterdam is the first dashboard city; Utrecht and Rotterdam exist as seeded supported cities.
+- Amsterdam, Utrecht, and Rotterdam have deterministic seeded dashboard snapshots for the public UI.

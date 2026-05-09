@@ -1,8 +1,17 @@
 import { headers } from "next/headers";
-import { LiveDashboard } from "@/app/components/live-dashboard";
-import type { DashboardResponse, CityListEntry } from "@/lib/types/dashboard";
+import { DashboardShell } from "./dashboard/components/DashboardShell";
+import type { DashboardResponse } from "./dashboard/types";
 
 export const dynamic = "force-dynamic";
+
+class DashboardLoadError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+  }
+}
 
 async function getBaseUrl(): Promise<string> {
   const headerList = await headers();
@@ -19,23 +28,10 @@ async function getServerDashboard(city: string): Promise<DashboardResponse> {
   );
 
   if (!res.ok) {
-    throw new Error(`Dashboard API returned ${res.status}`);
+    throw new DashboardLoadError(`Dashboard API returned ${res.status}`, res.status);
   }
 
   return res.json() as Promise<DashboardResponse>;
-}
-
-async function getServerCities(): Promise<CityListEntry[]> {
-  const base = await getBaseUrl();
-
-  try {
-    const res = await fetch(`${base}/api/cities`, { cache: "no-store" });
-    if (!res.ok) return [{ slug: "amsterdam", name: "Amsterdam" }];
-    const data = (await res.json()) as { cities?: CityListEntry[] | null };
-    return data.cities ?? [{ slug: "amsterdam", name: "Amsterdam" }];
-  } catch {
-    return [{ slug: "amsterdam", name: "Amsterdam" }];
-  }
 }
 
 export default async function Home({
@@ -43,39 +39,30 @@ export default async function Home({
 }: {
   searchParams?: Promise<{ city?: string }>;
 }) {
-  let dashboard: DashboardResponse;
-  let cities: CityListEntry[];
   const params = await searchParams;
 
   try {
-    cities = await getServerCities();
-    const selectedCity = cities.some((city) => city.slug === params?.city)
-      ? params?.city ?? "amsterdam"
-      : "amsterdam";
-    dashboard = await getServerDashboard(selectedCity);
+    const dashboard = await getServerDashboard(params?.city ?? "amsterdam");
+    return <DashboardShell initialDashboard={dashboard} />;
   } catch (error) {
+    const isUnsupportedCity = error instanceof DashboardLoadError && error.status === 404;
+
     return (
-      <main className="page-shell">
-        <div className="error-box">
-          <p className="eyebrow">Dashboard unavailable</p>
-          <h1>Dashboard data could not be loaded</h1>
-          <p className="subtitle">
-            Start PostgreSQL, run the Prisma migration, ingest source data, regenerate dashboard
-            snapshots, then refresh this page.
-          </p>
-          <p className="card-detail">
-            {error instanceof Error ? error.message : "Unknown error"}
-          </p>
+      <main className="dashboard-page">
+        <div className="dashboard-error">
+          <p className="eyebrow">{isUnsupportedCity ? "Unsupported city" : "Dashboard unavailable"}</p>
+          <h1>{isUnsupportedCity ? "This city is not available" : "Dashboard data could not be loaded"}</h1>
+          {isUnsupportedCity ? (
+            <p>Choose Amsterdam, Rotterdam, or Utrecht to view the dashboard.</p>
+          ) : (
+            <p>
+              Start PostgreSQL, run the Prisma migration, ingest source data, regenerate dashboard
+              snapshots, then refresh this page.
+            </p>
+          )}
+          <p>{error instanceof Error ? error.message : "Unknown error"}</p>
         </div>
       </main>
     );
   }
-
-  return (
-    <LiveDashboard
-      initialData={dashboard}
-      initialCity={dashboard.city.slug}
-      cities={cities}
-    />
-  );
 }

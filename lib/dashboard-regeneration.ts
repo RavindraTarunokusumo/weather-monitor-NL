@@ -100,18 +100,9 @@ async function regenerateForCity(options: {
 }) {
   const { prisma, city, now, force } = options;
   const [weather, airQuality, water] = await Promise.all([
-    prisma.weatherSnapshot.findFirst({
-      where: { cityId: city.id },
-      orderBy: [{ observedAt: "desc" }, { ingestedAt: "desc" }],
-    }) as Promise<WeatherSnapshot | null>,
-    prisma.airQualitySnapshot.findFirst({
-      where: { cityId: city.id },
-      orderBy: [{ observedAt: "desc" }, { ingestedAt: "desc" }],
-    }) as Promise<AirQualitySnapshot | null>,
-    prisma.waterSnapshot.findFirst({
-      where: { cityId: city.id },
-      orderBy: [{ observedAt: "desc" }, { ingestedAt: "desc" }],
-    }) as Promise<WaterSnapshot | null>,
+    findPreferredSourceSnapshot<WeatherSnapshot>(prisma.weatherSnapshot, city.id),
+    findPreferredSourceSnapshot<AirQualitySnapshot>(prisma.airQualitySnapshot, city.id),
+    findPreferredSourceSnapshot<WaterSnapshot>(prisma.waterSnapshot, city.id),
   ]);
   const sourceStatus = {
     weather: buildSourceStatus("weather", weather, now, 2),
@@ -157,6 +148,11 @@ async function regenerateForCity(options: {
   });
 
   if (existing && !force) {
+    await prisma.dashboardSnapshot.update({
+      where: { id: existing.id },
+      data: { generatedAt: now },
+    });
+
     return {
       city: city.slug,
       created: false,
@@ -199,6 +195,37 @@ async function getActiveCity(prisma: PrismaClient, citySlug: string) {
   }
 
   return city;
+}
+
+async function findPreferredSourceSnapshot<T extends Snapshot>(
+  delegate: {
+    findFirst: (args: {
+      where: {
+        cityId: string;
+        sourceName?: { not: { startsWith: string } };
+      };
+      orderBy: Array<{ observedAt: "desc" } | { ingestedAt: "desc" }>;
+    }) => Promise<T | null>;
+  },
+  cityId: string,
+) {
+  const orderBy: Array<{ observedAt: "desc" } | { ingestedAt: "desc" }> = [
+    { observedAt: "desc" },
+    { ingestedAt: "desc" },
+  ];
+  const liveSnapshot = await delegate.findFirst({
+    where: { cityId, sourceName: { not: { startsWith: "mock_" } } },
+    orderBy,
+  });
+
+  if (liveSnapshot) {
+    return liveSnapshot;
+  }
+
+  return delegate.findFirst({
+    where: { cityId },
+    orderBy,
+  });
 }
 
 function buildSourceStatus(

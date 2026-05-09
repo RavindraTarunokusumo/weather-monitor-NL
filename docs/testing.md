@@ -13,10 +13,11 @@ Testing includes route behavior, response shaping, Prisma schema validation, and
 
 ## Test Layout
 
-- `tests/`: Vitest tests for TypeScript helpers, API contract behavior, formatter unit tests, and React component tests.
-  - `tests/format.test.ts`: 21 unit tests covering all pure formatter functions in `lib/utils/format.ts`.
-  - `tests/live-dashboard.test.tsx`: 7 component render/interaction tests for `LiveDashboard` (data rendering, fallback labels, city selector, city-change fetch, manual Refresh button, 30s auto-poll).
+- `tests/`: Vitest tests for TypeScript helpers, API contract behavior, formatter unit tests, and live dashboard component tests.
+  - `tests/format.test.ts`: unit tests covering pure formatter functions in `lib/utils/format.ts`.
+  - `tests/live-dashboard.test.tsx`: component render/interaction tests for `LiveDashboard` (data rendering, fallback labels, city selector, city-change fetch, manual Refresh button, 30s auto-poll).
   - `tests/setup.ts`: `@testing-library/jest-dom` matcher setup, imported by the Vitest config.
+- `app/**/__tests__/`: Vitest + Testing Library tests for frontend helpers and interactive dashboard components.
 - `prisma/`: schema validation and migration checks.
 - Manual browser/API checks verify seeded data reaches the UI.
 
@@ -66,6 +67,12 @@ Lint:
 npm run lint
 ```
 
+Run the dashboard UI tests:
+
+```bash
+npm test -- app/dashboard/__tests__/qa.test.ts app/dashboard/__tests__/DashboardShell.test.tsx
+```
+
 ## Validation Workflow
 
 Default sequence before commit:
@@ -108,3 +115,17 @@ Meaningful changes should cover:
 - boundary conditions
 - persistence effects where practical
 - public API response shape
+- frontend interaction behavior for city switching, local Q&A, chart state, and failed dashboard reloads
+
+## Manual UI Checks
+
+For dashboard UI changes:
+
+```bash
+docker compose -f infra/docker/docker-compose.yml up -d postgres
+npx prisma migrate dev --name foundation_schema
+npx prisma db seed
+npm run dev
+```
+
+Then open `http://localhost:3000` and verify desktop, tablet, and mobile widths. Check that city switching stays on same-app API routes, source freshness is visible, and the Q&A panel returns local source-grounded answers only.

@@ -2,6 +2,16 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-05-06 - Reference Dashboard Webpage UI
+
+Summary:
+
+- What changed: upgraded the public dashboard page to a reference-aligned UI with a briefing hero, metric strip, outlook views, city selector, local ask-dashboard panel, air-quality detail, water signal detail, cycle comfort, and source freshness footer.
+- Why: make the first public webpage feel like a complete Dutch Weather Intelligence dashboard while staying grounded in same-app normalized data.
+- User-visible impact: `http://localhost:3000` now renders the polished dashboard shell and can switch among seeded Amsterdam, Utrecht, and Rotterdam dashboard snapshots.
+- Migration notes: run Prisma migration and seed commands so all three city dashboards exist locally; the browser still calls only same-app API routes.
+- Related spec: `docs/specs/reference-dashboard-webpage-ui.md`.
+
 ## 2026-05-06 - Live Data Pipeline Wiring
 
 Summary:
