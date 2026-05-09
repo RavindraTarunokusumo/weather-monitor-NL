@@ -14,7 +14,7 @@ Completed sessions must be moved to `docs/iterations/archive/` and include the r
 
 <!-- reference-dashboard-webpage-ui — spec: docs/specs/reference-dashboard-webpage-ui.md -->
 
-- [ ] Task: Keep the 24-hour outlook chart to a single 24-entry row when forecast ingestion returns more than one day of hourly data.
+- [x] Task: Keep the 24-hour outlook chart to a single 24-entry row when forecast ingestion returns more than one day of hourly data. Commit: `e10ba99`
 
 <!-- forecast-summary-trend-data-wiring — spec: docs/specs/forecast-summary-trend-data-wiring.md -->
 
