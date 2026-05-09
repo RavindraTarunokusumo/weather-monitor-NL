@@ -189,7 +189,7 @@ describe("live-capable adapters", () => {
                 "2026-05-05T18:00",
               ],
               temperature_2m: [17, 18, 16],
-              precipitation_probability: [20, 30, 80],
+              precipitation_probability: [20, null, 80],
               precipitation: [0, 0.2, 2.4],
               weather_code: [2, 3, 61],
               wind_speed_10m: [18, 20, 26],
@@ -207,7 +207,7 @@ describe("live-capable adapters", () => {
               ],
               temperature_2m_max: [18, 17, 16, 16, 15, 15, 14],
               temperature_2m_min: [10, 11, 10, 9, 8, 8, 7],
-              precipitation_probability_max: [80, 50, 30, 20, 40, 60, 70],
+              precipitation_probability_max: [80, null, 30, 20, 40, 60, 70],
               precipitation_sum: [2.6, 1.2, 0.2, 0, 0.4, 1.3, 2.1],
               weather_code: [61, 3, 2, 1, 3, 61, 63],
             },
@@ -247,17 +247,22 @@ describe("live-capable adapters", () => {
       weatherCode: "partly_cloudy",
       warningLevel: "yellow",
     });
+    const forecastRequest = fetcher.mock.calls.find(([input]) =>
+      input.toString().includes("api.open-meteo.com"),
+    )?.[0];
+    expect(forecastRequest?.toString()).toContain("forecast_hours=60");
+    expect(forecastRequest?.toString()).toContain("precipitation_probability");
     expect(normalized[0].sourcePayload).toMatchObject({
       forecast: {
         provider: "open-meteo",
         hourly: [
           { h: "12", rain: 20, wind: 18, temp: 17 },
-          { h: "15", rain: 30, wind: 20, temp: 18 },
+          { h: "15", rain: null, wind: 20, temp: 18 },
           { h: "18", rain: 80, wind: 26, temp: 16 },
         ],
         weekly: expect.arrayContaining([
           { day: "Tue", hi: 18, lo: 10, rain: 80 },
-          { day: "Wed", hi: 17, lo: 11, rain: 50 },
+          { day: "Wed", hi: 17, lo: 11, rain: null },
         ]),
       },
       warning: {

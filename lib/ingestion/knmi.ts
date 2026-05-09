@@ -152,13 +152,14 @@ export class KnmiAdapter extends SourceAdapter<NormalizedWeatherRecord> {
       url.searchParams.set("longitude", String(city.longitude));
       url.searchParams.set("timezone", "Europe/Amsterdam");
       url.searchParams.set("forecast_days", "7");
+      url.searchParams.set("forecast_hours", "60");
       url.searchParams.set(
         "hourly",
-        "temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m,wind_gusts_10m",
+        "temperature_2m,precipitation_probability,weather_code,wind_speed_10m,wind_gusts_10m",
       );
       url.searchParams.set(
         "daily",
-        "weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max",
+        "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max",
       );
       if (model) {
         url.searchParams.set("models", model);
@@ -268,7 +269,7 @@ function normalizeOpenMeteoForecast(payload: unknown) {
     const weatherCode = wmoToWeatherCode(readNumberAt(hourlyRecord, "weather_code", index));
     return {
       h: time.length >= 13 ? time.slice(11, 13) : time,
-      rain: readNumberAt(hourlyRecord, "precipitation_probability", index) ?? readNumberAt(hourlyRecord, "precipitation", index),
+      rain: readNumberAt(hourlyRecord, "precipitation_probability", index),
       wind: readNumberAt(hourlyRecord, "wind_speed_10m", index),
       temp: readNumberAt(hourlyRecord, "temperature_2m", index),
       weather_code: weatherCode,
@@ -278,7 +279,7 @@ function normalizeOpenMeteoForecast(payload: unknown) {
     day: weekdayLabel(time),
     hi: readNumberAt(dailyRecord, "temperature_2m_max", index),
     lo: readNumberAt(dailyRecord, "temperature_2m_min", index),
-    rain: readNumberAt(dailyRecord, "precipitation_probability_max", index) ?? readNumberAt(dailyRecord, "precipitation_sum", index),
+    rain: readNumberAt(dailyRecord, "precipitation_probability_max", index),
   }));
 
   return {
