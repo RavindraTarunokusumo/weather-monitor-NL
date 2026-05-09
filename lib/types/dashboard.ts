@@ -53,6 +53,35 @@ export type DashboardFreshnessEntry = {
   detail: string | null;
 };
 
+export type DashboardUiSummary = {
+  best_window: string | null;
+  main_risk: string | null;
+  changed: string | null;
+  outdoor_window_detail: string | null;
+  risk_detail: string | null;
+  changed_detail: string | null;
+};
+
+export type DashboardHourlyOutlook = {
+  h: string | null;
+  rain: number | null;
+  wind: number | null;
+  temp: number | null;
+  weather_code?: string | null;
+};
+
+export type DashboardWeeklyOutlook = {
+  day: string | null;
+  hi: number | null;
+  lo: number | null;
+  rain: number | null;
+};
+
+export type DashboardOutlook = {
+  hourly: DashboardHourlyOutlook[];
+  weekly: DashboardWeeklyOutlook[];
+};
+
 export type DashboardResponse = {
   city: DashboardCity;
   generated_at: string;
@@ -63,18 +92,8 @@ export type DashboardResponse = {
   water_signal: DashboardWaterSignal;
   source_freshness: DashboardFreshnessEntry[];
   summary_payload: unknown;
-  ui_summary?: {
-    best_window: string | null;
-    main_risk: string | null;
-    changed: string | null;
-    outdoor_window_detail: string | null;
-    risk_detail: string | null;
-    changed_detail: string | null;
-  };
-  outlook?: {
-    hourly: Array<Record<string, unknown>>;
-    weekly: Array<Record<string, unknown>>;
-  };
+  ui_summary: DashboardUiSummary;
+  outlook: DashboardOutlook;
 };
 
 export type CityListEntry = {

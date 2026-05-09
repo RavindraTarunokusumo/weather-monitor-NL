@@ -61,6 +61,18 @@ const mockDashboard: DashboardResponse = {
     },
   ],
   summary_payload: {},
+  ui_summary: {
+    best_window: null,
+    main_risk: null,
+    changed: null,
+    outdoor_window_detail: null,
+    risk_detail: null,
+    changed_detail: null,
+  },
+  outlook: {
+    hourly: [],
+    weekly: [],
+  },
 };
 
 const nullDashboard: DashboardResponse = {
