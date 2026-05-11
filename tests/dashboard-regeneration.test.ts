@@ -194,6 +194,77 @@ describe("regenerateDashboardSnapshot", () => {
     });
   });
 
+  it("chooses the lowest-risk 3-hour daytime window from the first 24 forecast entries", async () => {
+    const hourly = Array.from({ length: 30 }, (_, index) => ({
+      h: (index % 24).toString().padStart(2, "0"),
+      rain: index >= 24 ? 0 : 80,
+      wind: index >= 24 ? 0 : 40,
+      temp: 16,
+    }));
+    hourly[9] = { h: "09", rain: 5, wind: 8, temp: 16 };
+    hourly[10] = { h: "10", rain: 4, wind: 8, temp: 16 };
+    hourly[11] = { h: "11", rain: 5, wind: 8, temp: 16 };
+    const prisma = makePrismaStub({
+      weather: {
+        ...weather,
+        sourcePayload: {
+          ...weather.sourcePayload,
+          forecast: {
+            ...weather.sourcePayload.forecast,
+            hourly,
+          },
+        },
+      },
+    });
+
+    await regenerateDashboardSnapshot({ prisma, citySlug: "amsterdam", now });
+
+    const data = vi.mocked(prisma.dashboardSnapshot.create).mock.calls[0][0].data;
+    expect(data.summaryPayload).toMatchObject({
+      ui_summary: {
+        best_window: "09:00-12:00",
+        outdoor_window_detail: "Best available 3-hour outdoor window is 09:00-12:00.",
+      },
+    });
+  });
+
+  it("describes what changed from the previous dashboard snapshot", async () => {
+    const prisma = makePrismaStub();
+
+    (prisma.dashboardSnapshot.findFirst as unknown as Mock).mockImplementation(({ where }) => {
+      if ("stateHash" in where) {
+        return Promise.resolve(null);
+      }
+
+      return Promise.resolve({
+        id: "dashboard-previous",
+        stateHash: "previous-hash",
+        summaryPayload: {
+          current: {
+            temperature_c: 12,
+            rain_probability: 0.7,
+          },
+          air_quality: {
+            trend: "stable",
+          },
+          water_signal: {
+            trend: "falling",
+          },
+        },
+      });
+    });
+
+    await regenerateDashboardSnapshot({ prisma, citySlug: "amsterdam", now });
+
+    const data = vi.mocked(prisma.dashboardSnapshot.create).mock.calls[0][0].data;
+    expect(data.summaryPayload).toMatchObject({
+      ui_summary: {
+        changed: "Temperature changed",
+        changed_detail: "Temperature changed from 12.0°C to 17.0°C.",
+      },
+    });
+  });
+
   it("records missing and stale source states without inventing values", async () => {
     const prisma = makePrismaStub({
       air: null,

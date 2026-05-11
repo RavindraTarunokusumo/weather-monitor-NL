@@ -50,6 +50,11 @@ type SourceStatus = {
   detail: string | null;
 };
 
+type PreviousDashboardSnapshot = {
+  stateHash: string;
+  summaryPayload: unknown;
+};
+
 export type RegenerateDashboardResult = {
   city: string;
   created: boolean;
@@ -121,12 +126,28 @@ async function regenerateForCity(options: {
   const comfort = computeCycleComfort(weatherForSummary, airQuality);
   const forecast = extractForecast(weatherForSummary?.sourcePayload);
   const weeklyLevels = extractWeeklyLevels(waterForSummary?.sourcePayload);
+  const stateForHash = {
+    weatherSnapshotId: weather?.id ?? null,
+    airQualitySnapshotId: airQuality?.id ?? null,
+    waterSnapshotId: water?.id ?? null,
+    comfort,
+    sourceStatus,
+    forecast,
+    weeklyLevels,
+  };
+  const stateHash = hashState(stateForHash);
+  const previousDashboard = (await prisma.dashboardSnapshot.findFirst({
+    where: { cityId: city.id },
+    orderBy: { generatedAt: "desc" },
+  })) as PreviousDashboardSnapshot | null;
   const uiSummary = buildUiSummary({
     weather: weatherForSummary,
     airQuality,
     water: waterForSummary,
     forecast,
     sourceStatus,
+    previousDashboard,
+    currentStateHash: stateHash,
   });
   const summaryPayload = {
     source_status: sourceStatus,
@@ -159,16 +180,6 @@ async function regenerateForCity(options: {
       weekly_levels_cm: weeklyLevels,
     },
   };
-  const stateHash = hashState({
-    weatherSnapshotId: weather?.id ?? null,
-    airQualitySnapshotId: airQuality?.id ?? null,
-    waterSnapshotId: water?.id ?? null,
-    comfort,
-    sourceStatus,
-    forecast,
-    uiSummary,
-    weeklyLevels,
-  });
   const existing = await prisma.dashboardSnapshot.findFirst({
     where: { cityId: city.id, stateHash },
     orderBy: { generatedAt: "desc" },
@@ -468,9 +479,18 @@ function buildUiSummary(options: {
   water: WaterSnapshot | null;
   forecast: { hourly: Record<string, unknown>[]; weekly: Record<string, unknown>[] };
   sourceStatus: Record<string, SourceStatus>;
+  previousDashboard: PreviousDashboardSnapshot | null;
+  currentStateHash: string;
 }) {
-  const { weather, airQuality, water, forecast, sourceStatus } = options;
+  const { weather, airQuality, water, forecast, sourceStatus, previousDashboard, currentStateHash } = options;
   const bestWindow = pickBestWindow(forecast.hourly);
+  const changedSummary = buildChangedSummary({
+    previousDashboard,
+    currentStateHash,
+    weather,
+    airQuality,
+    water,
+  });
   const warning = asRecord(asRecord(weather?.sourcePayload)?.warning);
   const warningLevel = weather?.warningLevel ?? readString(warning, "level");
   const warningRegion = readString(warning, "region");
@@ -483,35 +503,123 @@ function buildUiSummary(options: {
   return {
     best_window: bestWindow,
     outdoor_window_detail: bestWindow
-      ? `Best available outdoor window starts around ${bestWindow}.`
+      ? `Best available 3-hour outdoor window is ${bestWindow}.`
       : sourceStatus.weather.detail ?? "Weather outlook data is unavailable.",
     main_risk: mainRisk,
     risk_detail: riskDetail,
-    changed: "New live snapshot",
-    changed_detail: "Dashboard regenerated from the latest available source snapshots.",
+    changed: changedSummary.changed,
+    changed_detail: changedSummary.changed_detail,
   };
 }
 
 function pickBestWindow(hourly: Record<string, unknown>[]) {
-  if (hourly.length === 0) {
+  const firstDay = hourly.slice(0, 24);
+  if (firstDay.length < 3) {
     return null;
   }
 
-  const scored = hourly
-    .map((item) => {
+  const scored = firstDay
+    .map((item, index) => {
+      const window = firstDay.slice(index, index + 3);
+      if (window.length < 3) {
+        return null;
+      }
+
       const hour = readString(item, "h");
-      const rain = readNumber(item, "rain") ?? 0;
-      const wind = readNumber(item, "wind") ?? 0;
-      const temp = readNumber(item, "temp") ?? 15;
       const hourNumber = hour ? Number(hour) : null;
-      const daytimePenalty = hourNumber !== null && (hourNumber < 7 || hourNumber > 21) ? 40 : 0;
-      const tempPenalty = temp < 8 || temp > 28 ? 20 : 0;
-      return { hour, score: rain + wind + daytimePenalty + tempPenalty };
+      if (hourNumber === null || hourNumber < 7 || hourNumber > 19) {
+        return null;
+      }
+
+      const score = window.reduce((sum, windowItem) => {
+        const rain = readNumber(windowItem, "rain") ?? 0;
+        const wind = readNumber(windowItem, "wind") ?? 0;
+        const temp = readNumber(windowItem, "temp") ?? 15;
+        const tempPenalty = temp < 8 || temp > 28 ? 20 : 0;
+        return sum + rain + wind + tempPenalty;
+      }, 0);
+
+      return { hour, score };
     })
-    .filter((item): item is { hour: string; score: number } => item.hour !== null)
+    .filter((item): item is { hour: string; score: number } => item !== null)
     .sort((a, b) => a.score - b.score);
 
-  return scored[0]?.hour ? `${scored[0].hour}:00` : null;
+  if (!scored[0]?.hour) {
+    return null;
+  }
+
+  const startHour = Number(scored[0].hour);
+  const endHour = (startHour + 3).toString().padStart(2, "0");
+  return `${scored[0].hour}:00-${endHour}:00`;
+}
+
+function buildChangedSummary(options: {
+  previousDashboard: PreviousDashboardSnapshot | null;
+  currentStateHash: string;
+  weather: WeatherSnapshot | null;
+  airQuality: AirQualitySnapshot | null;
+  water: WaterSnapshot | null;
+}) {
+  const { previousDashboard, currentStateHash, weather, airQuality, water } = options;
+  if (!previousDashboard) {
+    return {
+      changed: "New live snapshot",
+      changed_detail: "Dashboard regenerated from the latest available source snapshots.",
+    };
+  }
+
+  if (previousDashboard.stateHash === currentStateHash) {
+    return {
+      changed: "No material change",
+      changed_detail: "Source-backed dashboard state matches the previous snapshot.",
+    };
+  }
+
+  const previousPayload = asRecord(previousDashboard.summaryPayload);
+  const previousCurrent = asRecord(previousPayload?.current);
+  const previousAir = asRecord(previousPayload?.air_quality);
+  const previousWater = asRecord(previousPayload?.water_signal);
+  const previousTemperature = readNumber(previousCurrent, "temperature_c");
+  if (previousTemperature !== null && weather?.temperatureC !== null && weather?.temperatureC !== undefined) {
+    return {
+      changed: "Temperature changed",
+      changed_detail: `Temperature changed from ${previousTemperature.toFixed(1)}°C to ${weather.temperatureC.toFixed(1)}°C.`,
+    };
+  }
+
+  const previousRainProbability = readNumber(previousCurrent, "rain_probability");
+  if (
+    previousRainProbability !== null &&
+    weather?.rainProbability !== null &&
+    weather?.rainProbability !== undefined &&
+    previousRainProbability !== weather.rainProbability
+  ) {
+    return {
+      changed: "Rain chance changed",
+      changed_detail: `Rain probability changed from ${Math.round(previousRainProbability * 100)}% to ${Math.round(weather.rainProbability * 100)}%.`,
+    };
+  }
+
+  const previousAirTrend = readString(previousAir, "trend");
+  if (previousAirTrend && airQuality?.trendLabel && previousAirTrend !== airQuality.trendLabel) {
+    return {
+      changed: "Air quality trend changed",
+      changed_detail: `Air quality trend changed from ${previousAirTrend} to ${airQuality.trendLabel}.`,
+    };
+  }
+
+  const previousWaterTrend = readString(previousWater, "trend");
+  if (previousWaterTrend && water?.trendLabel && previousWaterTrend !== water.trendLabel) {
+    return {
+      changed: "Water trend changed",
+      changed_detail: `Water level trend changed from ${previousWaterTrend} to ${water.trendLabel}.`,
+    };
+  }
+
+  return {
+    changed: "Source state changed",
+    changed_detail: "Dashboard source snapshots changed since the previous regeneration.",
+  };
 }
 
 function pickMainRisk(options: {

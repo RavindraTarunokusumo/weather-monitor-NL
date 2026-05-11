@@ -12,7 +12,7 @@ export type DashboardCurrent = {
   wind_speed_kmh: number | null;
   wind_gust_kmh: number | null;
   wind_direction: string | null;
-  condition_label?: string | null;
+  condition_label: string | null;
   warning_level: string | null;
 };
 
@@ -28,7 +28,7 @@ export type DashboardAirQuality = {
   label: string | null;
   main_pollutant: string | null;
   trend: string | null;
-  pollutants?: {
+  pollutants: {
     pm25: number | null;
     pm10: number | null;
     no2: number | null;
@@ -42,7 +42,7 @@ export type DashboardWaterSignal = {
   water_level_cm: number | null;
   trend: string | null;
   risk_label: string | null;
-  weekly_levels_cm?: number[];
+  weekly_levels_cm: number[];
 };
 
 export type DashboardFreshnessEntry = {
