@@ -2,6 +2,14 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-11 - Production Live Data Guardrails
+
+- What worked: Vercel CLI checks separated deployment health from data freshness; the deployment was ready, but production env lacked `CRON_SECRET` and `KNMI_API_KEY`.
+- What failed: running seed after every production build made fresh mock dashboard snapshots newer than live-regenerated snapshots, so production could keep showing `mock_*` sources after deployment.
+- Useful commands: `vercel env list production --scope ravindratarunokusumos-projects`, `vercel logs <deployment> --project weather-monitor-nl --since 15m --level error`, `VERCEL_ENV=production npm run build`.
+- Scripts created: `scripts/postbuild.ts` now skips Prisma seed on Vercel production builds.
+- Workflow improvement: after setting production ingestion secrets, run live ingestion and dashboard regeneration after the deploy rather than relying on build-time seed data.
+
 ## 2026-05-10 - 24-Hour Outlook UI Bound
 
 - What worked: a focused component regression test caught the visual overflow by proving the `24H` tab only renders the first 24 hourly forecast entries.
