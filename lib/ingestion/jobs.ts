@@ -70,16 +70,11 @@ export function isAuthorizedJobRequest(request: Request): boolean {
 export function isJobAuthorizationRequired(
   env: {
     CRON_SECRET?: string;
-    NODE_ENV?: string;
     VERCEL_ENV?: string;
     [key: string]: string | undefined;
   } = process.env,
 ): boolean {
-  return Boolean(
-    env.CRON_SECRET ||
-      env.VERCEL_ENV === "production" ||
-      env.NODE_ENV === "production",
-  );
+  return Boolean(env.CRON_SECRET || env.VERCEL_ENV === "production");
 }
 
 export async function runWeatherIngestion(options: RunOptions): Promise<CityIngestionResult> {

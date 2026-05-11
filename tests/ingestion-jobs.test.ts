@@ -91,7 +91,9 @@ describe("ingestion job helpers", () => {
 
   it("requires job authorization in production even when CRON_SECRET is missing", () => {
     expect(isJobAuthorizationRequired({ VERCEL_ENV: "production" })).toBe(true);
-    expect(isJobAuthorizationRequired({ NODE_ENV: "production" })).toBe(true);
+    expect(isJobAuthorizationRequired({ VERCEL_ENV: "preview" })).toBe(false);
+    expect(isJobAuthorizationRequired({ NODE_ENV: "production" })).toBe(false);
+    expect(isJobAuthorizationRequired({ CRON_SECRET: "cron-secret" })).toBe(true);
     expect(isJobAuthorizationRequired({})).toBe(false);
   });
 

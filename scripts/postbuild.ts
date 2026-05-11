@@ -9,16 +9,26 @@ type SeedEnv = {
 };
 
 export function shouldRunSeedAfterBuild(env: SeedEnv = process.env) {
+  return getSeedSkipReason(env) === null;
+}
+
+export function getSeedSkipReason(env: SeedEnv = process.env) {
   if (env.SKIP_DB_SEED === "true") {
-    return false;
+    return "SKIP_DB_SEED=true";
   }
 
-  return env.VERCEL_ENV !== "production";
+  if (env.VERCEL_ENV === "production") {
+    return "VERCEL_ENV=production";
+  }
+
+  return null;
 }
 
 function runSeed() {
-  if (!shouldRunSeedAfterBuild()) {
-    console.log("Skipping Prisma seed after production build.");
+  const skipReason = getSeedSkipReason();
+
+  if (skipReason) {
+    console.log(`Skipping Prisma seed after build: ${skipReason}.`);
     return;
   }
 
