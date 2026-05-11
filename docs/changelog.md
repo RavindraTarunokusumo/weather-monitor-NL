@@ -2,6 +2,16 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-05-11 - Production Live Data Guardrails
+
+Summary:
+
+- What changed: production Vercel builds now skip `prisma db seed`, and production job routes require bearer authorization even when `CRON_SECRET` is not configured.
+- Why: prevent deployments or unauthenticated job calls from making seeded mock dashboard snapshots newer than live-regenerated snapshots.
+- User-visible impact: after production secrets are configured and live ingestion/regeneration runs, future deploys should not overwrite the latest live dashboard with mock source labels.
+- Migration notes: configure `CRON_SECRET` and `KNMI_API_KEY` in Vercel production, then run live ingestion and dashboard regeneration after the guarded deployment is live.
+- Related spec: `docs/specs/api-wiring-live-data-pipeline.md`.
+
 ## 2026-05-09 - Forecast Summary and Trend Data Wiring
 
 Summary:
