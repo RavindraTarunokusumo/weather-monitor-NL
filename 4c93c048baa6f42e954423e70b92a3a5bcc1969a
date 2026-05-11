@@ -1,0 +1,6 @@
+Task: Update changelog for production guardrails
+Summary: Added a changelog entry for production seed skipping and production job route authorization.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: docs/changelog.md
+TODO: TODO.md production-live-data-guard Task 3
+Validation: git diff --check
