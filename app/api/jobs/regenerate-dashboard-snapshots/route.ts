@@ -3,10 +3,10 @@ import {
   regenerateAllDashboardSnapshots,
   regenerateDashboardSnapshot,
 } from "@/lib/dashboard-regeneration";
-import { isAuthorizedJobRequest } from "@/lib/ingestion/jobs";
+import { isAuthorizedJobRequest, isJobAuthorizationRequired } from "@/lib/ingestion/jobs";
 
 export async function POST(request: Request) {
-  if (process.env.CRON_SECRET && !isAuthorizedJobRequest(request)) {
+  if (isJobAuthorizationRequired() && !isAuthorizedJobRequest(request)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
