@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db";
 import {
   getIngestionMode,
   isAuthorizedJobRequest,
+  isJobAuthorizationRequired,
   runAirQualityIngestion,
   runAllIngestion,
 } from "@/lib/ingestion/jobs";
@@ -11,7 +12,7 @@ export async function POST(request: Request) {
   const mode = getIngestionMode(searchParams);
   const citySlug = searchParams.get("city") ?? "amsterdam";
 
-  if (mode === "live" && !isAuthorizedJobRequest(request)) {
+  if ((mode === "live" || isJobAuthorizationRequired()) && !isAuthorizedJobRequest(request)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 

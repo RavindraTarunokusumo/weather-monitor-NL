@@ -34,6 +34,8 @@ Production migration command:
 npx prisma migrate deploy
 ```
 
+Production Vercel builds run migrations but skip `prisma db seed` so mock dashboard snapshots do not replace newer live dashboard snapshots. Seed production manually only when intentionally resetting sample data.
+
 ## API Checks
 
 ```bash
@@ -74,6 +76,8 @@ curl -X POST "http://localhost:3000/api/jobs/ingest-air-quality?all=true&mode=li
 curl -X POST "http://localhost:3000/api/jobs/ingest-water?all=true&mode=live" -H "Authorization: Bearer $CRON_SECRET"
 curl -X POST "http://localhost:3000/api/jobs/regenerate-dashboard-snapshots?all=true" -H "Authorization: Bearer $CRON_SECRET"
 ```
+
+Production job routes require `CRON_SECRET` authorization even for mock-mode calls. A production refresh that should show live sources needs `CRON_SECRET` and `KNMI_API_KEY` configured in Vercel, then live ingestion and dashboard regeneration must run after deploy.
 
 ## Testing and Validation
 

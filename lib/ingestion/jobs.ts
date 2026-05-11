@@ -67,6 +67,16 @@ export function isAuthorizedJobRequest(request: Request): boolean {
   return header === `Bearer ${secret}`;
 }
 
+export function isJobAuthorizationRequired(
+  env: {
+    CRON_SECRET?: string;
+    VERCEL_ENV?: string;
+    [key: string]: string | undefined;
+  } = process.env,
+): boolean {
+  return Boolean(env.CRON_SECRET || env.VERCEL_ENV === "production");
+}
+
 export async function runWeatherIngestion(options: RunOptions): Promise<CityIngestionResult> {
   const city = await getActiveCity(options.prisma, options.citySlug);
   const result = await runIngestionJob({

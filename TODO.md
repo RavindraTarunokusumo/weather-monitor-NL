@@ -12,6 +12,12 @@ Completed sessions must be moved to `docs/iterations/archive/` and include the r
 
 ## Active Session
 
+<!-- production-live-data-guard — spec: docs/specs/api-wiring-live-data-pipeline.md -->
+
+- [x] Task 1: Prevent production builds from reseeding mock dashboard snapshots. Commit: `ec33d4d`
+- [x] Task 2: Require job authorization for production job routes. Commit: `e22f1e9`
+- [x] Task 3: Validate production data-source guardrails and document the deployment requirement. Commit: `9ef7b2d`
+
 <!-- reference-dashboard-webpage-ui — spec: docs/specs/reference-dashboard-webpage-ui.md -->
 
 - [x] Task: Keep the 24-hour outlook chart to a single 24-entry row when forecast ingestion returns more than one day of hourly data. Commit: `e10ba99`
