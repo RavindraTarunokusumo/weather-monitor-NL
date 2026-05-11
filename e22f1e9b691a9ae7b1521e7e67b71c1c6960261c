@@ -1,0 +1,6 @@
+Task: Require job authorization for production job routes
+Summary: Added a shared production authorization requirement and applied it to ingestion and dashboard regeneration routes.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: N/A
+TODO: TODO.md production-live-data-guard Task 2
+Validation: npm test -- tests/postbuild.test.ts tests/ingestion-jobs.test.ts; npm run typecheck; npx vitest run --pool=forks --maxWorkers=1; local production-mode POST /api/jobs/regenerate-dashboard-snapshots?all=true returned 401
