@@ -2,6 +2,24 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-10 - 24-Hour Outlook UI Bound
+
+- What worked: a focused component regression test caught the visual overflow by proving the `24H` tab only renders the first 24 hourly forecast entries.
+- What failed: forecast ingestion can return more than one day of hourly data, so UI chart components must bound display series explicitly instead of assuming API arrays already match the selected tab.
+- Useful commands: `npm test -- app/dashboard/__tests__/DashboardShell.test.tsx`, `npm run lint`, `npm run typecheck`, `npm test`, `npx prisma validate`, `npx next build`.
+- Scripts created: none.
+- Workflow improvement: in worktrees without `.env`, pass a placeholder `DATABASE_URL` for Prisma schema validation and Next production compile checks.
+
+## 2026-05-09 - Forecast Summary Trend Data Wiring
+
+- What worked: keeping forecast/warning/trend enrichment inside ingestion jobs preserved the public dashboard as a snapshot-only read path while still exposing live API fields for every city.
+- What worked: mocked provider tests covered Open-Meteo, KNMI warnings, Luchtmeetnet trends, Rijkswaterstaat trends, weekly water levels, and deterministic briefing fallback before live validation.
+- What failed: the current KNMI key can read EDR observations but returns forbidden for the warnings open-data dataset, so the UI must treat warning access failures as `unknown` instead of `none`.
+- Useful commands: `npm test -- tests/ingestion-live-adapters.test.ts tests/dashboard-regeneration.test.ts tests/dashboard.test.ts`, `npm run ingest:all -- --live`, `npm run dashboard:regenerate -- --all`, `npm run build`.
+- Scripts created: none.
+- Workflow improvement: after `npm run build`, rerun live ingestion and dashboard regeneration because the build `postbuild` seed step replaces the current local dashboard data.
+- Skill worth adding or updating: adapt the repo-local `security-review` and `test-plan-writer` skills from inherited trading language to this weather-monitoring product.
+
 ## 2026-05-06 - Reference Dashboard Webpage UI
 
 - What worked: writing failing response-shaping and component interaction tests before implementation kept the new dashboard fields, city switching, chart state, and local Q&A behavior grounded in the accepted spec.
@@ -22,6 +40,12 @@ Record reusable lessons from completed sessions.
 - Useful commands: `npm test -- tests/ingestion-live-adapters.test.ts tests/ingestion-jobs.test.ts tests/dashboard-regeneration.test.ts tests/dashboard.test.ts`, `npm run ingest:all -- --live`, `npm run dashboard:regenerate -- --all`.
 - Scripts created: `npm run ingest:all` and `npm run dashboard:regenerate` now route through `scripts/ingest.ts`.
 - Workflow improvement: when a spec requires "live" data, keep provider API keys out of docs and use injected fetch clients so tests prove parsing without touching real services.
+
+- What worked: API smoke checks by city caught that Rotterdam and Utrecht still had empty `weekly_levels_cm` even after Amsterdam looked correct.
+- What failed: treating `riskLabel: "normal"` as enriched water metadata caused observation-only water rows to mask older rows with weekly levels and trend details.
+- Useful commands: `npm run ingest:all -- --live`, `npm run dashboard:regenerate -- --all`, and city-by-city `/api/dashboard?city=<slug>` checks for forecast counts and source freshness.
+- Workflow improvement: worktree dev servers need the original repo env loaded explicitly when `.env`/`.env.local` are not present in the worktree.
+- Windows note: stop the Next dev server before `npm run build`; otherwise Prisma client generation can lock `query_engine-windows.dll.node`.
 
 ## 2026-05-03 - Production Bootstrap Debugging
 

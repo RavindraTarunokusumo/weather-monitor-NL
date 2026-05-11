@@ -85,6 +85,11 @@ function readString(record: JsonRecord | null, key: string) {
   return typeof value === "string" ? value : null;
 }
 
+function readNumber(record: JsonRecord | null, key: string) {
+  const value = record?.[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
 function readNumberArray(record: JsonRecord | null, key: string) {
   const value = record?.[key];
   return Array.isArray(value) && value.every((item) => typeof item === "number")
@@ -106,6 +111,19 @@ function formatWeatherCode(value: string | null | undefined) {
 
   const label = value.split("_").join(" ");
   return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+function buildBriefingFallback(uiSummary: JsonRecord | null) {
+  const bestWindow = readString(uiSummary, "best_window");
+  const mainRisk = readString(uiSummary, "main_risk");
+  const changed = readString(uiSummary, "changed");
+  const parts = [
+    bestWindow ? `Best outdoor window: ${bestWindow}.` : null,
+    mainRisk ? `Main risk: ${mainRisk}.` : null,
+    changed ? `What changed: ${changed}.` : null,
+  ].filter((item): item is string => item !== null);
+
+  return parts.length > 0 ? parts.join(" ") : null;
 }
 
 function getSummarySourceStatus(summaryPayload: unknown, key: string): SourceStatus | null {
@@ -161,7 +179,12 @@ export function buildDashboardResponse(
   const summaryPayload = asRecord(snapshot.summaryPayload);
   const uiSummary = asRecord(summaryPayload?.ui_summary);
   const outlook = asRecord(summaryPayload?.outlook);
+  const currentSummary = asRecord(summaryPayload?.current);
   const waterSignalSummary = asRecord(summaryPayload?.water_signal);
+  const weatherCode =
+    snapshot.weatherSnapshot?.weatherCode ?? readString(currentSummary, "weather_code");
+  const summaryWaterTrend = readString(waterSignalSummary, "trend");
+  const summaryWaterRisk = readString(waterSignalSummary, "risk_label");
 
   return {
     city: {
@@ -170,17 +193,19 @@ export function buildDashboardResponse(
       timezone: city.timezone,
     },
     generated_at: toIsoString(snapshot.generatedAt),
-    briefing: snapshot.aiBriefings[0]?.briefingText ?? null,
+    briefing: snapshot.aiBriefings[0]?.briefingText ?? buildBriefingFallback(uiSummary),
     current: {
       temperature_c: snapshot.weatherSnapshot?.temperatureC ?? null,
       feels_like_c: snapshot.weatherSnapshot?.feelsLikeC ?? null,
       rain_mm: snapshot.weatherSnapshot?.rainMm ?? null,
-      rain_probability: snapshot.weatherSnapshot?.rainProbability ?? null,
+      rain_probability:
+        snapshot.weatherSnapshot?.rainProbability ?? readNumber(currentSummary, "rain_probability"),
       wind_speed_kmh: snapshot.weatherSnapshot?.windSpeedKmh ?? null,
       wind_gust_kmh: snapshot.weatherSnapshot?.windGustKmh ?? null,
       wind_direction: snapshot.weatherSnapshot?.windDirection ?? null,
-      condition_label: formatWeatherCode(snapshot.weatherSnapshot?.weatherCode),
-      warning_level: snapshot.weatherSnapshot?.warningLevel ?? null,
+      condition_label: formatWeatherCode(weatherCode),
+      warning_level:
+        snapshot.weatherSnapshot?.warningLevel ?? readString(currentSummary, "warning_level"),
     },
     cycle_comfort: {
       score: snapshot.cycleComfortScore,
@@ -204,8 +229,11 @@ export function buildDashboardResponse(
     water_signal: {
       station_name: snapshot.waterSnapshot?.stationName ?? null,
       water_level_cm: snapshot.waterSnapshot?.waterLevelCm ?? null,
-      trend: snapshot.waterSnapshot?.trendLabel ?? null,
-      risk_label: snapshot.waterSnapshot?.riskLabel ?? null,
+      trend:
+        snapshot.waterSnapshot?.trendLabel && snapshot.waterSnapshot.trendLabel !== "unknown"
+          ? snapshot.waterSnapshot.trendLabel
+          : summaryWaterTrend,
+      risk_label: snapshot.waterSnapshot?.riskLabel ?? summaryWaterRisk,
       weekly_levels_cm: snapshot.waterSnapshot
         ? readNumberArray(waterSignalSummary, "weekly_levels_cm")
         : [],

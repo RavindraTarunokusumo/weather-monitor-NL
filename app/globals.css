@@ -427,10 +427,13 @@ p {
 .hourly-bars {
   display: grid;
   min-height: 170px;
-  grid-template-columns: repeat(9, minmax(28px, 1fr));
+  grid-auto-columns: minmax(24px, 1fr);
+  grid-auto-flow: column;
   gap: 10px;
   align-items: end;
+  overflow-x: auto;
   padding-top: 18px;
+  padding-bottom: 4px;
 }
 
 .hourly-column {

@@ -28,14 +28,17 @@ Tracks source job freshness and outcome state for KNMI, Luchtmeetnet, Rijkswater
 ### `WeatherSnapshot`
 
 Stores normalized weather observations for a city snapshot. Records may come from seeded mock data or live KNMI ingestion.
+Live weather snapshots may also store compact forecast and warning metadata in `sourcePayload` so dashboard regeneration can build `outlook`, `rain_probability`, `weather_code`, and warning fields without request-time provider calls.
 
 ### `AirQualitySnapshot`
 
 Stores normalized air-quality observations for a city snapshot. Records may come from seeded mock data or live Luchtmeetnet ingestion.
+Live air-quality snapshots store the derived trend label from recent station measurements; trend support is source-derived and remains `unknown` when there is not enough comparable recent data.
 
 ### `WaterSnapshot`
 
 Stores normalized water observations for a city snapshot. Records may come from seeded mock data or live Rijkswaterstaat ingestion.
+Live water snapshots store the derived trend label and compact `weekly_levels_cm` metadata in `sourcePayload` for the dashboard water signal chart.
 
 ### `DashboardSnapshot`
 

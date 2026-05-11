@@ -17,6 +17,7 @@ const mockDashboard: DashboardResponse = {
     wind_speed_kmh: 18,
     wind_gust_kmh: 32,
     wind_direction: "WSW",
+    condition_label: "Partly cloudy",
     warning_level: "none",
   },
   cycle_comfort: {
@@ -30,12 +31,14 @@ const mockDashboard: DashboardResponse = {
     label: "Good",
     main_pollutant: "O3",
     trend: "stable",
+    pollutants: { pm25: 12, pm10: 22, no2: 18, o3: 46, so2: 6 },
   },
   water_signal: {
     station_name: "Amsterdam mock station",
     water_level_cm: 14,
     trend: "stable",
     risk_label: "normal",
+    weekly_levels_cm: [14, 13, 14, 15, 14, 16, 15],
   },
   source_freshness: [
     {
@@ -61,6 +64,18 @@ const mockDashboard: DashboardResponse = {
     },
   ],
   summary_payload: {},
+  ui_summary: {
+    best_window: null,
+    main_risk: null,
+    changed: null,
+    outdoor_window_detail: null,
+    risk_detail: null,
+    changed_detail: null,
+  },
+  outlook: {
+    hourly: [],
+    weekly: [],
+  },
 };
 
 const nullDashboard: DashboardResponse = {
@@ -74,11 +89,24 @@ const nullDashboard: DashboardResponse = {
     wind_speed_kmh: null,
     wind_gust_kmh: null,
     wind_direction: null,
+    condition_label: null,
     warning_level: null,
   },
   cycle_comfort: { score: null, label: null, best_outdoor_window: null, worst_outdoor_window: null },
-  air_quality: { aqi_value: null, label: null, main_pollutant: null, trend: null },
-  water_signal: { station_name: null, water_level_cm: null, trend: null, risk_label: null },
+  air_quality: {
+    aqi_value: null,
+    label: null,
+    main_pollutant: null,
+    trend: null,
+    pollutants: { pm25: null, pm10: null, no2: null, o3: null, so2: null },
+  },
+  water_signal: {
+    station_name: null,
+    water_level_cm: null,
+    trend: null,
+    risk_label: null,
+    weekly_levels_cm: [],
+  },
   source_freshness: [
     {
       source: "weather",

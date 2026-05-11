@@ -1,8 +1,10 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DashboardShell } from "../components/DashboardShell";
+import { DetailPanels } from "../components/DetailPanels";
+import { OutlookPanel } from "../components/OutlookPanel";
 import type { DashboardResponse } from "../types";
 
 const amsterdamDashboard: DashboardResponse = {
@@ -137,5 +139,52 @@ describe("DashboardShell", () => {
     await user.click(screen.getByRole("button", { name: /select city/i }));
     await user.click(await screen.findByRole("menuitemradio", { name: /utrecht/i }));
     expect(await screen.findByText(/dashboard data could not be loaded/i)).toBeInTheDocument();
+  });
+
+  it("limits the 24-hour chart to one day of hourly forecast entries", () => {
+    const hourly = Array.from({ length: 30 }, (_, index) => ({
+      h: `H${index.toString().padStart(2, "0")}`,
+      rain: index,
+      wind: 12,
+      temp: 14,
+    }));
+
+    render(
+      <OutlookPanel
+        chartView="24H"
+        onChartViewChange={vi.fn()}
+        dashboard={{
+          ...amsterdamDashboard,
+          outlook: {
+            ...amsterdamDashboard.outlook,
+            hourly,
+          },
+        }}
+      />,
+    );
+
+    const chart = screen.getByLabelText("24-hour rain bars");
+    expect(within(chart).getByText("H23")).toBeInTheDocument();
+    expect(within(chart).queryByText("H24")).not.toBeInTheDocument();
+  });
+
+  it("does not render unavailable pollutant rows", () => {
+    render(
+      <DetailPanels
+        dashboard={{
+          ...amsterdamDashboard,
+          air_quality: {
+            ...amsterdamDashboard.air_quality,
+            pollutants: { pm25: 8.5, pm10: 15.1, no2: 16.9, o3: null, so2: null },
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByText("PM2.5")).toBeInTheDocument();
+    expect(screen.getByText("PM10")).toBeInTheDocument();
+    expect(screen.getByText("NO2")).toBeInTheDocument();
+    expect(screen.queryByText("O3")).not.toBeInTheDocument();
+    expect(screen.queryByText("SO2")).not.toBeInTheDocument();
   });
 });

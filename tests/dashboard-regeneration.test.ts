@@ -32,10 +32,31 @@ const weather = {
   windSpeedKmh: 18,
   windGustKmh: 28,
   windDirection: "WSW",
-  weatherCode: null,
-  warningLevel: null,
+  weatherCode: "partly_cloudy",
+  warningLevel: "yellow",
   sourceName: "knmi",
-  sourcePayload: null,
+  sourcePayload: {
+    forecast: {
+      hourly: [
+        { h: "09", rain: 10, wind: 14, temp: 16 },
+        { h: "12", rain: 15, wind: 18, temp: 18 },
+        { h: "15", rain: 60, wind: 24, temp: 17 },
+      ],
+      weekly: [
+        { day: "Wed", hi: 18, lo: 10, rain: 60 },
+        { day: "Thu", hi: 17, lo: 11, rain: 30 },
+        { day: "Fri", hi: 16, lo: 10, rain: 20 },
+        { day: "Sat", hi: 15, lo: 9, rain: 40 },
+        { day: "Sun", hi: 15, lo: 8, rain: 50 },
+        { day: "Mon", hi: 14, lo: 8, rain: 70 },
+        { day: "Tue", hi: 14, lo: 7, rain: 80 },
+      ],
+    },
+    warning: {
+      level: "yellow",
+      region: "Noord-Holland",
+    },
+  },
 };
 
 const air = {
@@ -51,7 +72,7 @@ const air = {
   o3: null,
   so2: null,
   mainPollutant: "PM10",
-  trendLabel: "unknown",
+  trendLabel: "falling",
   sourceName: "luchtmeetnet",
   sourcePayload: null,
 };
@@ -64,16 +85,37 @@ const water = {
   observedAt: new Date("2026-05-06T08:45:00.000Z"),
   ingestedAt: new Date("2026-05-06T08:46:00.000Z"),
   waterLevelCm: 12.4,
-  trendLabel: "unknown",
+  trendLabel: "rising",
   riskLabel: "normal",
   sourceName: "rijkswaterstaat",
-  sourcePayload: null,
+  sourcePayload: {
+    weekly_levels_cm: [9, 10, 10, 11, 12, 12, 13],
+  },
+};
+
+type WeatherTestSnapshot = Omit<
+  typeof weather,
+  "rainProbability" | "weatherCode" | "warningLevel" | "sourcePayload"
+> & {
+  rainProbability: number | null;
+  weatherCode: string | null;
+  warningLevel: string | null;
+  sourcePayload: unknown;
+};
+
+type WaterTestSnapshot = Omit<
+  typeof water,
+  "trendLabel" | "riskLabel" | "sourcePayload"
+> & {
+  trendLabel: string | null;
+  riskLabel: string | null;
+  sourcePayload: unknown;
 };
 
 function makePrismaStub(overrides: {
-  weather?: typeof weather | null;
+  weather?: WeatherTestSnapshot | null;
   air?: typeof air | null;
-  water?: typeof water | null;
+  water?: WaterTestSnapshot | null;
   existingDashboard?: { id: string; stateHash: string } | null;
 } = {}) {
   return {
@@ -86,12 +128,14 @@ function makePrismaStub(overrides: {
     },
     weatherSnapshot: {
       findFirst: vi.fn().mockResolvedValue(overrides.weather === undefined ? weather : overrides.weather),
+      findMany: vi.fn().mockResolvedValue([]),
     },
     airQualitySnapshot: {
       findFirst: vi.fn().mockResolvedValue(overrides.air === undefined ? air : overrides.air),
     },
     waterSnapshot: {
       findFirst: vi.fn().mockResolvedValue(overrides.water === undefined ? water : overrides.water),
+      findMany: vi.fn().mockResolvedValue([]),
     },
     dashboardSnapshot: {
       findFirst: vi.fn().mockResolvedValue(overrides.existingDashboard ?? null),
@@ -127,6 +171,96 @@ describe("regenerateDashboardSnapshot", () => {
         weather: { status: "fresh", source: "knmi" },
         air_quality: { status: "fresh", source: "luchtmeetnet" },
         water: { status: "fresh", source: "rijkswaterstaat" },
+      },
+      ui_summary: {
+        best_window: expect.any(String),
+        main_risk: "Yellow weather warning",
+        changed: expect.any(String),
+        outdoor_window_detail: expect.any(String),
+        risk_detail: expect.stringContaining("Noord-Holland"),
+        changed_detail: expect.any(String),
+      },
+      outlook: {
+        hourly: [
+          { h: "09", rain: 10, wind: 14, temp: 16 },
+          { h: "12", rain: 15, wind: 18, temp: 18 },
+          { h: "15", rain: 60, wind: 24, temp: 17 },
+        ],
+        weekly: expect.arrayContaining([{ day: "Wed", hi: 18, lo: 10, rain: 60 }]),
+      },
+      water_signal: {
+        weekly_levels_cm: [9, 10, 10, 11, 12, 12, 13],
+      },
+    });
+  });
+
+  it("chooses the lowest-risk 3-hour daytime window from the first 24 forecast entries", async () => {
+    const hourly = Array.from({ length: 30 }, (_, index) => ({
+      h: (index % 24).toString().padStart(2, "0"),
+      rain: index >= 24 ? 0 : 80,
+      wind: index >= 24 ? 0 : 40,
+      temp: 16,
+    }));
+    hourly[9] = { h: "09", rain: 5, wind: 8, temp: 16 };
+    hourly[10] = { h: "10", rain: 4, wind: 8, temp: 16 };
+    hourly[11] = { h: "11", rain: 5, wind: 8, temp: 16 };
+    const prisma = makePrismaStub({
+      weather: {
+        ...weather,
+        sourcePayload: {
+          ...weather.sourcePayload,
+          forecast: {
+            ...weather.sourcePayload.forecast,
+            hourly,
+          },
+        },
+      },
+    });
+
+    await regenerateDashboardSnapshot({ prisma, citySlug: "amsterdam", now });
+
+    const data = vi.mocked(prisma.dashboardSnapshot.create).mock.calls[0][0].data;
+    expect(data.summaryPayload).toMatchObject({
+      ui_summary: {
+        best_window: "09:00-12:00",
+        outdoor_window_detail: "Best available 3-hour outdoor window is 09:00-12:00.",
+      },
+    });
+  });
+
+  it("describes what changed from the previous dashboard snapshot", async () => {
+    const prisma = makePrismaStub();
+
+    (prisma.dashboardSnapshot.findFirst as unknown as Mock).mockImplementation(({ where }) => {
+      if ("stateHash" in where) {
+        return Promise.resolve(null);
+      }
+
+      return Promise.resolve({
+        id: "dashboard-previous",
+        stateHash: "previous-hash",
+        summaryPayload: {
+          current: {
+            temperature_c: 12,
+            rain_probability: 0.7,
+          },
+          air_quality: {
+            trend: "stable",
+          },
+          water_signal: {
+            trend: "falling",
+          },
+        },
+      });
+    });
+
+    await regenerateDashboardSnapshot({ prisma, citySlug: "amsterdam", now });
+
+    const data = vi.mocked(prisma.dashboardSnapshot.create).mock.calls[0][0].data;
+    expect(data.summaryPayload).toMatchObject({
+      ui_summary: {
+        changed: "Temperature changed",
+        changed_detail: "Temperature changed from 12.0°C to 17.0°C.",
       },
     });
   });
@@ -205,6 +339,80 @@ describe("regenerateDashboardSnapshot", () => {
         weather: { source: "knmi" },
         air_quality: { source: "luchtmeetnet" },
         water: { source: "rijkswaterstaat" },
+      },
+    });
+  });
+
+  it("uses the latest enriched weather payload when the newest live weather row has observations only", async () => {
+    const currentWeatherOnly = {
+      ...weather,
+      id: "weather-current-observation",
+      observedAt: new Date("2026-05-06T09:59:00.000Z"),
+      temperatureC: 18,
+      weatherCode: null,
+      warningLevel: null,
+      rainProbability: null,
+      sourcePayload: null,
+    };
+    const prisma = makePrismaStub({ weather: currentWeatherOnly });
+
+    (prisma.weatherSnapshot.findMany as unknown as Mock).mockResolvedValue([
+      currentWeatherOnly,
+      weather,
+    ]);
+
+    await regenerateDashboardSnapshot({ prisma, citySlug: "amsterdam", now });
+
+    const data = vi.mocked(prisma.dashboardSnapshot.create).mock.calls[0][0].data;
+    expect(data.weatherSnapshotId).toBe("weather-current-observation");
+    expect(data.summaryPayload).toMatchObject({
+      current: {
+        temperature_c: 18,
+        rain_probability: 0.1,
+        weather_code: "partly_cloudy",
+        warning_level: "yellow",
+      },
+      ui_summary: {
+        best_window: expect.any(String),
+        main_risk: "Yellow weather warning",
+        outdoor_window_detail: expect.not.stringContaining("unavailable"),
+      },
+      outlook: {
+        hourly: [
+          { h: "09", rain: 10, wind: 14, temp: 16 },
+          { h: "12", rain: 15, wind: 18, temp: 18 },
+          { h: "15", rain: 60, wind: 24, temp: 17 },
+        ],
+      },
+    });
+  });
+
+  it("uses the latest enriched water payload when the newest live water row has observations only", async () => {
+    const currentWaterOnly = {
+      ...water,
+      id: "water-current-observation",
+      observedAt: new Date("2026-05-06T09:59:00.000Z"),
+      waterLevelCm: 18,
+      trendLabel: "unknown",
+      riskLabel: "normal",
+      sourcePayload: null,
+    };
+    const prisma = makePrismaStub({ water: currentWaterOnly });
+
+    (prisma.waterSnapshot.findMany as unknown as Mock).mockResolvedValue([
+      currentWaterOnly,
+      water,
+    ]);
+
+    await regenerateDashboardSnapshot({ prisma, citySlug: "amsterdam", now });
+
+    const data = vi.mocked(prisma.dashboardSnapshot.create).mock.calls[0][0].data;
+    expect(data.waterSnapshotId).toBe("water-current-observation");
+    expect(data.summaryPayload).toMatchObject({
+      water_signal: {
+        trend: "rising",
+        risk_label: "normal",
+        weekly_levels_cm: [9, 10, 10, 11, 12, 12, 13],
       },
     });
   });
