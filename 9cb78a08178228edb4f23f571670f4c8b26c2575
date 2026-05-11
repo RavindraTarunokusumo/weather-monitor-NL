@@ -1,0 +1,6 @@
+Task: Address PR #9 code review feedback
+Summary: Removed NODE_ENV as a production auth signal, added preview/local coverage, and made postbuild seed skip logs report the actual skip reason.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: N/A
+TODO: TODO.md production-live-data-guard review follow-up
+Validation: npm test -- tests/postbuild.test.ts tests/ingestion-jobs.test.ts; npm run typecheck
