@@ -1,0 +1,6 @@
+Task: Address PR #8 review feedback
+Summary: Scored first-day daytime 3-hour forecast windows for best_window, compared regenerated snapshots with the previous dashboard summary for changed copy, and restored required dashboard API fields in shared types and fixtures.
+Spec: docs/specs/forecast-summary-trend-data-wiring.md; docs/specs/reference-dashboard-webpage-ui.md
+Docs: N/A
+TODO: PR #8 review comments
+Validation: npm test -- tests/dashboard-regeneration.test.ts; npm run typecheck; npm test -- tests/dashboard-regeneration.test.ts tests/live-dashboard.test.tsx; npm run lint; npm test; git diff --check
