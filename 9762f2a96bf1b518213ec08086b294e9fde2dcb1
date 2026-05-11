@@ -1,0 +1,6 @@
+Task: Record TODO commit hash
+Summary: Updated TODO.md to point Task 3 at the documentation commit hash after commit creation.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: N/A
+TODO: TODO.md production-live-data-guard Task 3
+Validation: git diff --check
