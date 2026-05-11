@@ -1,0 +1,6 @@
+Task: Archive completed post-PR sessions
+Summary: Moved completed PR #8 and PR #9 session TODOs into iteration archive files and left TODO.md with no active completed work.
+Spec: docs/specs/api-wiring-live-data-pipeline.md, docs/specs/reference-dashboard-webpage-ui.md, docs/specs/forecast-summary-trend-data-wiring.md
+Docs: TODO.md, docs/iterations/archive/2026-05-11-pr-8-data-ui-fix.md, docs/iterations/archive/2026-05-11-production-live-data-guard.md
+TODO: Post-PR cleanup
+Validation: git diff --check
