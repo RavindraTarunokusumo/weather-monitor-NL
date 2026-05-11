@@ -16,7 +16,7 @@ Completed sessions must be moved to `docs/iterations/archive/` and include the r
 
 - [x] Task 1: Prevent production builds from reseeding mock dashboard snapshots. Commit: `ec33d4d`
 - [x] Task 2: Require job authorization for production job routes. Commit: `e22f1e9`
-- [x] Task 3: Validate production data-source guardrails and document the deployment requirement. Commit: `pending`
+- [x] Task 3: Validate production data-source guardrails and document the deployment requirement. Commit: `9ef7b2d`
 
 <!-- reference-dashboard-webpage-ui — spec: docs/specs/reference-dashboard-webpage-ui.md -->
 
