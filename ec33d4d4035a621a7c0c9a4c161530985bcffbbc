@@ -1,0 +1,6 @@
+Task: Prevent production builds from reseeding mock dashboard snapshots
+Summary: Replaced the raw postbuild seed command with a guarded script that skips Prisma seed on Vercel production builds.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: docs/database.md
+TODO: TODO.md production-live-data-guard Task 1
+Validation: npm test -- tests/postbuild.test.ts tests/ingestion-jobs.test.ts; npm run typecheck; npx vitest run --pool=forks --maxWorkers=1; DATABASE_URL=local npx prisma validate; VERCEL_ENV=production npm run build
