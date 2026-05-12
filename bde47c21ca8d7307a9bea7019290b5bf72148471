@@ -1,0 +1,6 @@
+Task: address PR review feedback
+Summary: Fixed review comments around unavailable dashboard messaging, unit rendering, chart empty states, footer labeling, and documented the intentional wide-desktop frame behavior.
+Spec: docs/specs/ui-overhaul-design-handoff.md
+Docs: docs/specs/ui-overhaul-design-handoff.md, docs/changelog.md
+TODO: N/A
+Validation: npm run lint; npm run typecheck; npm test; npx prisma validate; npx prisma migrate deploy; npx prisma db seed; SKIP_DB_SEED=true npm run build
