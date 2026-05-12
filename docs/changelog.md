@@ -2,6 +2,16 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-05-12 - UI Overhaul Design Handoff
+
+Summary:
+
+- What changed: refit the public dashboard to the accepted Dutch Weather Intelligence handoff with a compact sticky nav, redesigned briefing hero, compact metric strip, metric-switching 24-hour SVG chart, reordered detail panels, redesigned ask-dashboard panel, and bordered source freshness footer.
+- Why: make the production dashboard visually match the supplied handoff while preserving the existing normalized dashboard API, SSR entry path, and grounded local Q&A behavior.
+- User-visible impact: `/` now renders the handoff-aligned dashboard layout and supports Rain, Temp, and Wind chart modes, improved responsive behavior, and concept-verified desktop presentation.
+- Migration notes: no schema migration is required; local production build validation should stop active `next` servers first on Windows to avoid Prisma query-engine DLL locks.
+- Related spec: `docs/specs/ui-overhaul-design-handoff.md`.
+
 ## 2026-05-11 - Production Live Data Guardrails
 
 Summary:
