@@ -113,7 +113,47 @@ describe("DashboardShell", () => {
     expect(screen.getByText(/7-day outlook/i)).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /will it rain/i }));
-    expect(screen.getByText(/rain chance/i)).toBeInTheDocument();
+    expect(screen.getByText(/Utrecht has a 20% rain chance/i)).toBeInTheDocument();
+    expect(screen.getByRole("contentinfo", { name: /source freshness/i })).toBeInTheDocument();
+    expect(screen.getByText(/all times in cest/i)).toBeInTheDocument();
+  });
+
+  it("switches the 24-hour chart metric between rain, temperature, and wind", async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        Response.json({
+          cities: [amsterdamDashboard.city],
+        }),
+      ),
+    );
+
+    render(<DashboardShell initialDashboard={amsterdamDashboard} />);
+
+    expect(screen.getByLabelText("24-hour rain chart")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Temp" }));
+    expect(screen.getByLabelText("24-hour temperature chart")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Wind" }));
+    expect(screen.getByLabelText("24-hour wind chart")).toBeInTheDocument();
+  });
+
+  it("exposes handoff dashboard landmarks", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        Response.json({
+          cities: [amsterdamDashboard.city],
+        }),
+      ),
+    );
+
+    render(<DashboardShell initialDashboard={amsterdamDashboard} />);
+
+    expect(screen.getByRole("navigation", { name: /primary/i })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: /today briefing/i })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: /dashboard metrics/i })).toBeInTheDocument();
+    await screen.findByRole("button", { name: /select city/i });
   });
 
   it("shows an error state when dashboard reload fails", async () => {
@@ -152,7 +192,9 @@ describe("DashboardShell", () => {
     render(
       <OutlookPanel
         chartView="24H"
+        chartMetric="rain"
         onChartViewChange={vi.fn()}
+        onChartMetricChange={vi.fn()}
         dashboard={{
           ...amsterdamDashboard,
           outlook: {
@@ -163,7 +205,7 @@ describe("DashboardShell", () => {
       />,
     );
 
-    const chart = screen.getByLabelText("24-hour rain bars");
+    const chart = screen.getByLabelText("24-hour rain chart");
     expect(within(chart).getByText("H23")).toBeInTheDocument();
     expect(within(chart).queryByText("H24")).not.toBeInTheDocument();
   });

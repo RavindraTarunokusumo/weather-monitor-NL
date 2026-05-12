@@ -12,4 +12,15 @@ Completed sessions must be moved to `docs/iterations/archive/` and include the r
 
 ## Active Session
 
-None.
+### UI Overhaul Design Handoff
+
+Spec path: `docs/specs/ui-overhaul-design-handoff.md`
+Plan path: `docs/superpowers/plans/2026-05-12-ui-overhaul-design-handoff.md`
+
+- [x] Accept spec and create implementation plan.
+- [x] Add failing dashboard tests for chart metric toggles and handoff landmarks.
+- [x] Implement chart metric state and SVG 24-hour outlook.
+- [x] Refit top nav, hero, metric strip, and right-side detail panels to the handoff.
+- [x] Refit Q&A panel, source freshness footer, and responsive CSS.
+- [x] Run full validation and screenshot comparison against the supplied concept image.
+- [ ] Complete pre-PR workflow, archive session, and record relevant insights.
