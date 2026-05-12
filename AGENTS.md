@@ -85,6 +85,20 @@ Rules:
 9. A chat prompt is not implementation authority by itself; it either supplies an accepted spec or starts spec creation/refinement.
 10. Do not implement from a spec with unresolved blocking open questions.
 
+## Production Data Verification
+
+When working on production deployment, data freshness, or UI values shown on `https://weather-monitor-nl.vercel.app/`, do not rely on rendered footer labels alone. Verify the backing source identifiers through `/api/dashboard?city=amsterdam`, `/api/dashboard?city=utrecht`, and `/api/dashboard?city=rotterdam`.
+
+Expected live production source identifiers are:
+
+```text
+knmi
+luchtmeetnet
+rijkswaterstaat
+```
+
+If any production dashboard response contains `mock_*` source identifiers, report that production is using mock-backed snapshots and run the protected all-in refresh route from [docs/commands.md](docs/commands.md) if `CRON_SECRET` is available. Do not repeat the old manual sequence unless the all-in route is unavailable; the all-in route exists so future sessions do not have to remember separate ingestion and regeneration calls.
+
 ## Pre-Commit Checks
 
 Adapt these commands to the active stack:

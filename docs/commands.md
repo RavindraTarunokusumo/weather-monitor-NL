@@ -87,6 +87,16 @@ curl -X POST "https://weather-monitor-nl.vercel.app/api/jobs/refresh-live?force=
 
 `vercel.json` registers `/api/jobs/refresh-live` as a daily Vercel Cron at `05:00 UTC`. Vercel automatically sends `Authorization: Bearer $CRON_SECRET` to cron invocations when `CRON_SECRET` is configured in the project environment.
 
+Future production checks must verify source identifiers from the dashboard API, not only the rendered footer:
+
+```bash
+curl "https://weather-monitor-nl.vercel.app/api/dashboard?city=amsterdam"
+curl "https://weather-monitor-nl.vercel.app/api/dashboard?city=utrecht"
+curl "https://weather-monitor-nl.vercel.app/api/dashboard?city=rotterdam"
+```
+
+Live production dashboards should report `knmi`, `luchtmeetnet`, and `rijkswaterstaat` in `source_freshness`. Any `mock_*` source means the dashboard snapshot is mock-backed and should be repaired with `/api/jobs/refresh-live`.
+
 ## Testing and Validation
 
 ```bash
