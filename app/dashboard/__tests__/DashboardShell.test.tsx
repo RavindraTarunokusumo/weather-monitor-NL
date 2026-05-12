@@ -4,6 +4,7 @@ import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DashboardShell } from "../components/DashboardShell";
 import { DetailPanels } from "../components/DetailPanels";
+import { MetricStrip } from "../components/MetricStrip";
 import { OutlookPanel } from "../components/OutlookPanel";
 import type { DashboardResponse } from "../types";
 
@@ -113,7 +114,47 @@ describe("DashboardShell", () => {
     expect(screen.getByText(/7-day outlook/i)).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /will it rain/i }));
-    expect(screen.getByText(/rain chance/i)).toBeInTheDocument();
+    expect(screen.getByText(/Utrecht has a 20% rain chance/i)).toBeInTheDocument();
+    expect(screen.getByRole("contentinfo", { name: /source freshness/i })).toBeInTheDocument();
+    expect(screen.getByText(/all times in cest/i)).toBeInTheDocument();
+  });
+
+  it("switches the 24-hour chart metric between rain, temperature, and wind", async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        Response.json({
+          cities: [amsterdamDashboard.city],
+        }),
+      ),
+    );
+
+    render(<DashboardShell initialDashboard={amsterdamDashboard} />);
+
+    expect(screen.getByLabelText("24-hour rain chart")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Temp" }));
+    expect(screen.getByLabelText("24-hour temperature chart")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Wind" }));
+    expect(screen.getByLabelText("24-hour wind chart")).toBeInTheDocument();
+  });
+
+  it("exposes handoff dashboard landmarks", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        Response.json({
+          cities: [amsterdamDashboard.city],
+        }),
+      ),
+    );
+
+    render(<DashboardShell initialDashboard={amsterdamDashboard} />);
+
+    expect(screen.getByRole("navigation", { name: /primary/i })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: /today briefing/i })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: /dashboard metrics/i })).toBeInTheDocument();
+    await screen.findByRole("button", { name: /select city/i });
   });
 
   it("shows an error state when dashboard reload fails", async () => {
@@ -152,7 +193,9 @@ describe("DashboardShell", () => {
     render(
       <OutlookPanel
         chartView="24H"
+        chartMetric="rain"
         onChartViewChange={vi.fn()}
+        onChartMetricChange={vi.fn()}
         dashboard={{
           ...amsterdamDashboard,
           outlook: {
@@ -163,7 +206,7 @@ describe("DashboardShell", () => {
       />,
     );
 
-    const chart = screen.getByLabelText("24-hour rain bars");
+    const chart = screen.getByLabelText("24-hour rain chart");
     expect(within(chart).getByText("H23")).toBeInTheDocument();
     expect(within(chart).queryByText("H24")).not.toBeInTheDocument();
   });
@@ -186,5 +229,87 @@ describe("DashboardShell", () => {
     expect(screen.getByText("NO2")).toBeInTheDocument();
     expect(screen.queryByText("O3")).not.toBeInTheDocument();
     expect(screen.queryByText("SO2")).not.toBeInTheDocument();
+  });
+
+  it("avoids fabricated units and comparison copy when metric values are unavailable", () => {
+    render(
+      <MetricStrip
+        dashboard={{
+          ...amsterdamDashboard,
+          current: {
+            ...amsterdamDashboard.current,
+            temperature_c: null,
+            feels_like_c: null,
+            wind_speed_kmh: null,
+            wind_gust_kmh: null,
+          },
+          cycle_comfort: {
+            ...amsterdamDashboard.cycle_comfort,
+            score: null,
+          },
+        }}
+      />,
+    );
+
+    const temperatureTile = screen.getByRole("heading", { name: /temperature/i }).closest("article");
+    const windTile = screen.getByRole("heading", { name: /wind \/ gusts/i }).closest("article");
+    const cycleTile = screen.getByRole("heading", { name: /cycle comfort/i }).closest("article");
+
+    expect(temperatureTile).not.toBeNull();
+    expect(windTile).not.toBeNull();
+    expect(cycleTile).not.toBeNull();
+
+    expect(within(temperatureTile as HTMLElement).getByText("Feels-like unavailable")).toBeInTheDocument();
+    expect(within(temperatureTile as HTMLElement).queryByText("°C")).not.toBeInTheDocument();
+    expect(within(windTile as HTMLElement).queryByText("km/h")).not.toBeInTheDocument();
+    expect(within(cycleTile as HTMLElement).queryByText("/100")).not.toBeInTheDocument();
+  });
+
+  it("renders unavailable copy for missing detail data and selected metric chart gaps", () => {
+    render(
+      <DetailPanels
+        dashboard={{
+          ...amsterdamDashboard,
+          cycle_comfort: {
+            ...amsterdamDashboard.cycle_comfort,
+            score: null,
+            label: null,
+          },
+          air_quality: {
+            ...amsterdamDashboard.air_quality,
+            label: null,
+          },
+          water_signal: {
+            ...amsterdamDashboard.water_signal,
+            risk_label: null,
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Air quality data unavailable.")).toBeInTheDocument();
+    expect(screen.getByText("Cycle comfort data unavailable.")).toBeInTheDocument();
+    expect(screen.getByText(/no cycling score/i)).toBeInTheDocument();
+    expect(screen.getByText("Water signal data unavailable.")).toBeInTheDocument();
+
+    cleanup();
+
+    render(
+      <OutlookPanel
+        chartView="24H"
+        chartMetric="temp"
+        onChartViewChange={vi.fn()}
+        onChartMetricChange={vi.fn()}
+        dashboard={{
+          ...amsterdamDashboard,
+          outlook: {
+            ...amsterdamDashboard.outlook,
+            hourly: [{ h: "00", rain: 0.3 }],
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Temperature outlook data is unavailable.")).toBeInTheDocument();
   });
 });

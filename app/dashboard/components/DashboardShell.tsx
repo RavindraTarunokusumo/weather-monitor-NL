@@ -9,7 +9,7 @@ import { MetricStrip } from "./MetricStrip";
 import { OutlookPanel } from "./OutlookPanel";
 import { SourceFreshnessFooter } from "./SourceFreshnessFooter";
 import { TopNav } from "./TopNav";
-import type { ChartView, CityOption, DashboardResponse } from "../types";
+import type { ChartMetric, ChartView, CityOption, DashboardResponse } from "../types";
 
 type DashboardShellProps = {
   initialDashboard: DashboardResponse;
@@ -20,6 +20,7 @@ export function DashboardShell({ initialDashboard }: DashboardShellProps) {
   const [cities, setCities] = useState<CityOption[]>([initialDashboard.city]);
   const [cityMenuOpen, setCityMenuOpen] = useState(false);
   const [chartView, setChartView] = useState<ChartView>("24H");
+  const [chartMetric, setChartMetric] = useState<ChartMetric>("rain");
   const [error, setError] = useState<string | null>(null);
   const [loadingCity, setLoadingCity] = useState<string | null>(null);
 
@@ -85,7 +86,9 @@ export function DashboardShell({ initialDashboard }: DashboardShellProps) {
           <OutlookPanel
             dashboard={dashboard}
             chartView={chartView}
+            chartMetric={chartMetric}
             onChartViewChange={setChartView}
+            onChartMetricChange={setChartMetric}
           />
           <AskDashboardPanel dashboard={dashboard} />
         </div>

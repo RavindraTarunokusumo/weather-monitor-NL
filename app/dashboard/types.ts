@@ -19,6 +19,7 @@ export type WeeklyOutlook = {
 };
 
 export type ChartView = "24H" | "7D" | "7D+";
+export type ChartMetric = "rain" | "temp" | "wind";
 
 export type DashboardResponse = {
   city: CityOption;

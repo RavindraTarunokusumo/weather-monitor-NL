@@ -2,6 +2,15 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-12 - UI Overhaul Design Handoff
+
+- What worked: keeping the extracted handoff local and writing an accepted spec first made the production refit traceable without importing the standalone prototype.
+- What worked: CDP screenshots against a production `next start` server gave cleaner UI comparison captures than the one-shot Chromium screenshot command in this Windows worktree.
+- What failed: active `next start` processes in either the worktree or parent checkout lock Prisma's Windows query-engine DLL, so stop local servers before `npm run build`.
+- Useful commands: `npm run lint`, `npm run typecheck`, `npm test`, `npx prisma validate`, `npx prisma migrate deploy`, `npx prisma db seed`, `SKIP_DB_SEED=true npm run build`.
+- Workflow improvement: local screenshot artifacts and extracted design handoff folders should live in the worktree but be added to `.git/info/exclude` so they do not pollute PR staging.
+- Skill worth adding or updating: adapt `test-plan-writer` and `security-review` prompts away from inherited trading terminology for this weather dashboard project.
+
 ## 2026-05-11 - Production Live Data Guardrails
 
 - What worked: Vercel CLI checks separated deployment health from data freshness; the deployment was ready, but production env lacked `CRON_SECRET` and `KNMI_API_KEY`.
