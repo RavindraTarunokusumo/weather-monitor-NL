@@ -1,0 +1,6 @@
+Task: Address production refresh review feedback
+Summary: Archives completed production refresh TODO content and makes the all-in refresh route return status=failed with HTTP 502 when any ingestion result reports failure.
+Spec: docs/specs/production-live-refresh-guardrails.md
+Docs: docs/iterations/archive/2026-05-12-production-live-refresh-guardrails.md
+TODO: TODO.md cleanup for archived session
+Validation: npm test -- tests/production-refresh.test.ts; npm run lint; npm run typecheck; npm test; git diff --check
