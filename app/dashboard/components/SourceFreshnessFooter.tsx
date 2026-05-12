@@ -32,6 +32,9 @@ export function SourceFreshnessFooter({ dashboard }: SourceFreshnessFooterProps)
 }
 
 function formatSourceName(source: string) {
+  const isMockSource = source.startsWith("mock_");
   const normalized = source.replace(/^mock_/, "").toLowerCase();
-  return sourceLabels[normalized] ?? source;
+  const label = sourceLabels[normalized] ?? source;
+
+  return isMockSource ? `Mock ${label}` : label;
 }
