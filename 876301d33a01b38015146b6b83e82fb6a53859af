@@ -1,0 +1,6 @@
+Task: fix CI quality check failure
+Summary: Normalized the UI overhaul plan file end-of-file newline so pre-commit end-of-file-fixer passes in GitHub Actions.
+Spec: docs/specs/ui-overhaul-design-handoff.md
+Docs: docs/superpowers/plans/2026-05-12-ui-overhaul-design-handoff.md
+TODO: N/A
+Validation: pre-commit run --all-files
