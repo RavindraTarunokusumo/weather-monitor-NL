@@ -10,7 +10,7 @@ Completed sessions must be moved to `docs/iterations/archive/` and include the r
 
 Active spec: `docs/specs/production-live-refresh-guardrails.md`
 
-- [ ] Implement production live refresh guardrails: explicit mock source labels, authenticated all-sources live refresh route, Vercel Cron registration, docs, and tests.
+- [x] Implement production live refresh guardrails: explicit mock source labels, authenticated all-sources live refresh route, Vercel Cron registration, docs, and tests. Commit: `671358c`
 
 Verification notes:
 

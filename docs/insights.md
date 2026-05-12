@@ -2,6 +2,13 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-12 - Production Live Refresh Guardrails
+
+- What worked: checking `/api/dashboard` directly exposed that production had live-looking footer labels backed by `mock_*` source identifiers.
+- What failed: formatting away the `mock_` prefix made seeded snapshots indistinguishable from live snapshots in the UI.
+- Useful commands: protected production ingestion route calls followed by `regenerate-dashboard-snapshots?all=true&force=true`, then city-by-city `/api/dashboard?city=<slug>` checks.
+- Workflow improvement: production live refresh should be a scheduled authenticated route rather than a manual post-deploy memory step.
+
 ## 2026-05-12 - UI Overhaul Design Handoff
 
 - What worked: keeping the extracted handoff local and writing an accepted spec first made the production refit traceable without importing the standalone prototype.
