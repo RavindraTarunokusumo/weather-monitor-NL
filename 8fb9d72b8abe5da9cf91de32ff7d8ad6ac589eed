@@ -1,0 +1,6 @@
+Task: archive UI overhaul session
+Summary: Updated changelog, archived the completed UI overhaul session, and removed the completed active TODO entry before PR creation.
+Spec: docs/specs/ui-overhaul-design-handoff.md
+Docs: docs/changelog.md, docs/iterations/archive/2026-05-12-ui-overhaul-design-handoff.md, TODO.md
+TODO: archived completed UI Overhaul Design Handoff session from TODO.md
+Validation: git diff --check
