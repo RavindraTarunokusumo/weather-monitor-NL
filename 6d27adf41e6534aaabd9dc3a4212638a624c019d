@@ -1,0 +1,6 @@
+Task: Archive Vercel preview seed guard session
+Summary: Moves the completed Vercel preview seed guard TODO entry into the iteration archive.
+Spec: docs/specs/production-live-refresh-guardrails.md
+Docs: docs/iterations/archive/2026-05-12-vercel-preview-seed-guard.md
+TODO: TODO.md cleanup for archived session
+Validation: git diff --check
