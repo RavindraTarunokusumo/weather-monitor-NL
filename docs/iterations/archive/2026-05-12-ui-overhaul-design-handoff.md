@@ -6,6 +6,8 @@ Spec: `docs/specs/ui-overhaul-design-handoff.md`
 
 Plan: `docs/superpowers/plans/2026-05-12-ui-overhaul-design-handoff.md`
 
+PR: `https://github.com/RavindraTarunokusumo/weather-monitor-NL/pull/10`
+
 ## Completed tasks
 
 - [x] Accepted spec and implementation plan. Commit: `79bf90b`
