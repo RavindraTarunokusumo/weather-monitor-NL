@@ -21,15 +21,28 @@ async function refreshLiveDashboardData(request: Request) {
   try {
     const ingestion = await runAllSourcesIngestion({ prisma, mode: "live" });
     const regeneration = await regenerateAllDashboardSnapshots({ prisma, force });
+    const status = hasFailedIngestion(ingestion) ? "failed" : "success";
 
-    return Response.json({
-      mode: "live",
-      ingestion,
-      regeneration,
-    });
+    return Response.json(
+      {
+        status,
+        mode: "live",
+        ingestion,
+        regeneration,
+      },
+      { status: status === "failed" ? 502 : 200 },
+    );
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown production refresh error";
 
     return Response.json({ error: message }, { status: 500 });
   }
+}
+
+function hasFailedIngestion(
+  ingestion: Awaited<ReturnType<typeof runAllSourcesIngestion>>,
+) {
+  return ingestion.some((sourceResult) =>
+    sourceResult.results.some((cityResult) => cityResult.result.status === "failed"),
+  );
 }

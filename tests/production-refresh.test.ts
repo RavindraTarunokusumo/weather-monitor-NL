@@ -65,9 +65,58 @@ describe("production live refresh automation", () => {
       force: true,
     });
     expect(body).toMatchObject({
+      status: "success",
       mode: "live",
       ingestion: [{ type: "weather", results: [] }],
       regeneration: [{ city: "amsterdam", created: true }],
+    });
+  });
+
+  it("returns a non-2xx status when any live ingestion result fails", async () => {
+    const { GET } = await import("@/app/api/jobs/refresh-live/route");
+
+    mocks.isAuthorizedJobRequest.mockReturnValueOnce(true);
+    mocks.runAllSourcesIngestion.mockResolvedValueOnce([
+      {
+        type: "weather",
+        results: [
+          {
+            city: "amsterdam",
+            result: {
+              status: "failed",
+              recordsFetched: 0,
+              recordsStored: 0,
+              error: "KNMI unavailable",
+            },
+          },
+        ],
+      },
+    ]);
+    mocks.regenerateAllDashboardSnapshots.mockResolvedValueOnce([{ city: "amsterdam", created: false }]);
+
+    const response = await GET(new Request("https://example.test/api/jobs/refresh-live"));
+    const body = await response.json();
+
+    expect(response.status).toBe(502);
+    expect(mocks.regenerateAllDashboardSnapshots).toHaveBeenCalledWith({
+      prisma: mocks.prisma,
+      force: false,
+    });
+    expect(body).toMatchObject({
+      status: "failed",
+      mode: "live",
+      ingestion: [
+        {
+          type: "weather",
+          results: [
+            {
+              city: "amsterdam",
+              result: { status: "failed", error: "KNMI unavailable" },
+            },
+          ],
+        },
+      ],
+      regeneration: [{ city: "amsterdam", created: false }],
     });
   });
 
