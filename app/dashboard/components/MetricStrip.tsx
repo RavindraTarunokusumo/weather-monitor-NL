@@ -13,9 +13,13 @@ export function MetricStrip({ dashboard }: MetricStripProps) {
     {
       label: "Temperature",
       icon: "/dashboard-assets/icon-temp.png",
-      value: formatTemperature(dashboard.current.temperature_c).replace("°C", ""),
+      value: formatTemperatureValue(dashboard.current.temperature_c),
       unit: "°C",
-      detail: "↑ vs yesterday",
+      showUnit: typeof dashboard.current.temperature_c === "number",
+      detail:
+        typeof dashboard.current.feels_like_c === "number"
+          ? `Feels like ${dashboard.current.feels_like_c.toFixed(1)}°C`
+          : "Feels-like unavailable",
     },
     {
       label: "Rain",
@@ -25,6 +29,7 @@ export function MetricStrip({ dashboard }: MetricStripProps) {
           ? dashboard.current.rain_mm.toFixed(1)
           : "Unavailable",
       unit: "mm",
+      showUnit: typeof dashboard.current.rain_mm === "number",
       detail: `${formatPercent(dashboard.current.rain_probability)} chance`,
     },
     {
@@ -35,9 +40,10 @@ export function MetricStrip({ dashboard }: MetricStripProps) {
           ? String(dashboard.current.wind_speed_kmh)
           : "Unavailable",
       unit: "km/h",
+      showUnit: typeof dashboard.current.wind_speed_kmh === "number",
       detail:
         typeof dashboard.current.wind_gust_kmh === "number"
-          ? `${fallbackLabel(dashboard.current.wind_direction)} · Gusts ${dashboard.current.wind_gust_kmh}`
+          ? `${fallbackLabel(dashboard.current.wind_direction)} · Gusts ${dashboard.current.wind_gust_kmh} km/h`
           : fallbackLabel(dashboard.current.wind_direction),
     },
     {
@@ -62,6 +68,7 @@ export function MetricStrip({ dashboard }: MetricStripProps) {
           ? String(dashboard.cycle_comfort.score)
           : "Unavailable",
       unit: "/100",
+      showUnit: typeof dashboard.cycle_comfort.score === "number",
       detail: fallbackLabel(dashboard.cycle_comfort.label, "No score label"),
       ring: dashboard.cycle_comfort.score,
     },
@@ -77,7 +84,7 @@ export function MetricStrip({ dashboard }: MetricStripProps) {
           </div>
           <div className="metric-main">
             <span>{metric.value}</span>
-            {metric.unit ? <small>{metric.unit}</small> : null}
+            {metric.unit && metric.showUnit ? <small>{metric.unit}</small> : null}
             {typeof metric.ring === "number" ? <CycleMiniRing score={metric.ring} /> : null}
           </div>
           <p className="metric-sub">{metric.detail}</p>
@@ -85,6 +92,10 @@ export function MetricStrip({ dashboard }: MetricStripProps) {
       ))}
     </section>
   );
+}
+
+function formatTemperatureValue(value: number | null) {
+  return typeof value === "number" ? formatTemperature(value).replace("°C", "") : "Unavailable";
 }
 
 function CycleMiniRing({ score }: { score: number }) {

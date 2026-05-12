@@ -16,8 +16,11 @@ export function SourceFreshnessFooter({ dashboard }: SourceFreshnessFooterProps)
   return (
     <footer className="source-footer" aria-label="Source freshness">
       {dashboard.source_freshness.map((source) => (
-        <div className="source-cell" key={source.source}>
-          <span>Data sources</span>
+        <div
+          className="source-cell"
+          key={source.source}
+          aria-label={`${formatSourceName(source.source)} source freshness`}
+        >
           <strong>{formatSourceName(source.source)}</strong>
           <span>Updated {formatDateTime(source.updated_at, dashboard.city.timezone)}</span>
           <span className="freshness-dot" aria-hidden="true" />

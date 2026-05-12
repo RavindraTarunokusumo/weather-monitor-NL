@@ -99,6 +99,15 @@ function HourlyMetricChart({ data, metric }: { data: HourlyOutlook[]; metric: Ch
   const rainValues = numericValues(points.map((item) => item.rain));
   const tempSeries = series(points, "temp");
   const windSeries = series(points, "wind");
+  const hasSelectedSeries =
+    (metric === "rain" && rainValues.length > 0) ||
+    (metric === "temp" && tempSeries.length > 0) ||
+    (metric === "wind" && windSeries.length > 0);
+
+  if (!hasSelectedSeries) {
+    return <div className="empty-state">{chartLabels[metric]} outlook data is unavailable.</div>;
+  }
+
   const rainMax = Math.max(...rainValues, 1);
   const windMax = Math.max(...windSeries.map((item) => item.value), 10);
   const [tempMin, tempMax] = extent(
@@ -133,10 +142,6 @@ function HourlyMetricChart({ data, metric }: { data: HourlyOutlook[]; metric: Ch
       role="img"
     >
       <defs>
-        <linearGradient id="rainGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.02" />
-        </linearGradient>
         <linearGradient id="windGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#22c55e" stopOpacity="0.15" />
           <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
@@ -302,8 +307,7 @@ type NumericPoint = {
 };
 
 function numericValues(input: Array<number | null | undefined>) {
-  const result = input.filter((value): value is number => typeof value === "number");
-  return result.length > 0 ? result : [0];
+  return input.filter((value): value is number => typeof value === "number");
 }
 
 function series(points: Array<HourlyOutlook & { h: string }>, key: "temp" | "wind"): NumericPoint[] {

@@ -29,8 +29,8 @@ The current UI already has the right product modules and data flow: top navigati
 
 Key differences to close:
 
-- Top navigation: current nav is a non-sticky grid with a larger brand mark and dropdown city picker. The handoff requires a sticky 56px white nav with max-width 1220px, compact 32px logo, centered tab nav, active underline, city switcher pill, and compact current-condition badge.
-- Page frame: current page uses `max-width: 1440px`, 24px top padding, and larger gaps. The handoff uses a tighter `max-width: 1220px`, `0 24px` inner padding, and a more compact information-dense layout.
+- Top navigation: current nav is a non-sticky grid with a larger brand mark and dropdown city picker. The handoff requires a sticky 56px white nav with a compact 32px logo, centered tab nav, active underline, city switcher pill, and compact current-condition badge.
+- Page frame: current page uses `max-width: 1440px`, 24px top padding, and larger gaps. The handoff uses a tighter compact frame, `0 24px` inner padding, and a more information-dense layout. For this implementation, the compact proportions must still hold at 1220px while the layout may expand on very wide desktops to match the supplied concept screenshot more closely.
 - Hero: current hero is taller, city-name led, and uses a gradient navy panel. The handoff uses a 260px strip, date-led briefing, dark `#111c2e` panel, 560px image column, compact AI summary pill, tinted icon squares, and a smaller glass weather overlay.
 - Metric bar: current metric tiles are taller, two-column icon/value cards. The handoff requires compact six-column tiles with 36px icons, 10px uppercase labels, DM Mono values, smaller sub-lines, and a cycle comfort donut embedded in the cycle metric tile.
 - Outlook: current 24h view only renders rain bars and 7d cards. The handoff requires a single SVG chart with two controls: metric toggle (`Rain`, `Temp`, `Wind`) and view toggle (`24H`, `7D`, `7D+`). The active metric must crossfade between rain bars, temperature line, and wind area, including active y-axis labels, value labels, and native SVG tooltips.
@@ -54,7 +54,7 @@ Alternatives considered:
 
 Update the public dashboard at `/` to match the handoff:
 
-- Refine `DashboardShell` layout to use a 1220px content frame, compact vertical spacing, and chart/right-panel arrangement from the handoff.
+- Refine `DashboardShell` layout to use the handoff's compact content proportions, compact vertical spacing, and chart/right-panel arrangement from the handoff, while allowing a larger max width on very wide desktops for concept-image parity.
 - Rework `TopNav` into the sticky handoff nav while preserving accessible city selection and same-app city switching.
 - Rework `BriefingHero` to match the 260px two-column strip, date-led briefing content, tinted icon squares, and compact weather overlay.
 - Rework `MetricStrip` into compact handoff tiles with explicit unit styling and a cycle score donut in the cycle tile.
@@ -80,6 +80,7 @@ Update the public dashboard at `/` to match the handoff:
 ## Acceptance Criteria
 
 - The `/` dashboard uses the existing normalized dashboard API data and visually follows the handoff at desktop width: sticky compact nav, 260px hero strip, compact six-metric bar, chart plus 340px right column, Q&A card, and source freshness strip.
+- At around 1220px and 1440px widths, the compact spacing and hierarchy remain aligned with the handoff; on wider desktops, the frame may expand to preserve the proportions visible in the supplied concept image.
 - City switching still fetches `/api/dashboard?city=<slug>` and updates all dashboard sections without a full page reload.
 - The 24h chart has a metric toggle for Rain, Temp, and Wind, with only the active series interactive and visible.
 - Rain bars, temperature line/dots, wind area/dots, active y-axis labels, point/bar value labels, and native SVG tooltips render from `dashboard.outlook.hourly`.

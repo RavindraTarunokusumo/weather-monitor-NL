@@ -7,6 +7,7 @@ Record notable behavior, architecture, API, persistence, or workflow changes.
 Summary:
 
 - What changed: refit the public dashboard to the accepted Dutch Weather Intelligence handoff with a compact sticky nav, redesigned briefing hero, compact metric strip, metric-switching 24-hour SVG chart, reordered detail panels, redesigned ask-dashboard panel, and bordered source freshness footer.
+- Layout note: the compact handoff spacing remains the baseline at 1220px and 1440px widths, but the large-desktop frame expands beyond 1220px so the production screenshot can match the supplied concept image proportions.
 - Why: make the production dashboard visually match the supplied handoff while preserving the existing normalized dashboard API, SSR entry path, and grounded local Q&A behavior.
 - User-visible impact: `/` now renders the handoff-aligned dashboard layout and supports Rain, Temp, and Wind chart modes, improved responsive behavior, and concept-verified desktop presentation.
 - Migration notes: no schema migration is required; local production build validation should stop active `next` servers first on Windows to avoid Prisma query-engine DLL locks.

@@ -7,7 +7,7 @@ type DetailPanelsProps = {
 };
 
 export function DetailPanels({ dashboard }: DetailPanelsProps) {
-  const score = dashboard.cycle_comfort.score ?? 0;
+  const score = dashboard.cycle_comfort.score;
   const pollutants = [
     ["PM2.5", dashboard.air_quality.pollutants.pm25],
     ["PM10", dashboard.air_quality.pollutants.pm10],
@@ -52,7 +52,9 @@ export function DetailPanels({ dashboard }: DetailPanelsProps) {
         <div className="cycle-panel-content">
           <CycleDonut score={score} />
           <div>
-            <strong className="cycle-label">{fallbackLabel(dashboard.cycle_comfort.label, "Unknown")}</strong>
+            <strong className="cycle-label">
+              {fallbackLabel(dashboard.cycle_comfort.label, "Cycle score unavailable")}
+            </strong>
             <p>{cycleCopy(score)}</p>
             <span className="cycle-status">⌘ {cycleStatus(score)}</span>
           </div>
@@ -80,9 +82,11 @@ export function DetailPanels({ dashboard }: DetailPanelsProps) {
   );
 }
 
-function CycleDonut({ score }: { score: number }) {
+function CycleDonut({ score }: { score: number | null }) {
   const circumference = 2 * Math.PI * 36;
-  const offset = circumference - (Math.min(Math.max(score, 0), 100) / 100) * circumference;
+  const numericScore = typeof score === "number" ? Math.min(Math.max(score, 0), 100) : null;
+  const offset =
+    numericScore === null ? circumference : circumference - (numericScore / 100) * circumference;
   return (
     <div className="cycle-content">
       <svg viewBox="0 0 92 92" aria-hidden="true">
@@ -97,7 +101,7 @@ function CycleDonut({ score }: { score: number }) {
         />
       </svg>
       <div>
-        <strong>{score || "?"}</strong>
+        <strong>{typeof score === "number" ? score : "?"}</strong>
         <span>/100</span>
       </div>
     </div>
@@ -138,12 +142,24 @@ function WaterSparkline({ levels }: { levels: number[] }) {
 }
 
 function airQualityCopy(label: string | null) {
-  return label?.toLowerCase() === "good"
-    ? "Clean air. Great for outdoor activities."
-    : "Moderate air quality. Sensitive groups take care.";
+  if (!label) {
+    return "Air quality data unavailable.";
+  }
+
+  const normalized = label.toLowerCase();
+  if (normalized === "good") {
+    return "Clean air. Great for outdoor activities.";
+  }
+  if (normalized === "moderate" || normalized === "fair") {
+    return "Moderate air quality. Sensitive groups take care.";
+  }
+  return `${label} air quality. Plan outdoor activity with care.`;
 }
 
-function cycleCopy(score: number) {
+function cycleCopy(score: number | null) {
+  if (typeof score !== "number") {
+    return "Cycle comfort data unavailable.";
+  }
   if (score >= 75) {
     return "Light wind, low rain chance and good air quality make for a comfortable ride.";
   }
@@ -153,7 +169,10 @@ function cycleCopy(score: number) {
   return "Challenging conditions. Consider alternative transport.";
 }
 
-function cycleStatus(score: number) {
+function cycleStatus(score: number | null) {
+  if (typeof score !== "number") {
+    return "No cycling score";
+  }
   if (score >= 75) {
     return "Great conditions";
   }
@@ -164,7 +183,16 @@ function cycleStatus(score: number) {
 }
 
 function waterCopy(risk: string | null) {
-  return risk?.toLowerCase() === "normal"
-    ? "No flood or high water risks in the area."
-    : "Elevated water level - monitoring closely.";
+  if (!risk) {
+    return "Water signal data unavailable.";
+  }
+
+  const normalized = risk.toLowerCase();
+  if (normalized === "normal") {
+    return "No flood or high water risks in the area.";
+  }
+  if (["elevated", "high", "alert", "warning", "severe"].includes(normalized)) {
+    return "Elevated water level - monitoring closely.";
+  }
+  return `Water signal is ${risk}. Monitoring continues.`;
 }

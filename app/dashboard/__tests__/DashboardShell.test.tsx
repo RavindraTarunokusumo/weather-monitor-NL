@@ -4,6 +4,7 @@ import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DashboardShell } from "../components/DashboardShell";
 import { DetailPanels } from "../components/DetailPanels";
+import { MetricStrip } from "../components/MetricStrip";
 import { OutlookPanel } from "../components/OutlookPanel";
 import type { DashboardResponse } from "../types";
 
@@ -228,5 +229,87 @@ describe("DashboardShell", () => {
     expect(screen.getByText("NO2")).toBeInTheDocument();
     expect(screen.queryByText("O3")).not.toBeInTheDocument();
     expect(screen.queryByText("SO2")).not.toBeInTheDocument();
+  });
+
+  it("avoids fabricated units and comparison copy when metric values are unavailable", () => {
+    render(
+      <MetricStrip
+        dashboard={{
+          ...amsterdamDashboard,
+          current: {
+            ...amsterdamDashboard.current,
+            temperature_c: null,
+            feels_like_c: null,
+            wind_speed_kmh: null,
+            wind_gust_kmh: null,
+          },
+          cycle_comfort: {
+            ...amsterdamDashboard.cycle_comfort,
+            score: null,
+          },
+        }}
+      />,
+    );
+
+    const temperatureTile = screen.getByRole("heading", { name: /temperature/i }).closest("article");
+    const windTile = screen.getByRole("heading", { name: /wind \/ gusts/i }).closest("article");
+    const cycleTile = screen.getByRole("heading", { name: /cycle comfort/i }).closest("article");
+
+    expect(temperatureTile).not.toBeNull();
+    expect(windTile).not.toBeNull();
+    expect(cycleTile).not.toBeNull();
+
+    expect(within(temperatureTile as HTMLElement).getByText("Feels-like unavailable")).toBeInTheDocument();
+    expect(within(temperatureTile as HTMLElement).queryByText("°C")).not.toBeInTheDocument();
+    expect(within(windTile as HTMLElement).queryByText("km/h")).not.toBeInTheDocument();
+    expect(within(cycleTile as HTMLElement).queryByText("/100")).not.toBeInTheDocument();
+  });
+
+  it("renders unavailable copy for missing detail data and selected metric chart gaps", () => {
+    render(
+      <DetailPanels
+        dashboard={{
+          ...amsterdamDashboard,
+          cycle_comfort: {
+            ...amsterdamDashboard.cycle_comfort,
+            score: null,
+            label: null,
+          },
+          air_quality: {
+            ...amsterdamDashboard.air_quality,
+            label: null,
+          },
+          water_signal: {
+            ...amsterdamDashboard.water_signal,
+            risk_label: null,
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Air quality data unavailable.")).toBeInTheDocument();
+    expect(screen.getByText("Cycle comfort data unavailable.")).toBeInTheDocument();
+    expect(screen.getByText(/no cycling score/i)).toBeInTheDocument();
+    expect(screen.getByText("Water signal data unavailable.")).toBeInTheDocument();
+
+    cleanup();
+
+    render(
+      <OutlookPanel
+        chartView="24H"
+        chartMetric="temp"
+        onChartViewChange={vi.fn()}
+        onChartMetricChange={vi.fn()}
+        dashboard={{
+          ...amsterdamDashboard,
+          outlook: {
+            ...amsterdamDashboard.outlook,
+            hourly: [{ h: "00", rain: 0.3 }],
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Temperature outlook data is unavailable.")).toBeInTheDocument();
   });
 });
