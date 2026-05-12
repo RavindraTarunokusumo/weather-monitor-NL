@@ -1,0 +1,6 @@
+Task: Record production refresh guardrails follow-up
+Summary: Marks the production refresh TODO with the implementation commit and records session lessons for future deployments.
+Spec: docs/specs/production-live-refresh-guardrails.md
+Docs: docs/insights.md
+TODO: TODO.md > Session: 2026-05-12 Production Live Refresh Guardrails
+Validation: git diff --check; npm run lint
