@@ -115,7 +115,11 @@ describe("DashboardShell", () => {
 
     await user.click(screen.getByRole("button", { name: /will it rain/i }));
     expect(screen.getByText(/Utrecht has a 20% rain chance/i)).toBeInTheDocument();
-    expect(screen.getByRole("contentinfo", { name: /source freshness/i })).toBeInTheDocument();
+    const sourceFooter = screen.getByRole("contentinfo", { name: /source freshness/i });
+    expect(sourceFooter).toBeInTheDocument();
+    expect(within(sourceFooter).getByText("Mock KNMI")).toBeInTheDocument();
+    expect(within(sourceFooter).getByText("Mock Luchtmeetnet")).toBeInTheDocument();
+    expect(within(sourceFooter).getByText("Mock Rijkswaterstaat")).toBeInTheDocument();
     expect(screen.getByText(/all times in cest/i)).toBeInTheDocument();
   });
 

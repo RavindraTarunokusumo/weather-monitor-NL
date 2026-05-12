@@ -79,6 +79,14 @@ curl -X POST "http://localhost:3000/api/jobs/regenerate-dashboard-snapshots?all=
 
 Production job routes require `CRON_SECRET` authorization even for mock-mode calls. A production refresh that should show live sources needs `CRON_SECRET` and `KNMI_API_KEY` configured in Vercel, then live ingestion and dashboard regeneration must run after deploy.
 
+Production also exposes one all-in refresh route for Vercel Cron and manual post-deploy repair. It always runs live ingestion for all active cities, then regenerates all dashboard snapshots:
+
+```bash
+curl -X POST "https://weather-monitor-nl.vercel.app/api/jobs/refresh-live?force=true" -H "Authorization: Bearer $CRON_SECRET"
+```
+
+`vercel.json` registers `/api/jobs/refresh-live` as a daily Vercel Cron at `05:00 UTC`. Vercel automatically sends `Authorization: Bearer $CRON_SECRET` to cron invocations when `CRON_SECRET` is configured in the project environment.
+
 ## Testing and Validation
 
 ```bash
