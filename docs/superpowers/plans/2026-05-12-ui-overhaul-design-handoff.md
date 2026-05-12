@@ -268,4 +268,3 @@ Use `.github/git_notes_template.md` and include `docs/specs/ui-overhaul-design-h
 - [ ] **Step 4: Complete Step 6 and Step 7 checks**
 
 Run simplification review, doc update review, test plan writer if behavior coverage needs mapping, full validation, and prepare PR text from `.github/pull_request_template.md`.
-
