@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 
 type SeedEnv = {
   SKIP_DB_SEED?: string;
+  VERCEL?: string;
   VERCEL_ENV?: string;
   [key: string]: string | undefined;
 };
@@ -15,6 +16,10 @@ export function shouldRunSeedAfterBuild(env: SeedEnv = process.env) {
 export function getSeedSkipReason(env: SeedEnv = process.env) {
   if (env.SKIP_DB_SEED === "true") {
     return "SKIP_DB_SEED=true";
+  }
+
+  if (env.VERCEL === "1") {
+    return "VERCEL=1";
   }
 
   if (env.VERCEL_ENV === "production") {

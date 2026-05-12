@@ -14,6 +14,7 @@ Production must not silently present mock dashboard snapshots as if they were li
 - Keep `mock_*` source identifiers visibly distinguishable in the UI source freshness footer.
 - Add one protected refresh route that runs live ingestion for all active cities and then regenerates dashboard snapshots.
 - Register a Vercel Cron job for the refresh route so production data freshness does not depend on a remembered manual post-deploy command.
+- Prevent Vercel preview and production deployments from running the local seed step against shared dashboard databases.
 - Document the refresh route and cron behavior.
 - Add future-session production data verification guidance to the agent instructions.
 - Add tests for mock-source labeling, refresh route authorization/orchestration, and Vercel Cron registration.
@@ -31,6 +32,7 @@ Production must not silently present mock dashboard snapshots as if they were li
 - A production refresh route rejects unauthenticated requests and accepts the existing `CRON_SECRET` bearer authorization.
 - The refresh route runs all live ingestion sources for all active cities before dashboard snapshot regeneration.
 - Vercel Cron is configured to call the refresh route with a schedule compatible with the Hobby plan daily limit.
+- Postbuild seeding is skipped on Vercel deployments using the Vercel system environment flag, while local and GitHub smoke builds can still seed their isolated databases.
 - Documentation explains how production refresh happens and how to manually invoke it when needed.
 - Future sessions have explicit instructions to verify production source IDs through `/api/dashboard`, not by trusting footer labels alone.
 - Production is manually refreshed once after this change so the current deployed instance no longer shows mock dashboard data when live source jobs succeed.

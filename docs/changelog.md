@@ -2,6 +2,16 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-05-12 - Vercel Preview Seed Guard
+
+Summary:
+
+- What changed: Vercel deployments now skip `prisma db seed` whenever the Vercel system environment flag is present, not only when `VERCEL_ENV=production`.
+- Why: preview deployments may share the same dashboard database as production; allowing preview builds to seed mock dashboard snapshots made production show fresh `mock_*` data after PR deploys.
+- User-visible impact: Vercel preview and production deploys should no longer overwrite live dashboard snapshots with seeded mock snapshots.
+- Migration notes: local and GitHub smoke builds without `VERCEL=1` still seed isolated databases as before.
+- Related spec: `docs/specs/production-live-refresh-guardrails.md`.
+
 ## 2026-05-12 - UI Overhaul Design Handoff
 
 Summary:
