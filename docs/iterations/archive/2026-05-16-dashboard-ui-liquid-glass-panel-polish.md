@@ -6,7 +6,7 @@ Spec: `docs/specs/dashboard-ui-liquid-glass-panel-polish.md`
 
 Parent spec: `docs/specs/reference-dashboard-webpage-ui.md`
 
-PR: pending.
+PR: `https://github.com/RavindraTarunokusumo/weather-monitor-NL/pull/13`
 
 ## Completed tasks
 
