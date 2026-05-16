@@ -2,6 +2,14 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-16 - Provided HTML Dashboard Data Wiring
+
+- What worked: keeping `Dutch Weather Dashboard.html` as the UI source satisfied the handoff constraint while still allowing `/api/cities` and `/api/dashboard?city=<slug>` to drive the visible values.
+- What worked: checking `/api/dashboard?city=amsterdam` exposed live rain chance values near 100%, which proved the 24-hour chart needed dynamic percentage scaling instead of a fixed rain-mm axis.
+- What failed: the first "nice axis" helper over-rounded 94% rain chance to a 200% axis, so screenshot verification was still needed after tests passed.
+- Useful commands: `npm run ingest:all -- --live`, `npm run dashboard:regenerate -- --all`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`.
+- Workflow improvement: for Windows local builds, stop the Next dev server before `npm run build`, then restart it after build validation to avoid Prisma query-engine lock issues.
+
 ## 2026-05-12 - Production Live Refresh Guardrails
 
 - What worked: checking `/api/dashboard` directly exposed that production had live-looking footer labels backed by `mock_*` source identifiers.

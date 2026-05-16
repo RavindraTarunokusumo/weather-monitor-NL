@@ -34,7 +34,13 @@ Production migration command:
 npx prisma migrate deploy
 ```
 
-Vercel builds run migrations but skip `prisma db seed` so preview or production deployments cannot replace newer live dashboard snapshots in a shared database. Seed production manually only when intentionally resetting sample data.
+Builds run migrations but skip `prisma db seed` by default so local, preview, or production builds cannot replace newer live dashboard snapshots with seeded mock data. Seed manually only when intentionally resetting sample data.
+
+To explicitly seed after a local build:
+
+```bash
+RUN_DB_SEED_AFTER_BUILD=true npm run build
+```
 
 ## API Checks
 
