@@ -1091,7 +1091,7 @@ function App() {
                   onKeyDown={(e) => {if (e.key === 'Enter') sendQA(qaInput);}}
                   placeholder={`Ask anything about the weather in ${city.name}…`}
                   style={{ flex: 1, background: 'none', border: 'none', outline: 'none', fontSize: 13, color: 'var(--text)', fontFamily: 'var(--sans)' }} />
-                
+
                 <button onClick={() => sendQA(qaInput)} style={{
                   background: 'var(--accent-orange)', border: 'none', cursor: 'pointer',
                   borderRadius: 6, padding: '7px 10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
