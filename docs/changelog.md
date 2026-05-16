@@ -2,6 +2,17 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-05-16 - Dashboard Provided HTML Data Wiring
+
+Summary:
+
+- What changed: the public dashboard root now renders the provided `Dutch Weather Dashboard.html` UI, with same-origin API data wiring, a compact liquid-glass briefing panel, a unified right column, and a dynamically scaled 24-hour outlook chart.
+- Why: align the app with the supplied UI spec while keeping the existing normalized dashboard API as the data source.
+- User-visible impact: `/` shows the provided dashboard design with live-backed values, 24 hourly bins, rain chance percentage scaling, and no duplicate Cycle Comfort metric card.
+- Build behavior: local builds no longer reseed mock dashboard snapshots unless `RUN_DB_SEED_AFTER_BUILD=true` is set.
+- Migration notes: no schema migration is required; refresh local snapshots with `npm run ingest:all -- --live` and `npm run dashboard:regenerate -- --all` when live API values are desired.
+- Related spec: `docs/specs/dashboard-ui-liquid-glass-panel-polish.md`.
+
 ## 2026-05-12 - Vercel Preview Seed Guard
 
 Summary:

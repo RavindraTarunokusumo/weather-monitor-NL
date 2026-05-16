@@ -1,8 +1,10 @@
 import { spawnSync } from "node:child_process";
+import type { SpawnSyncOptions } from "node:child_process";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 type SeedEnv = {
+  RUN_DB_SEED_AFTER_BUILD?: string;
   SKIP_DB_SEED?: string;
   VERCEL?: string;
   VERCEL_ENV?: string;
@@ -26,7 +28,31 @@ export function getSeedSkipReason(env: SeedEnv = process.env) {
     return "VERCEL_ENV=production";
   }
 
+  if (env.RUN_DB_SEED_AFTER_BUILD !== "true") {
+    return "RUN_DB_SEED_AFTER_BUILD is not true";
+  }
+
   return null;
+}
+
+export function getSeedSpawnOptions(platform: NodeJS.Platform = process.platform): {
+  executable: string;
+  args: string[];
+  options: SpawnSyncOptions;
+} {
+  const isWindows = platform === "win32";
+
+  return {
+    executable: isWindows ? "cmd.exe" : "npx",
+    args: isWindows
+      ? ["/d", "/s", "/c", "npx.cmd", "prisma", "db", "seed"]
+      : ["prisma", "db", "seed"],
+    options: {
+      env: process.env,
+      shell: false,
+      stdio: "inherit",
+    },
+  };
 }
 
 function runSeed() {
@@ -37,11 +63,8 @@ function runSeed() {
     return;
   }
 
-  const executable = process.platform === "win32" ? "npx.cmd" : "npx";
-  const result = spawnSync(executable, ["prisma", "db", "seed"], {
-    env: process.env,
-    stdio: "inherit",
-  });
+  const seed = getSeedSpawnOptions();
+  const result = spawnSync(seed.executable, seed.args, seed.options);
 
   if (result.status !== 0) {
     process.exit(result.status ?? 1);

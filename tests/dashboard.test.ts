@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildDashboardResponse } from "@/lib/dashboard";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 
 const city = {
   slug: "amsterdam",
@@ -292,5 +294,39 @@ describe("buildDashboardResponse", () => {
       risk_label: "normal",
       weekly_levels_cm: [9, 10, 10, 11, 12, 12, 13],
     });
+  });
+});
+
+describe("provided dashboard HTML chart contract", () => {
+  it("normalizes the 24-hour outlook chart to 24 bins with thinned axis labels", () => {
+    const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
+
+    expect(html).toContain("function buildHourlyBins");
+    expect(html).toContain("Array.from({ length: 24 }");
+    expect(html).toContain("const labelHours = new Set([0, 3, 6, 9, 12, 15, 18, 21, 23])");
+    expect(html).toContain("function niceAxisMax(value, tickCount = 4)");
+    expect(html).toContain("function paddedDomain(values, padding = 1, minimumSpan = 4)");
+    expect(html).toContain("const rMax = niceAxisMax(Math.max(...rains, 0), 4)");
+    expect(html).toContain("const wMax = niceAxisMax(Math.max(...winds, 0), 4)");
+    expect(html).toContain("return Math.max(step * tickCount, Math.ceil(value / step) * step)");
+    expect(html).toContain("const rainTicks = chartTicks(0, rMax, 4)");
+    expect(html).toContain("const windTicks = chartTicks(0, wMax, 4)");
+    expect(html).toContain("const tempTicks = chartTicks(tMin, tMax, 4)");
+    expect(html).toContain("Rain chance (%)");
+    expect(html).toContain("rain chance");
+    expect(html).toContain("const PAD = { top: 14, right: 62, bottom: 30, left: 36 }");
+    expect(html).toContain("x={PAD.left - 14}");
+    expect(html).toContain("x={PAD.left + innerW + 14}");
+    expect(html).toContain("x={PAD.left + innerW + 44}");
+    expect(html).toContain("height: 228");
+  });
+});
+
+describe("provided dashboard HTML hero contract", () => {
+  it("keeps the desktop briefing panel content-fit instead of fixed to half the hero", () => {
+    const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
+
+    expect(html).toContain("height: isMobile ? 'auto' : 'fit-content'");
+    expect(html).not.toContain("height: isMobile ? 'auto' : 'calc(50% - 20px)'");
   });
 });

@@ -15,6 +15,7 @@ on:
       - .pre-commit-config.yaml
       - package.json
       - package-lock.json
+      - Dutch Weather Dashboard.html
       - prisma/**
       - app/**
       - lib/**
@@ -33,6 +34,7 @@ on:
       - .pre-commit-config.yaml
       - package.json
       - package-lock.json
+      - Dutch Weather Dashboard.html
       - prisma/**
       - app/**
       - lib/**

@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dutch Weather Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f4f5f7;
+      --surface: #ffffff;
+      --surface-muted: #f1f3f5;
+      --border: #e4e7eb;
+      --text: #0f1c2e;
+      --muted: #6b7280;
+      --accent: #0f766e;
+      --accent-orange: #ea580c;
+      --warning: #b45309;
+      --navy: #0e1d2e;
+      --navy-light: #1b2d47;
+      --good: #16a34a;
+      --mono: 'DM Mono', monospace;
+      --sans: Arial, Helvetica, sans-serif;
+      --radius: 10px;
+      --shadow: 0 1px 3px rgba(15,28,46,0.05), 0 1px 2px rgba(15,28,46,0.04);
+      --shadow-md: 0 4px 16px rgba(15,28,46,0.08);
+    }
+    [data-dark="true"] {
+      --bg: #0f1512;
+      --surface: #18211c;
+      --surface-muted: #1e2a22;
+      --border: #2a3a30;
+      --text: #e8f0ea;
+      --muted: #7a9484;
+      --navy: #0a1020;
+      --navy-light: #121c30;
+    }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; }
+    #root { min-height: 100vh; }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+
+
+
+
+const { useState, useEffect, useRef, useCallback } = React;
+
+// ─── API DATA ADAPTER ───────────────────────────────────────────────────────
+const SOURCE_LABELS = {
+  mock_knmi: 'Mock KNMI',
+  mock_luchtmeetnet: 'Mock Luchtmeetnet',
+  mock_rijkswaterstaat: 'Mock Rijkswaterstaat',
+  knmi: 'KNMI',
+  luchtmeetnet: 'Luchtmeetnet',
+  rijkswaterstaat: 'Rijkswaterstaat'
+};
+
+function fallback(value, fallbackText = 'Unavailable') {
+  return value === null || value === undefined || value === '' ? fallbackText : value;
+}
+
+function numeric(value, fallbackValue = 0) {
+  return typeof value === 'number' && Number.isFinite(value) ? value : fallbackValue;
+}
+
+function titleCase(value, fallbackText = 'Unavailable') {
+  const text = String(fallback(value, fallbackText));
+  return text ? text.charAt(0).toUpperCase() + text.slice(1) : fallbackText;
+}
+
+function probabilityToPercent(value) {
+  if (typeof value !== 'number') return 0;
+  return value <= 1 ? Math.round(value * 100) : Math.round(value);
+}
+
+function formatApiTime(value, timezone = 'Europe/Amsterdam') {
+  if (!value) return 'Unavailable';
+  return new Intl.DateTimeFormat('en-NL', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: timezone
+  }).format(new Date(value));
+}
+
+function parseOutlookHour(value, index) {
+  const hour = Number.parseInt(String(value ?? index), 10);
+  if (!Number.isFinite(hour)) return index;
+  if (hour === 0 && index > 0) return 24;
+  return Math.max(0, Math.min(24, hour));
+}
+
+function interpolateHourlyMetric(samples, hour, key) {
+  const exact = samples.find((sample) => sample.hour === hour);
+  if (exact) return exact[key];
+
+  const lower = [...samples].reverse().find((sample) => sample.hour < hour);
+  const upper = samples.find((sample) => sample.hour > hour);
+  if (!lower && !upper) return 0;
+  if (!lower) return upper[key];
+  if (!upper) return lower[key];
+
+  const progress = (hour - lower.hour) / (upper.hour - lower.hour);
+  return lower[key] + (upper[key] - lower[key]) * progress;
+}
+
+function buildHourlyBins(input) {
+  const samples = (input || [])
+    .map((item, index) => ({
+      hour: parseOutlookHour(item.h, index),
+      rain: numeric(item.rain),
+      wind: numeric(item.wind),
+      temp: numeric(item.temp)
+    }))
+    .sort((a, b) => a.hour - b.hour);
+
+  return Array.from({ length: 24 }, (_, hour) => ({
+    h: String(hour).padStart(2, '0'),
+    rain: interpolateHourlyMetric(samples, hour, 'rain'),
+    wind: interpolateHourlyMetric(samples, hour, 'wind'),
+    temp: interpolateHourlyMetric(samples, hour, 'temp')
+  }));
+}
+
+function niceAxisMax(value, tickCount = 4) {
+  if (!Number.isFinite(value) || value <= 0) return tickCount;
+  const rawStep = value / tickCount;
+  const magnitude = 10 ** Math.floor(Math.log10(rawStep));
+  const fraction = rawStep / magnitude;
+  const niceFraction = fraction <= 1 ? 1 : fraction <= 2 ? 2 : fraction <= 2.5 ? 2.5 : fraction <= 5 ? 5 : 10;
+  const step = niceFraction * magnitude;
+  return Math.max(step * tickCount, Math.ceil(value / step) * step);
+}
+
+function paddedDomain(values, padding = 1, minimumSpan = 4) {
+  const finite = values.filter((value) => Number.isFinite(value));
+  if (finite.length === 0) return { min: 0, max: minimumSpan };
+
+  let min = Math.min(...finite) - padding;
+  let max = Math.max(...finite) + padding;
+  const span = max - min;
+  if (span < minimumSpan) {
+    const midpoint = (min + max) / 2;
+    min = midpoint - minimumSpan / 2;
+    max = midpoint + minimumSpan / 2;
+  }
+
+  return {
+    min: Math.floor(min),
+    max: Math.ceil(max)
+  };
+}
+
+function chartTicks(min, max, tickCount = 4) {
+  const step = (max - min) / tickCount;
+  return Array.from({ length: tickCount + 1 }, (_, index) => min + step * index);
+}
+
+function formatAxisNumber(value) {
+  const rounded = Math.round(value * 10) / 10;
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+}
+
+function mapDashboardResponse(data) {
+  const timezone = data.city?.timezone || 'Europe/Amsterdam';
+  const risk = titleCase(data.water_signal?.risk_label, 'Unknown');
+  const summary = data.ui_summary || {};
+  const sources = Array.isArray(data.source_freshness) ? data.source_freshness : [];
+
+  return {
+    slug: data.city?.slug || 'amsterdam',
+    name: data.city?.name || 'Amsterdam',
+    timezone,
+    temp: numeric(data.current?.temperature_c),
+    feelsLike: numeric(data.current?.feels_like_c),
+    rain: numeric(data.current?.rain_mm),
+    rainProb: probabilityToPercent(data.current?.rain_probability),
+    wind: numeric(data.current?.wind_speed_kmh),
+    gust: numeric(data.current?.wind_gust_kmh),
+    windDir: String(fallback(data.current?.wind_direction, '')),
+    condition: String(fallback(data.current?.condition_label, 'Condition unavailable')),
+    cycleScore: numeric(data.cycle_comfort?.score),
+    cycleLabel: titleCase(data.cycle_comfort?.label, 'Cycle score unavailable'),
+    bestWindow: String(fallback(data.cycle_comfort?.best_outdoor_window || summary.best_window)),
+    worstWindow: String(fallback(data.cycle_comfort?.worst_outdoor_window)),
+    aqi: numeric(data.air_quality?.aqi_value),
+    aqiLabel: titleCase(data.air_quality?.label, 'AQI unavailable'),
+    pm25: numeric(data.air_quality?.pollutants?.pm25),
+    pm10: numeric(data.air_quality?.pollutants?.pm10),
+    no2: numeric(data.air_quality?.pollutants?.no2),
+    o3: numeric(data.air_quality?.pollutants?.o3),
+    so2: numeric(data.air_quality?.pollutants?.so2),
+    waterLevel: numeric(data.water_signal?.water_level_cm),
+    waterTrend: String(fallback(data.water_signal?.trend, 'stable')),
+    waterRisk: risk,
+    briefing: String(fallback(data.briefing, 'Dashboard briefing unavailable.')),
+    aiSummary: [
+      {
+        icon: '☀️',
+        color: '#0f766e',
+        label: 'Best outdoor window',
+        value: String(fallback(summary.best_window || data.cycle_comfort?.best_outdoor_window)),
+        text: String(fallback(summary.outdoor_window_detail, 'Outdoor timing detail unavailable.'))
+      },
+      {
+        icon: '⚠️',
+        color: '#b45309',
+        label: 'Main risk',
+        value: String(fallback(summary.main_risk, 'No known risk')),
+        text: String(fallback(summary.risk_detail, 'Risk detail unavailable.'))
+      },
+      {
+        icon: '↑',
+        color: '#1d4ed8',
+        label: 'What changed',
+        value: String(fallback(summary.changed, 'No change data')),
+        text: String(fallback(summary.changed_detail, 'Change detail unavailable.'))
+      }
+    ],
+    hourly: buildHourlyBins(data.outlook?.hourly),
+    weekly: (data.outlook?.weekly || []).map((item) => ({
+      day: item.day || '--',
+      hi: numeric(item.hi),
+      lo: numeric(item.lo),
+      rain: probabilityToPercent(item.rain)
+    })),
+    waterWeekly: Array.isArray(data.water_signal?.weekly_levels_cm) ? data.water_signal.weekly_levels_cm : [],
+    sources: (sources.length > 0 ? sources : [{ source: 'dashboard', updated_at: data.generated_at }]).map((source) => ({
+      name: SOURCE_LABELS[source.source] || source.source,
+      time: formatApiTime(source.updated_at, timezone)
+    })),
+    generatedAt: data.generated_at
+  };
+}
+
+function getAnswer(city, question) {
+  const q = question.toLowerCase();
+  if (q.includes('rain') || q.includes('umbrella')) {
+    return `${city.name} has ${city.rainProb}% rain chance with ${city.rain.toFixed(1)} mm recorded.`;
+  }
+  if (q.includes('cycl') || q.includes('bike') || q.includes('biking')) {
+    return `${city.name} cycle comfort is ${city.cycleScore}/100 (${city.cycleLabel}). Best window: ${city.bestWindow}.`;
+  }
+  if (q.includes('wind') || q.includes('tomorrow')) {
+    return `${city.name} wind is ${city.wind} km/h from ${city.windDir}, with gusts up to ${city.gust} km/h.`;
+  }
+  if (q.includes('weekend') || q.includes('saturday') || q.includes('sunday')) {
+    const weekend = city.weekly.slice(-2).map((day) => `${day.day} ${day.rain}% rain`).join(', ');
+    return weekend ? `Weekend outlook: ${weekend}.` : 'Weekend outlook data is unavailable.';
+  }
+  return `${city.name}: ${city.temp.toFixed(1)}°C, ${city.condition}, ${city.rainProb}% rain chance. Best outdoor time is ${city.bestWindow}.`;
+}
+
+// ─── BRAND LOGO ─────────────────────────────────────────────────────────────
+const DWILogo = ({ size = 32 }) =>
+<img src="/dashboard-assets/logo-mark.png" width={size} height={size} alt="DWI" style={{ objectFit: 'contain', display: 'block' }} />;
+
+
+// ─── WEATHER CONDITION ICONS (real images from brand sheet) ─────────────────
+const WeatherIcon = ({ condition, size = 28 }) => {
+  // Map conditions to our metric icons where applicable
+  const src = condition === 'rain' ? '/dashboard-assets/icon-rain.png' :
+  condition === 'partly' ? '/dashboard-assets/icon-rain.png' :
+  condition === 'sunny' ? '/dashboard-assets/icon-temp.png' :
+  condition === 'cloudy' ? '/dashboard-assets/icon-rain.png' :
+  condition === 'windy' ? '/dashboard-assets/icon-wind.png' :
+  '/dashboard-assets/icon-rain.png';
+  return <img src={src} width={size} height={size} alt={condition} style={{ objectFit: 'contain', display: 'block' }} />;
+};
+
+// ─── METRIC BADGE ICONS (real images) ────────────────────────────────────────
+const METRIC_ICON_SRC = {
+  temp: '/dashboard-assets/icon-temp.png',
+  rain: '/dashboard-assets/icon-rain.png',
+  wind: '/dashboard-assets/icon-wind.png',
+  leaf: '/dashboard-assets/icon-leaf.png',
+  wave: '/dashboard-assets/icon-wave.png',
+  spark: '/dashboard-assets/icon-spark.png',
+  warn: '/dashboard-assets/icon-warn.png',
+  trend: '/dashboard-assets/icon-trend.png'
+};
+const MetricIcon = ({ type, size = 38 }) =>
+<img src={METRIC_ICON_SRC[type] || METRIC_ICON_SRC.spark} width={size} height={size} alt={type} style={{ objectFit: 'contain', display: 'block', flexShrink: 0 }} />;
+
+
+// ─── UTILITY ICONS ───────────────────────────────────────────────────────────
+const IconPin = () =>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
+  </svg>;
+
+const IconChevronDown = () =>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="6 9 12 15 18 9" />
+  </svg>;
+
+const IconSend = () =>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
+  </svg>;
+
+const IconStar = () =>
+<svg width="14" height="14" viewBox="0 0 48 48" fill="none">
+    <path d="M24 8 L27 20 L39 20 L30 28 L33 40 L24 33 L15 40 L18 28 L9 20 L21 20 Z" fill="#1d4ed8" stroke="none" />
+    <circle cx="34" cy="12" r="4" fill="#1d4ed8" />
+    <circle cx="37" cy="17" r="2" fill="#1d4ed8" />
+  </svg>;
+
+const IconInfo = () =>
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+  </svg>;
+
+const IconBike = () =>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="18.5" cy="17.5" r="3.5" /><circle cx="5.5" cy="17.5" r="3.5" />
+    <circle cx="15" cy="5" r="1" /><path d="M12 17.5V14l-3-3 4-3 2 3h2" />
+    <path d="M8 17.5l3-3" />
+  </svg>;
+
+
+// ─── COMBINED CHART (all metrics shown simultaneously) ─────────────────────
+function CombinedChart({ data }) {
+  const chartData = buildHourlyBins(data);
+  const W = 720,H = 220;
+  const PAD = { top: 14, right: 62, bottom: 30, left: 36 };
+  const innerW = W - PAD.left - PAD.right;
+  const innerH = H - PAD.top - PAD.bottom;
+
+  const temps = chartData.map((d) => d.temp);
+  const rains = chartData.map((d) => d.rain);
+  const winds = chartData.map((d) => d.wind);
+  const tempDomain = paddedDomain(temps, 1, 4);
+  const tMin = tempDomain.min,tMax = tempDomain.max;
+  const rMax = niceAxisMax(Math.max(...rains, 0), 4);
+  const wMax = niceAxisMax(Math.max(...winds, 0), 4);
+  const rainTicks = chartTicks(0, rMax, 4);
+  const windTicks = chartTicks(0, wMax, 4);
+  const tempTicks = chartTicks(tMin, tMax, 4);
+
+  const xScale = (i) => PAD.left + i / (chartData.length - 1) * innerW;
+  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+  const yScaleT = (v) => PAD.top + innerH - (clamp(v, tMin, tMax) - tMin) / (tMax - tMin) * innerH;
+  const yScaleR = (v) => PAD.top + innerH - clamp(v, 0, rMax) / rMax * innerH;
+  const yScaleW = (v) => PAD.top + innerH - clamp(v, 0, wMax) / wMax * innerH;
+
+  // smooth curve generator
+  const smoothPath = (vals, scale) => {
+    const pts = vals.map((v, i) => [xScale(i), scale(v)]);
+    let d = `M ${pts[0][0]} ${pts[0][1]}`;
+    for (let i = 1; i < pts.length; i++) {
+      const [x0, y0] = pts[i - 1];
+      const [x1, y1] = pts[i];
+      const cx = (x0 + x1) / 2;
+      d += ` C ${cx} ${y0}, ${cx} ${y1}, ${x1} ${y1}`;
+    }
+    return d;
+  };
+
+  const barW = Math.max(8, innerW / chartData.length * 0.65);
+  const labelHours = new Set([0, 3, 6, 9, 12, 15, 18, 21, 23]);
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible' }}>
+      {/* horizontal grid */}
+      {rainTicks.map((v) => {
+        const y = yScaleR(v);
+        return <line key={`grid${v}`} x1={PAD.left} y1={y} x2={PAD.left + innerW} y2={y} stroke="#e5e7eb" strokeWidth="1" />;
+      })}
+
+      {/* Rain bars */}
+      {rains.map((r, i) => {
+        const barY = yScaleR(r);
+        const barH = PAD.top + innerH - barY;
+        return (
+          <rect key={i} x={xScale(i) - barW / 2} y={barY} width={barW} height={Math.max(barH, 1)}
+          fill="#94a3d4" fillOpacity="0.78" rx="1.5">
+            <title>{`${chartData[i].h}:00 — ${r.toFixed(0)}% rain chance`}</title>
+          </rect>);
+
+      })}
+
+      {/* Wind line (teal) */}
+      <path d={smoothPath(winds, yScaleW)} fill="none" stroke="#14b8a6" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" />
+
+      {/* Temp line (orange) */}
+      <path d={smoothPath(temps, yScaleT)} fill="none" stroke="#f97316" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" />
+
+      {/* Left y-axis: rain mm */}
+      {rainTicks.map((v) => {
+        const y = yScaleR(v);
+        return <text key={`l${v}`} x={PAD.left - 14} y={y + 4} textAnchor="end" fill="#6b7280" fontSize="11" fontFamily="var(--sans)">{formatAxisNumber(v)}</text>;
+      })}
+
+      {/* Right y-axis: wind (teal, inner) */}
+      {windTicks.slice(1).map((v) => {
+        const y = yScaleW(v);
+        return <text key={`w${v}`} x={PAD.left + innerW + 14} y={y + 4} textAnchor="start" fill="#14b8a6" fontSize="11" fontFamily="var(--sans)">{formatAxisNumber(v)}</text>;
+      })}
+
+      {/* Right y-axis: temp (orange, outer) */}
+      {tempTicks.map((v) => {
+        const y = yScaleT(v);
+        return <text key={`t${v}`} x={PAD.left + innerW + 44} y={y + 4} textAnchor="start" fill="#f97316" fontSize="11" fontFamily="var(--sans)">{formatAxisNumber(v)}°</text>;
+      })}
+
+      {/* X axis labels — every 3 hours */}
+      {chartData.map((d, i) => {
+        if (!labelHours.has(i)) return null;
+        return <text key={i} x={xScale(i)} y={H - 6} textAnchor="middle" fill="#6b7280" fontSize="11" fontFamily="var(--sans)">{d.h}:00</text>;
+      })}
+    </svg>);
+
+}
+
+// ─── CHART (legacy single-metric, kept for fallback) ───────────────────────
+function MiniChart({ data, view, metric }) {
+  const W = 580,H = 170;
+  const PAD = { top: 22, right: 20, bottom: 32, left: 56 };
+  const innerW = W - PAD.left - PAD.right;
+  const innerH = H - PAD.top - PAD.bottom;
+
+  const temps = data.map((d) => d.temp);
+  const rains = data.map((d) => d.rain);
+  const winds = data.map((d) => d.wind);
+  const tMin = Math.min(...temps) - 1,tMax = Math.max(...temps) + 1;
+  const rMax = Math.max(...rains, 1);
+  const wMax = Math.max(...winds, 10);
+
+  const xScale = (i) => PAD.left + i / (data.length - 1) * innerW;
+  const yScaleT = (v) => PAD.top + innerH - (v - tMin) / (tMax - tMin) * innerH;
+  const yScaleR = (v) => PAD.top + innerH - v / rMax * innerH;
+  const yScaleW = (v) => PAD.top + innerH - v / wMax * innerH;
+
+  const linePath = (vals, scale) =>
+  vals.map((v, i) => `${i === 0 ? 'M' : 'L'} ${xScale(i)} ${scale(v)}`).join(' ');
+
+  const areaPath = (vals, scale) => {
+    const pts = vals.map((v, i) => `${xScale(i)} ${scale(v)}`).join(' L ');
+    return `M ${xScale(0)} ${PAD.top + innerH} L ${pts} L ${xScale(vals.length - 1)} ${PAD.top + innerH} Z`;
+  };
+
+  const barW = Math.max(4, innerW / data.length * 0.55);
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible' }}>
+      <defs>
+        <linearGradient id="rainGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.02" />
+        </linearGradient>
+        <linearGradient id="windGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#22c55e" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      {/* Grid lines */}
+      {[0, 0.25, 0.5, 0.75, 1].map((t) => {
+        const y = PAD.top + innerH * (1 - t);
+        return <line key={t} x1={PAD.left} y1={y} x2={PAD.left + innerW} y2={y} stroke="var(--border)" strokeWidth="0.8" strokeDasharray="4 3" />;
+      })}
+
+      {/* Rain bars */}
+      <g style={{ opacity: metric === 'rain' ? 1 : 0, transition: 'opacity 0.45s ease', pointerEvents: metric === 'rain' ? 'auto' : 'none' }}>
+      {rains.map((r, i) => {
+          const barH = r / rMax * innerH;
+          const barY = PAD.top + innerH - barH;
+          return (
+            <g key={i}>
+          <rect
+                x={xScale(i) - barW / 2}
+                y={barY}
+                width={barW} height={Math.max(barH, 1)}
+                fill="#3b82f6" fillOpacity="0.55" rx="2"
+                style={{ transition: 'y 0.45s ease, height 0.45s ease, fill-opacity 0.15s' }}
+                onMouseEnter={(e) => e.target.setAttribute('fill-opacity', '0.95')}
+                onMouseLeave={(e) => e.target.setAttribute('fill-opacity', '0.55')}>
+            <title>{`${data[i].h} — ${r.toFixed(1)} mm`}</title>
+          </rect>
+          <text x={xScale(i)} y={barY - 4} textAnchor="middle" fill="#3b82f6" fontSize="9" fontFamily="var(--mono)" fontWeight="600">{r.toFixed(1)}</text>
+          </g>);
+        })}
+      </g>
+
+      {/* Wind area */}
+      <g style={{ opacity: metric === 'wind' ? 1 : 0, transition: 'opacity 0.45s ease', pointerEvents: metric === 'wind' ? 'auto' : 'none' }}>
+      <path d={areaPath(winds, yScaleW)} fill="url(#windGrad)" style={{ transition: 'd 0.45s ease' }} />
+      <path d={linePath(winds, yScaleW)} fill="none" stroke="#22c55e" strokeWidth="2" strokeLinejoin="round" style={{ transition: 'd 0.45s ease' }} />
+      {winds.map((w, i) =>
+        <g key={i}>
+      <circle cx={xScale(i)} cy={yScaleW(w)} r="3" fill="#22c55e" stroke="var(--surface)" strokeWidth="1.5"
+          style={{ transition: 'cy 0.45s ease, r 0.15s' }}
+          onMouseEnter={(e) => e.target.setAttribute('r', '5')}
+          onMouseLeave={(e) => e.target.setAttribute('r', '3')}>
+        <title>{`${data[i].h} — ${Math.round(w)} km/h`}</title>
+      </circle>
+      <text x={xScale(i)} y={yScaleW(w) - 7} textAnchor="middle" fill="#22c55e" fontSize="9" fontFamily="var(--mono)" fontWeight="600">{Math.round(w)}</text>
+      </g>
+        )}
+      </g>
+
+      {/* Temp line */}
+      <g style={{ opacity: metric === 'temp' ? 1 : 0, transition: 'opacity 0.45s ease', pointerEvents: metric === 'temp' ? 'auto' : 'none' }}>
+      <path d={areaPath(temps, yScaleT)} fill="rgba(249,115,22,0.08)" style={{ transition: 'd 0.45s ease' }} />
+      <path d={linePath(temps, yScaleT)} fill="none" stroke="#f97316" strokeWidth="2.2" strokeLinejoin="round" style={{ transition: 'd 0.45s ease' }} />
+      {temps.map((t, i) =>
+        <g key={i}>
+      <circle cx={xScale(i)} cy={yScaleT(t)} r="3" fill="#f97316" stroke="var(--surface)" strokeWidth="1.5"
+          style={{ transition: 'cy 0.45s ease, r 0.15s' }}
+          onMouseEnter={(e) => e.target.setAttribute('r', '5')}
+          onMouseLeave={(e) => e.target.setAttribute('r', '3')}>
+        <title>{`${data[i].h} — ${t.toFixed(1)}°C`}</title>
+      </circle>
+      <text x={xScale(i)} y={yScaleT(t) - 7} textAnchor="middle" fill="#f97316" fontSize="9" fontFamily="var(--mono)" fontWeight="600">{t.toFixed(0)}</text>
+      </g>
+        )}
+      </g>
+
+      {/* X axis labels */}
+      {data.map((d, i) =>
+      <text key={i} x={xScale(i)} y={H - 6} textAnchor="middle" fill="var(--muted)" fontSize="10" fontFamily="var(--mono)">{d.h}</text>
+      )}
+
+      {/* Single y-axis — fades to match active metric */}
+      <g style={{ opacity: metric === 'rain' ? 1 : 0, transition: 'opacity 0.35s ease' }}>
+        <text x={PAD.left - 16} y={PAD.top - 8} textAnchor="end" fill="#3b82f6" fontSize="9" fontWeight="700">mm</text>
+        {[0, 0.5, 1].map((t) => {
+          const v = (rMax * t).toFixed(rMax < 2 ? 1 : 0);
+          const y = PAD.top + innerH - innerH * t;
+          return <text key={`r${t}`} x={PAD.left - 16} y={y + 3} textAnchor="end" fill="#3b82f6" fontSize="10" fontFamily="var(--mono)">{v}</text>;
+        })}
+      </g>
+      <g style={{ opacity: metric === 'temp' ? 1 : 0, transition: 'opacity 0.35s ease' }}>
+        <text x={PAD.left - 8} y={PAD.top - 8} textAnchor="end" fill="#f97316" fontSize="9" fontWeight="700">°C</text>
+        {[0, 0.5, 1].map((t) => {
+          const v = Math.round(tMin + (tMax - tMin) * t);
+          const y = PAD.top + innerH - innerH * t;
+          return <text key={`t${t}`} x={PAD.left - 8} y={y + 3} textAnchor="end" fill="#f97316" fontSize="10" fontFamily="var(--mono)">{v}</text>;
+        })}
+      </g>
+      <g style={{ opacity: metric === 'wind' ? 1 : 0, transition: 'opacity 0.35s ease' }}>
+        <text x={PAD.left - 8} y={PAD.top - 8} textAnchor="end" fill="#22c55e" fontSize="9" fontWeight="700">km/h</text>
+        {[0, 0.5, 1].map((t) => {
+          const v = Math.round(wMax * t);
+          const y = PAD.top + innerH - innerH * t;
+          return <text key={`w${t}`} x={PAD.left - 8} y={y + 3} textAnchor="end" fill="#22c55e" fontSize="10" fontFamily="var(--mono)">{v}</text>;
+        })}
+      </g>
+    </svg>);
+
+}
+
+// ─── WATER SPARKLINE ─────────────────────────────────────────────────────────
+function WaterSparkline({ data, activeIdx }) {
+  const W = 260,H = 56;
+  const pad = { l: 10, r: 10, t: 8, b: 24 };
+  const iW = W - pad.l - pad.r,iH = H - pad.t - pad.b;
+  const min = Math.min(...data) - 2,max = Math.max(...data) + 2;
+  const days = ['Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon'];
+  const x = (i) => pad.l + i / (data.length - 1) * iW;
+  const y = (v) => pad.t + iH - (v - min) / (max - min) * iH;
+  const path = data.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i)} ${y(v)}`).join(' ');
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: H, display: 'block' }}>
+      <defs>
+        <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.2" />
+          <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={path + ` L ${x(data.length - 1)} ${pad.t + iH} L ${x(0)} ${pad.t + iH} Z`} fill="url(#waterGrad)" />
+      <path d={path} fill="none" stroke="#3b82f6" strokeWidth="1.8" strokeLinejoin="round" strokeDasharray="5 3" />
+      {data.map((v, i) =>
+      <circle key={i} cx={x(i)} cy={y(v)} r={i === activeIdx ? 4 : 2.5}
+      fill={i === activeIdx ? "#1d4ed8" : "#3b82f6"}
+      stroke={i === activeIdx ? "var(--surface)" : "none"} strokeWidth="1.5" />
+      )}
+      {days.map((d, i) =>
+      <text key={i} x={x(i)} y={H - 2} textAnchor="middle" fontSize="9" fill={i === activeIdx ? "#1d4ed8" : "var(--muted)"} fontFamily="var(--mono)">{d}</text>
+      )}
+    </svg>);
+
+}
+
+// ─── CYCLE DONUT ─────────────────────────────────────────────────────────────
+function CycleDonut({ score, size = 110 }) {
+  const r = 44,cx = 56,cy = 56;
+  const circ = 2 * Math.PI * r;
+  const filled = circ * (score / 100);
+  const scoreColor = score >= 75 ? '#16a34a' : score >= 50 ? '#0f766e' : '#b45309';
+  return (
+    <svg viewBox="0 0 112 112" width={size} height={size} style={{ flexShrink: 0 }}>
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="#e8f0ea" strokeWidth="9" />
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke={scoreColor} strokeWidth="9"
+      strokeDasharray={`${filled} ${circ}`}
+      strokeLinecap="round"
+      transform={`rotate(-90 ${cx} ${cy})`} />
+      <text x={cx} y={cy + 6} textAnchor="middle" fontSize="28" fontWeight="800" fill="#0f1c2e" fontFamily="var(--mono)">{score}</text>
+      <text x={cx} y={cy + 22} textAnchor="middle" fontSize="10" fill="var(--muted)" fontFamily="var(--sans)">/100</text>
+    </svg>);
+
+}
+
+// ─── AQI DOT ─────────────────────────────────────────────────────────────────
+function AqiDot({ value }) {
+  const color = value <= 50 ? '#16a34a' : value <= 100 ? '#eab308' : '#ef4444';
+  return <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: color, marginRight: 4 }} />;
+}
+
+// ─── VIEWPORT HOOK ──────────────────────────────────────────────────────────
+function useViewport() {
+  const [w, setW] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  useEffect(() => {
+    const onR = () => setW(window.innerWidth);
+    window.addEventListener('resize', onR);
+    return () => window.removeEventListener('resize', onR);
+  }, []);
+  return { w, isMobile: w < 640, isTablet: w >= 640 && w < 1024, isDesktop: w >= 1024 };
+}
+
+const useTweaks = window.useTweaks || ((defaults) => {
+  const [tweaks, setTweaks] = useState(defaults);
+  return {
+    tweaks,
+    setTweak: (key, value) => setTweaks((current) => ({ ...current, [key]: value }))
+  };
+});
+const TweaksPanel = window.TweaksPanel || (() => null);
+const TweakSection = window.TweakSection || (({ children }) => <>{children}</>);
+const TweakToggle = window.TweakToggle || (() => null);
+const TweakColor = window.TweakColor || (() => null);
+const TweakRadio = window.TweakRadio || (() => null);
+
+// ─── MAIN APP ─────────────────────────────────────────────────────────────────
+function App() {
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "darkMode": false,
+    "accentColor": "#0f766e",
+    "showCycleWidget": true,
+    "chartStyle": "combined",
+    "defaultCity": "amsterdam"
+  } /*EDITMODE-END*/;
+
+  const { tweaks, setTweak } = useTweaks(TWEAK_DEFAULTS);
+  const safeTweaks = tweaks || TWEAK_DEFAULTS;
+  const { isMobile, isTablet, isDesktop } = useViewport();
+  const isNarrow = isMobile || isTablet;
+  const [activeCity, setActiveCity] = useState(safeTweaks.defaultCity || 'amsterdam');
+  const [activeNav, setActiveNav] = useState('Dashboard');
+  const [chartView, setChartView] = useState('24H');
+  const [chartMetric, setChartMetric] = useState('rain');
+  const [cityDropOpen, setCityDropOpen] = useState(false);
+  const [qaInput, setQaInput] = useState('');
+  const [qaMessages, setQaMessages] = useState([]);
+  const [qaLoading, setQaLoading] = useState(false);
+  const [cityOptions, setCityOptions] = useState([]);
+  const [cityData, setCityData] = useState(null);
+  const [dataError, setDataError] = useState(null);
+  const [dataLoading, setDataLoading] = useState(true);
+  const qaRef = useRef(null);
+
+  const city = cityData;
+  const navItems = ['Dashboard', 'Forecast', 'Maps', 'Insights', 'Alerts'];
+  const quickQs = ['Will it rain this evening?', 'Is it a good day for cycling?', 'How windy will it be tomorrow?', 'Weekend outlook'];
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-dark', safeTweaks.darkMode ? 'true' : 'false');
+    if (safeTweaks.accentColor) {
+      document.documentElement.style.setProperty('--accent', safeTweaks.accentColor);
+    }
+  }, [safeTweaks.darkMode, safeTweaks.accentColor]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadCities() {
+      try {
+        const response = await fetch('/api/cities');
+        if (!response.ok) throw new Error('City API unavailable');
+        const body = await response.json();
+        if (!cancelled && Array.isArray(body.cities)) {
+          setCityOptions(body.cities);
+        }
+      } catch (error) {
+        if (!cancelled) setDataError('City list could not be loaded.');
+      }
+    }
+    loadCities();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadDashboard() {
+      setDataLoading(true);
+      setDataError(null);
+      try {
+        const response = await fetch(`/api/dashboard?city=${encodeURIComponent(activeCity)}`);
+        if (!response.ok) throw new Error('Dashboard API unavailable');
+        const body = await response.json();
+        if (!cancelled) {
+          setCityData(mapDashboardResponse(body));
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setCityData(null);
+          setDataError('Dashboard data could not be loaded.');
+        }
+      } finally {
+        if (!cancelled) setDataLoading(false);
+      }
+    }
+    loadDashboard();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeCity]);
+
+  function sendQA(question) {
+    if (!question.trim()) return;
+    setQaMessages((m) => [...m, { role: 'user', text: question }]);
+    setQaInput('');
+    setQaLoading(true);
+    setTimeout(() => {
+      const answer = getAnswer(city, question);
+      setQaMessages((m) => [...m, { role: 'assistant', text: answer }]);
+      setQaLoading(false);
+    }, 900);
+  }
+
+  useEffect(() => {
+    if (qaRef.current) qaRef.current.scrollTop = qaRef.current.scrollHeight;
+  }, [qaMessages]);
+
+  const todayStr = new Intl.DateTimeFormat('en-NL', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
+
+  if (!city) {
+    return (
+      <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', display: 'grid', placeItems: 'center', fontFamily: 'var(--sans)' }}>
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: 24, boxShadow: 'var(--shadow)', maxWidth: 420 }}>
+          <div style={{ fontWeight: 700, marginBottom: 8 }}>{dataLoading ? 'Loading dashboard data...' : 'Dashboard unavailable'}</div>
+          {dataError && <div style={{ color: 'var(--muted)', fontSize: 13 }}>{dataError}</div>}
+        </div>
+      </div>
+    );
+  }
+
+  // Score color helper
+  const scoreColor = city.cycleScore >= 75 ? '#16a34a' : city.cycleScore >= 50 ? '#0f766e' : '#b45309';
+
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', fontFamily: 'var(--sans)' }}>
+
+      {/* ── NAV ── */}
+      <nav style={{
+        background: 'var(--surface)', borderBottom: '1px solid var(--border)',
+        position: 'sticky', top: 0, zIndex: 50,
+        boxShadow: '0 1px 8px rgba(0,0,0,0.04)'
+      }}>
+        <div style={{ maxWidth: 1220, margin: '0 auto', padding: isMobile ? '0 14px' : '0 24px', display: 'flex', alignItems: 'center', gap: isMobile ? 12 : 32, height: 56 }}>
+          {/* Logo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+            <DWILogo size={32} />
+            {!isMobile && <span style={{ fontWeight: 700, fontSize: 15, letterSpacing: '-0.02em', whiteSpace: 'nowrap', color: '#111c2e' }}>Dutch Weather Intelligence</span>}
+          </div>
+
+          {/* Nav links — hidden on mobile */}
+          {!isMobile &&
+          <div style={{ display: 'flex', gap: 4, flex: 1, overflow: 'hidden' }}>
+            {navItems.map((n) =>
+            <button key={n} onClick={() => setActiveNav(n)} style={{
+              background: 'none', border: 'none', cursor: 'pointer', padding: '6px 12px',
+              fontSize: 14, fontWeight: activeNav === n ? 600 : 400,
+              color: activeNav === n ? 'var(--accent)' : 'var(--muted)',
+              borderBottom: activeNav === n ? '2px solid var(--accent-orange)' : '2px solid transparent',
+              marginBottom: '-1px', transition: 'all 0.15s'
+            }}>{n}</button>
+            )}
+          </div>
+          }
+
+          {/* City picker */}
+          <div style={{ position: 'relative', flexShrink: 0, marginLeft: isMobile ? 'auto' : 0 }}>
+            <button onClick={() => setCityDropOpen((o) => !o)} style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              background: 'var(--surface-muted)', border: '1px solid var(--border)',
+              borderRadius: 8, padding: '6px 12px', cursor: 'pointer',
+              fontSize: 13, fontWeight: 500, color: 'var(--text)'
+            }}>
+              <IconPin />
+              {city.name}
+              <IconChevronDown />
+            </button>
+            {cityDropOpen &&
+            <div style={{
+              position: 'absolute', top: 'calc(100% + 6px)', right: 0, minWidth: 160,
+              background: 'var(--surface)', border: '1px solid var(--border)',
+              borderRadius: 10, boxShadow: 'var(--shadow-md)', zIndex: 100, overflow: 'hidden'
+            }}>
+                {cityOptions.map((c) =>
+              <button key={c.slug} onClick={() => {setActiveCity(c.slug);setCityDropOpen(false);setQaMessages([]);}} style={{
+                display: 'block', width: '100%', textAlign: 'left',
+                padding: '10px 14px', background: activeCity === c.slug ? 'var(--surface-muted)' : 'none',
+                border: 'none', cursor: 'pointer', fontSize: 13, color: 'var(--text)',
+                fontWeight: activeCity === c.slug ? 600 : 400
+              }}>{c.name}</button>
+              )}
+              </div>
+            }
+          </div>
+
+          {/* Condition badge — circular */}
+          <button style={{
+            width: 44, height: 44, borderRadius: '50%',
+            background: 'var(--surface)', border: '1px solid var(--border)',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0, padding: 0
+          }}>
+            <WeatherIcon condition={city.rainProb > 50 ? 'rain' : city.rainProb > 25 ? 'partly' : 'sunny'} size={26} />
+          </button>
+        </div>
+      </nav>
+
+      {activeNav !== 'Dashboard' ?
+      <div style={{ maxWidth: 1220, margin: '80px auto', padding: '0 24px', textAlign: 'center', color: 'var(--muted)' }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>🚧</div>
+          <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>{activeNav}</div>
+          <p>This section is coming in the next milestone.</p>
+        </div> :
+
+      <main style={{ maxWidth: 1220, margin: '0 auto', padding: isMobile ? '0 14px 32px' : '0 24px 48px' }}>
+
+        {/* ── HERO STRIP ── */}
+        <div style={{ position: 'relative', marginTop: 20, borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--shadow-md)', aspectRatio: isMobile ? 'auto' : '1672 / 941', minHeight: isMobile ? 480 : undefined, background: '#2a3a50' }}>
+
+          {/* Full-bleed photo */}
+          <img src="/dashboard-assets/amsterdam-day.png" alt={city.name} style={{
+            position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
+            zIndex: 0
+          }} />
+
+          {/* Subtle gradient overlay for legibility */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.0) 60%, rgba(15,28,46,0.08) 100%)',
+            zIndex: 1, pointerEvents: 'none'
+          }} />
+
+          {/* Briefing — liquid-glass panel (light) */}
+          <div style={{
+            position: isMobile ? 'static' : 'absolute',
+            top: isMobile ? undefined : 20, left: isMobile ? undefined : 20,
+            height: isMobile ? 'auto' : 'fit-content',
+            margin: isMobile ? '16px' : undefined,
+            width: isMobile ? 'auto' : 390,
+            zIndex: 2,
+            color: '#0f1c2e',
+            padding: '20px 22px',
+            display: 'flex', flexDirection: 'column', gap: 10,
+            background: 'rgba(255, 255, 255, 0.42)',
+            backdropFilter: 'blur(28px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+            border: '1px solid rgba(255,255,255,0.55)',
+            borderRadius: 16,
+            boxShadow: '0 12px 40px rgba(15,28,46,0.18), inset 0 1px 0 rgba(255,255,255,0.55)'
+          }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#ea580c' }}>Today's Briefing</div>
+            <div style={{ fontSize: isMobile ? 26 : 30, fontWeight: 800, lineHeight: 1.0, letterSpacing: '-0.02em', color: '#0f1c2e' }}>{todayStr}</div>
+
+            {/* AI badge */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(59,130,246,0.30)', borderRadius: 999, padding: '4px 12px 4px 10px', fontSize: 13, color: '#1e3a8a', width: 'fit-content', fontWeight: 500 }}>
+              <MetricIcon type="spark" size={14} />
+              <span>AI summary</span>
+            </div>
+
+            {/* Briefing items */}
+            <div style={{ display: 'flex', flexDirection: 'column', marginTop: 6, flex: 1, justifyContent: 'flex-start' }}>
+              {city.aiSummary.map((item, i) => {
+                const bg = i === 0 ? '#5eead4' : i === 1 ? '#fb923c' : '#60a5fa';
+                return (
+                  <div key={i} style={{
+                    display: 'flex', alignItems: 'flex-start', gap: 12,
+                    padding: '10px 0',
+                    borderTop: i === 0 ? 'none' : '1px solid rgba(15,28,46,0.08)'
+                  }}>
+                    <div style={{
+                      width: 32, height: 32, borderRadius: '50%', background: bg,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                      boxShadow: '0 2px 6px rgba(15,28,46,0.12)'
+                    }}>
+                      {i === 0 ?
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></svg>
+                      : i === 1 ?
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+                      :
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" /></svg>
+                      }
+                    </div>
+                    <div style={{ minWidth: 0, fontSize: 13, lineHeight: 1.4 }}>
+                      <div style={{ color: '#0f1c2e', fontWeight: 700, marginBottom: 2, fontSize: 13 }}>
+                        {item.label}:{'  '}
+                        <span>{item.value}</span>
+                      </div>
+                      <div style={{ color: '#4b5563', fontSize: 12 }}>
+                        {item.text}
+                      </div>
+                    </div>
+                  </div>);
+
+              })}
+            </div>
+          </div>
+
+          {/* Temp card — top-right of image */}
+          <div style={{
+            position: 'absolute', top: 20, right: 20, zIndex: 2,
+            background: 'rgba(255,255,255,0.78)',
+            backdropFilter: 'blur(22px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(22px) saturate(180%)',
+            border: '1px solid rgba(255,255,255,0.6)',
+            borderRadius: 14, padding: '12px 14px', minWidth: 140,
+            boxShadow: '0 8px 24px rgba(15,28,46,0.18), inset 0 1px 0 rgba(255,255,255,0.6)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+              <WeatherIcon condition={city.rainProb > 50 ? 'rain' : city.rainProb > 25 ? 'partly' : 'sunny'} size={28} />
+              <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <span style={{ fontSize: 26, fontWeight: 800, color: '#0f1c2e', lineHeight: 1, fontFamily: 'var(--sans)' }}>{Math.round(city.temp)}</span>
+                <span style={{ fontSize: 16, fontWeight: 700, color: '#0f1c2e', lineHeight: 1, marginTop: 2 }}>°</span>
+              </div>
+            </div>
+            <div style={{ fontSize: 10, color: '#4b5563', textAlign: 'right', marginBottom: 6 }}>Feels like {Math.round(city.feelsLike)}°</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#0f1c2e', marginBottom: 3 }}>{city.condition}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10, color: '#6b7280' }}>
+              <span>Updated</span>
+              <span style={{ fontFamily: 'var(--mono)', color: '#0f1c2e', fontWeight: 600 }}>{city.sources[0].time}</span>
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
+            </div>
+          </div>
+        </div>
+
+        {/* ── MAIN GRID: left content | right rail ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: isNarrow ? '1fr' : '1fr 340px', gap: 14, marginTop: 14, alignItems: 'stretch' }}>
+
+          {/* ── LEFT COLUMN ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
+
+            {/* Metric bar */}
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : isTablet ? 'repeat(3, 1fr)' : 'repeat(5, 1fr)', gap: 10 }}>
+            {[
+              { label: 'Temperature', icon: 'temp', tint: 'rgba(249,115,22,0.14)', value: city.temp, unit: '°C', sub: 'Feels like', subAfter: <span style={{ color: '#d4571a', fontWeight: 600, marginLeft: 8 }}>{city.feelsLike.toFixed(1)}°C</span> },
+              { label: 'Rain', icon: 'rain', tint: 'rgba(148,163,212,0.22)', value: city.rain, unit: 'mm', sub: 'Today so far', subAfter: <span style={{ color: '#3b82f6', fontWeight: 600, marginLeft: 8 }}>{city.rainProb}% chance</span> },
+              { label: 'Wind / Gusts', icon: 'wind', tint: 'rgba(148,163,212,0.22)', value: city.wind, unit: 'km/h', sub: <span style={{ color: '#3b82f6' }}>↗ {city.windDir}</span>, subAfter: <span style={{ marginLeft: 10, color: 'var(--muted)' }}>Gusts <span style={{ color: '#3b82f6', fontWeight: 600 }}>{city.gust} km/h</span></span> },
+              { label: 'Air Quality', icon: 'leaf', tint: 'rgba(22,163,74,0.13)', value: city.aqi, unit: '', sub: city.aqiLabel, subAfter: <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#16a34a', marginLeft: 6, verticalAlign: 'middle' }} /> },
+              { label: 'Water Signal', icon: 'wave', tint: 'rgba(14,165,233,0.13)', special: city.waterRisk, sub: city.waterRisk === 'Normal' ? 'No alerts' : 'Monitoring' }].
+              map((m, i) =>
+              <div key={i} style={{
+                background: 'var(--surface)', border: '1px solid var(--border)',
+                borderRadius: var_radius, padding: '14px 14px 12px',
+                boxShadow: 'var(--shadow)', display: 'flex', flexDirection: 'column'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
+                  <div style={{
+                    width: 38, height: 38, borderRadius: '50%', background: m.tint,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                  }}>
+                    <MetricIcon type={m.icon} size={24} />
+                  </div>
+                  <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--muted)', marginTop: 4 }}>{m.label}</span>
+                </div>
+                {m.special ?
+                <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>{m.special}</div> :
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, marginBottom: 4 }}>
+                    <span style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', fontFamily: 'var(--mono)', lineHeight: 1 }}>{m.value}</span>
+                    <span style={{ fontSize: 12, color: 'var(--muted)', fontFamily: 'var(--mono)' }}>{m.unit}</span>
+                  </div>
+                }
+                <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 'auto' }}>
+                  {m.sub}{m.subAfter}
+                </div>
+              </div>
+              )}
+            </div>
+
+            {/* Chart panel */}
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: var_radius, padding: '18px 20px', boxShadow: 'var(--shadow)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontWeight: 700, fontSize: 13, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text)' }}>24-Hour Outlook</span>
+                <div style={{ display: 'flex', gap: 4 }}>
+                  {['24H', '7D', '7D+'].map((v) =>
+                  <button key={v} onClick={() => setChartView(v)} style={{
+                    padding: '5px 14px', fontSize: 12, borderRadius: 6, cursor: 'pointer', fontWeight: 600,
+                    background: chartView === v ? '#4f6fc5' : 'transparent',
+                    color: chartView === v ? '#fff' : 'var(--muted)',
+                    border: chartView === v ? '1px solid #4f6fc5' : '1px solid transparent',
+                    transition: 'all 0.15s'
+                  }}>{v}</button>
+                  )}
+                </div>
+              </div>
+
+              {/* Legend */}
+              <div style={{ display: 'flex', gap: 18, alignItems: 'center', marginBottom: 8, fontSize: 11, color: 'var(--muted)' }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 14, height: 8, borderRadius: 2, background: '#94a3d4' }} />Rain chance (%)
+                </span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 16, height: 2, background: '#14b8a6' }} />Wind (km/h)
+                </span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 16, height: 2, background: '#f97316' }} />Temperature (°C)
+                </span>
+              </div>
+
+              <div style={{ height: 228 }}>
+                {chartView === '24H' ?
+                <CombinedChart data={city.hourly} /> : (
+
+                /* 7D view */
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: 6, height: '100%', alignItems: 'end' }}>
+                    {city.weekly.map((d, i) =>
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                        <span style={{ fontSize: 11, color: 'var(--muted)', fontFamily: 'var(--mono)' }}>{d.hi}°</span>
+                        <WeatherIcon condition={d.rain > 60 ? 'rain' : d.rain > 30 ? 'partly' : d.rain > 15 ? 'cloudy' : 'sunny'} size={22} />
+                        <div style={{
+                      width: '70%', background: 'rgba(59,130,246,0.25)', borderRadius: 3,
+                      height: Math.max(8, d.rain * 0.6)
+                    }} />
+                        <span style={{ fontSize: 10, color: 'var(--muted)' }}>{d.day}</span>
+                        <span style={{ fontSize: 10, color: '#3b82f6', fontFamily: 'var(--mono)' }}>{d.rain}%</span>
+                      </div>
+                  )}
+                  </div>)
+                }
+              </div>
+            </div>
+
+            {/* ── AI Q&A ── */}
+            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: var_radius, padding: '18px 20px', boxShadow: 'var(--shadow)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 12 }}>
+                <MetricIcon type="spark" size={20} />
+                <span style={{ fontWeight: 700, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Ask the Dashboard</span>
+              </div>
+
+              {/* Messages */}
+              {qaMessages.length > 0 &&
+              <div ref={qaRef} style={{
+                maxHeight: 180, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12,
+                paddingRight: 4
+              }}>
+                  {qaMessages.map((m, i) =>
+                <div key={i} style={{
+                  padding: '9px 13px', borderRadius: 8, fontSize: 13, lineHeight: 1.5,
+                  background: m.role === 'user' ? 'var(--surface-muted)' : 'rgba(15,118,110,0.08)',
+                  color: 'var(--text)',
+                  alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
+                  maxWidth: '85%', border: '1px solid var(--border)'
+                }}>
+                      {m.role === 'assistant' && <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--accent)', marginBottom: 3, textTransform: 'uppercase', letterSpacing: '0.06em' }}>AI</div>}
+                      {m.text}
+                    </div>
+                )}
+                  {qaLoading &&
+                <div style={{ padding: '9px 13px', borderRadius: 8, fontSize: 13, background: 'rgba(15,118,110,0.08)', border: '1px solid var(--border)', alignSelf: 'flex-start', color: 'var(--muted)' }}>
+                      <span style={{ fontFamily: 'var(--mono)' }}>▋</span>
+                    </div>
+                }
+                </div>
+              }
+
+              {/* Input */}
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', background: 'var(--surface-muted)', border: '1px solid var(--border)', borderRadius: 8, padding: '6px 6px 6px 14px' }}>
+                <input
+                  value={qaInput}
+                  onChange={(e) => setQaInput(e.target.value)}
+                  onKeyDown={(e) => {if (e.key === 'Enter') sendQA(qaInput);}}
+                  placeholder={`Ask anything about the weather in ${city.name}…`}
+                  style={{ flex: 1, background: 'none', border: 'none', outline: 'none', fontSize: 13, color: 'var(--text)', fontFamily: 'var(--sans)' }} />
+
+                <button onClick={() => sendQA(qaInput)} style={{
+                  background: 'var(--accent-orange)', border: 'none', cursor: 'pointer',
+                  borderRadius: 6, padding: '7px 10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: '#fff', transition: 'opacity 0.15s'
+                }}>
+                  <IconSend />
+                </button>
+              </div>
+
+              {/* Quick chips */}
+              {qaMessages.length === 0 &&
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
+                  {quickQs.map((q) =>
+                <button key={q} onClick={() => sendQA(q)} style={{
+                  background: 'none', border: '1px solid var(--border)', borderRadius: 20,
+                  padding: '4px 12px', fontSize: 12, color: 'var(--muted)', cursor: 'pointer',
+                  transition: 'all 0.15s'
+                }}>· {q}</button>
+                )}
+                </div>
+              }
+            </div>
+          </div>
+
+          {/* Right rail — single unified panel */}
+          <div style={{
+            background: 'var(--surface)', border: '1px solid var(--border)',
+            borderRadius: var_radius, boxShadow: 'var(--shadow)',
+            display: 'flex', flexDirection: 'column', alignSelf: 'stretch'
+          }}>
+
+            {/* Cycle Comfort */}
+            {safeTweaks.showCycleWidget &&
+            <div style={{ padding: '18px 20px', borderBottom: '1px solid var(--border)', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 12 }}>
+                <span style={{ fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>Cycle Comfort</span>
+                <span style={{ color: 'var(--muted)' }}><IconInfo /></span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+                <CycleDonut score={city.cycleScore} size={110} />
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ fontWeight: 700, fontSize: 17, color: scoreColor, marginBottom: 6 }}>{city.cycleLabel}</div>
+                  <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.45, marginBottom: 10 }}>
+                    {city.cycleScore >= 75 ?
+                    'Light wind, low rain chance and good air quality make for a comfortable ride.' :
+                    city.cycleScore >= 50 ?
+                    'Manageable conditions. Watch for afternoon gusts.' :
+                    'Challenging conditions. Consider alternative transport.'}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#16a34a', fontWeight: 600 }}>
+                    <IconBike /> {city.cycleScore >= 75 ? 'Great conditions' : city.cycleScore >= 50 ? 'Fair conditions' : 'Poor conditions'}
+                  </div>
+                </div>
+              </div>
+            </div>
+            }
+
+            {/* Air Quality */}
+            <div style={{ padding: '18px 20px', borderBottom: '1px solid var(--border)', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <span style={{ fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>Air Quality</span>
+                  <span style={{ color: 'var(--muted)' }}><IconInfo /></span>
+                </div>
+                <span style={{ fontSize: 10, color: 'var(--muted)', letterSpacing: '0.04em' }}>US AQI</span>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'stretch', gap: 14, marginBottom: 10 }}>
+                <div style={{
+                  background: city.aqi <= 50 ? 'rgba(22,163,74,0.10)' : 'rgba(234,179,8,0.12)',
+                  borderRadius: 8, padding: '8px 12px', textAlign: 'center', minWidth: 64,
+                  display: 'flex', flexDirection: 'column', justifyContent: 'center'
+                }}>
+                  <div style={{ fontSize: 28, fontWeight: 800, fontFamily: 'var(--mono)', color: city.aqi <= 50 ? '#16a34a' : '#a16207', lineHeight: 1 }}>{city.aqi}</div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: city.aqi <= 50 ? '#16a34a' : '#a16207', marginTop: 4 }}>{city.aqiLabel}</div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 4, flex: 1, alignContent: 'center' }}>
+                  {[['PM2.5', city.pm25], ['PM10', city.pm10], ['NO₂', city.no2], ['O₃', city.o3], ['SO₂', city.so2]].map(([k, v]) =>
+                  <div key={k} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                      <span style={{ fontSize: 9, color: 'var(--muted)', fontWeight: 500 }}>{k}</span>
+                      <span style={{ fontSize: 15, fontFamily: 'var(--mono)', fontWeight: 700, color: 'var(--text)', lineHeight: 1 }}>{v}</span>
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#16a34a', marginTop: 1 }} />
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--muted)' }}>
+                {city.aqi <= 50 ? 'Clean air. Great for outdoor activities.' : 'Moderate air quality. Sensitive groups take care.'}
+              </div>
+            </div>
+
+            {/* Water Signal — flex:1 so it absorbs remaining height */}
+            <div style={{ padding: '18px 20px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <span style={{ fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>Water Signal</span>
+                  <span style={{ color: 'var(--muted)' }}><IconInfo /></span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: 'var(--text)', fontWeight: 600 }}>
+                  <IconPin /> Rijkswaterstaat
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, marginBottom: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, paddingRight: 10, borderRight: '1px solid var(--border)' }}>
+                  <div style={{
+                    width: 48, height: 48, borderRadius: '50%', background: 'rgba(14,165,233,0.13)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <MetricIcon type="wave" size={28} />
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>{city.waterRisk}</div>
+                    <div style={{ fontSize: 10, color: 'var(--muted)' }}>{city.waterRisk === 'Normal' ? 'All clear' : 'Alert'}</div>
+                  </div>
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <WaterSparkline data={city.waterWeekly} activeIdx={3} />
+                </div>
+              </div>
+
+              <div style={{ fontSize: 11, color: 'var(--muted)' }}>
+                {city.waterRisk === 'Normal' ?
+                'No flood or high water risks in the area.' :
+                'Elevated water level — monitoring closely.'}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── SOURCE FRESHNESS ── */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 16,
+          flexWrap: 'wrap',
+          marginTop: 14, padding: '14px 4px',
+          fontSize: 12, color: 'var(--muted)'
+        }}>
+          <span style={{ color: 'var(--muted)' }}>Data sources:</span>
+          {city.sources.map((s, i) =>
+          <React.Fragment key={i}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontWeight: 700, color: 'var(--text)' }}>{s.name}</span>
+                <span style={{ color: 'var(--muted)' }}>Updated</span>
+                <span style={{ fontFamily: 'var(--mono)', color: 'var(--text)', fontWeight: 500 }}>{s.time}</span>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16a34a', flexShrink: 0 }} />
+              </div>
+              {i < city.sources.length - 1 && <span style={{ color: 'var(--border)' }}>|</span>}
+            </React.Fragment>
+          )}
+          <div style={{ marginLeft: 'auto', color: 'var(--muted)', fontSize: 11 }}>All times in CEST</div>
+        </div>
+
+      </main>
+      }
+
+      <TweaksPanel tweaks={safeTweaks} setTweak={setTweak}>
+        <TweakSection title="Display">
+          <TweakToggle label="Dark mode" tweakKey="darkMode" tweaks={safeTweaks} setTweak={setTweak} />
+          <TweakToggle label="Show cycle widget" tweakKey="showCycleWidget" tweaks={safeTweaks} setTweak={setTweak} />
+        </TweakSection>
+        <TweakSection title="Style">
+          <TweakColor label="Accent color" tweakKey="accentColor" tweaks={safeTweaks} setTweak={setTweak} />
+        </TweakSection>
+        <TweakSection title="Default city">
+          <TweakRadio label="City" tweakKey="defaultCity" tweaks={safeTweaks} setTweak={setTweak}
+          options={cityOptions.map((option) => ({ label: option.name, value: option.slug }))} />
+        </TweakSection>
+      </TweaksPanel>
+    </div>);
+
+}
+
+// helper so JSX doesn't break on CSS vars
+const var_radius = '10px';
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

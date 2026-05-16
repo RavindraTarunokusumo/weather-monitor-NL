@@ -14,6 +14,7 @@ on:
       - .gitignore
       - package.json
       - package-lock.json
+      - Dutch Weather Dashboard.html
       - prisma/**
       - app/**
       - lib/**
@@ -31,6 +32,7 @@ on:
       - .gitignore
       - package.json
       - package-lock.json
+      - Dutch Weather Dashboard.html
       - prisma/**
       - app/**
       - lib/**
@@ -89,6 +91,8 @@ jobs:
 
       - name: Build seeded app
         run: npm run build
+        env:
+          RUN_DB_SEED_AFTER_BUILD: "true"
 
       - name: Start production server
         run: |
