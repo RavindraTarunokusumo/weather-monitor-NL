@@ -1,0 +1,6 @@
+Task: Briefing panel glass overlay
+Summary: Replaced the two-column briefing hero with a full-bleed image, responsive glass briefing variants, and component tests for panel behavior and summary fallbacks.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: N/A
+TODO: TODO.md Active Session: Briefing Panel Glass Overlay
+Validation: npm run lint; npm run typecheck; npm test; DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dutch_weather npm run build; browser smoke check at http://localhost:3001/
