@@ -1,0 +1,6 @@
+Task: Match briefing panel export exactly
+Summary: Replaced the public dashboard briefing shell with the provided export's class-based markup, spacing, sizing, fonts, and glass tokens while preserving API-driven briefing values.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: N/A
+TODO: TODO.md Active Session / Match the public briefing panel shell exactly to the provided HTML export while preserving API-driven briefing data
+Validation: npm test -- tests/dashboard.test.ts; npm run lint; npm test; DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dutch_weather npm run build; in-app browser locator check for localhost:3001 iframe briefing pill
