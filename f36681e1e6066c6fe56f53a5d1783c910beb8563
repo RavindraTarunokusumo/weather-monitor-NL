@@ -1,0 +1,6 @@
+Task: Record public briefing shell fix
+Summary: Marked the public dashboard shell briefing pill TODO item complete with its commit hash.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: N/A
+TODO: TODO.md Active Session: Briefing Panel Glass Overlay
+Validation: git diff --check TODO.md
