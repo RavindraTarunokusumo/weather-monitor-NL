@@ -13,7 +13,7 @@ Spec: `docs/specs/briefing-panel-glass-overlay.md`
 - [x] Add component tests for the collapsible briefing panel behavior and summary fallbacks.
   - [x] Commit: `45a2216`
 - [x] Rewrite the briefing hero as a full-bleed image with responsive glass briefing variants.
-  - [x] Commit: `45a2216`
+  - [x] Commit: `45a2216`, `22d9e6d`
 - [x] Add export-matched responsive CSS tokens for the glass overlay and repositioned weather card.
   - [x] Commit: `45a2216`
 
