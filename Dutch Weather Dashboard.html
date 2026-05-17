@@ -6,7 +6,7 @@
   <title>Dutch Weather Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
@@ -47,6 +47,195 @@
     /* scrollbar */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.52);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      box-shadow:
+        0 8px 32px rgba(15, 28, 46, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      color: var(--navy);
+    }
+
+    .briefing-collapsible,
+    .briefing-static {
+      --navy: #0f1c2e;
+      --sans: 'DM Sans', Arial, sans-serif;
+      font-family: var(--sans);
+    }
+
+    .briefing-collapsible {
+      position: absolute;
+      top: 16px; left: 16px;
+      z-index: 10;
+      transition:
+        width      0.44s cubic-bezier(0.4, 0, 0.2, 1),
+        max-height 0.46s cubic-bezier(0.4, 0, 0.2, 1),
+        border-radius 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 210px;
+      max-height: 46px;
+      border-radius: 999px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .briefing-collapsible.open {
+      width: calc(50% - 24px);
+      max-height: calc(100% - 32px);
+      border-radius: 14px;
+      cursor: default;
+    }
+
+    .briefing-pill {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 46px;
+      display: flex; align-items: center; gap: 8px;
+      padding: 0 14px 0 12px;
+      white-space: nowrap;
+      opacity: 1;
+      transition: opacity 0.16s ease;
+      pointer-events: auto;
+    }
+
+    .briefing-collapsible.open .briefing-pill {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .pill-label {
+      font-size: 14px; font-weight: 600;
+      color: var(--navy); font-family: var(--sans);
+    }
+
+    .briefing-expanded {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease 0.18s;
+      color: var(--navy);
+    }
+
+    .briefing-collapsible.open .briefing-expanded {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .briefing-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px 5px;
+    }
+
+    .briefing-eyebrow {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--accent-orange);
+    }
+
+    .briefing-close {
+      background: none; border: none; cursor: pointer;
+      padding: 3px; color: var(--muted);
+      display: flex; border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .briefing-close:hover { background: rgba(0,0,0,0.06); }
+
+    .briefing-scroll {
+      overflow-y: auto;
+      max-height: 210px;
+      padding: 2px 14px 10px;
+      display: flex; flex-direction: column; gap: 5px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black 16px);
+      mask-image: linear-gradient(to bottom, transparent 0px, black 16px);
+    }
+
+    .briefing-scroll::-webkit-scrollbar { display: none; }
+
+    .briefing-static {
+      position: absolute;
+      top: 24px; left: 24px;
+      width: 400px;
+      z-index: 2;
+      padding: 22px 24px;
+      display: flex; flex-direction: column; gap: 12px;
+      border-radius: 16px;
+      box-shadow:
+        0 12px 40px rgba(15, 28, 46, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.55);
+      background: rgba(255, 255, 255, 0.42);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      color: var(--navy);
+    }
+
+    .static-eyebrow {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--accent-orange);
+    }
+
+    .static-date {
+      font-size: 30px; font-weight: 800;
+      line-height: 1.0; letter-spacing: -0.02em;
+      color: var(--navy);
+      margin-top: 10px;
+    }
+
+    .ai-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(59, 130, 246, 0.30);
+      border-radius: 999px;
+      color: #1e3a8a;
+      font-weight: 500;
+      width: fit-content;
+    }
+
+    .ai-badge.sm { padding: 2px 8px 2px 6px; font-size: 10px; gap: 4px; }
+    .ai-badge.md { padding: 4px 12px 4px 10px; font-size: 13px; gap: 6px; }
+
+    .items-list { display: flex; flex-direction: column; }
+
+    .item-row {
+      display: flex; align-items: flex-start;
+      border-top: 1px solid rgba(15, 28, 46, 0.08);
+    }
+
+    .item-row:first-child { border-top: none; }
+    .item-row.sm { gap: 7px; padding: 5px 0; }
+    .item-row.md { gap: 12px; padding: 10px 0; }
+
+    .item-dot {
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .item-dot.sm { width: 20px; height: 20px; margin-top: 1px; }
+    .item-dot.md {
+      width: 32px; height: 32px;
+      box-shadow: 0 2px 6px rgba(15, 28, 46, 0.12);
+    }
+
+    .item-text { min-width: 0; line-height: 1.4; }
+    .item-title { color: var(--navy); font-weight: 700; }
+    .item-title.sm { font-size: 11px; margin-bottom: 1px; }
+    .item-title.md { font-size: 13px; margin-bottom: 2px; }
+    .item-desc { color: #4b5563; }
+    .item-desc.sm { font-size: 11px; }
+    .item-desc.md { font-size: 12px; }
+
+    @media (min-width: 1092px) {
+      .briefing-collapsible { display: none; }
+    }
+
+    @media (max-width: 1091px) {
+      .briefing-static { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -646,36 +835,30 @@ const TweakToggle = window.TweakToggle || (() => null);
 const TweakColor = window.TweakColor || (() => null);
 const TweakRadio = window.TweakRadio || (() => null);
 
-function BriefingItems({ items }) {
+function BriefingItems({ items, size }) {
+  const iconSize = size === 'sm' ? 10 : 16;
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', marginTop: 6, flex: 1, justifyContent: 'flex-start' }}>
+    <div className="items-list" style={size === 'md' ? { marginTop: 6 } : undefined}>
       {items.map((item, i) => {
         const bg = i === 0 ? '#5eead4' : i === 1 ? '#fb923c' : '#60a5fa';
         return (
-          <div key={i} style={{
-            display: 'flex', alignItems: 'flex-start', gap: 12,
-            padding: '10px 0',
-            borderTop: i === 0 ? 'none' : '1px solid rgba(15,28,46,0.08)'
-          }}>
-            <div style={{
-              width: 32, height: 32, borderRadius: '50%', background: bg,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-              boxShadow: '0 2px 6px rgba(15,28,46,0.12)'
-            }}>
+          <div key={i} className={`item-row ${size}`}>
+            <div className={`item-dot ${size}`} style={{ background: bg }}>
               {i === 0 ?
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></svg>
+                <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></svg>
               : i === 1 ?
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+                <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
               :
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" /></svg>
+                <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" /></svg>
               }
             </div>
-            <div style={{ minWidth: 0, fontSize: 13, lineHeight: 1.4 }}>
-              <div style={{ color: '#0f1c2e', fontWeight: 700, marginBottom: 2, fontSize: 13 }}>
+            <div className="item-text">
+              <div className={`item-title ${size}`}>
                 {item.label}:{'  '}
                 <span>{item.value}</span>
               </div>
-              <div style={{ color: '#4b5563', fontSize: 12 }}>
+              <div className={`item-desc ${size}`}>
                 {item.text}
               </div>
             </div>
@@ -698,9 +881,8 @@ function App() {
 
   const { tweaks, setTweak } = useTweaks(TWEAK_DEFAULTS);
   const safeTweaks = tweaks || TWEAK_DEFAULTS;
-  const { w, isMobile, isTablet, isDesktop } = useViewport();
+  const { isMobile, isTablet, isDesktop } = useViewport();
   const isNarrow = isMobile || isTablet;
-  const isBriefingPill = w < 1092;
   const [activeCity, setActiveCity] = useState(safeTweaks.defaultCity || 'amsterdam');
   const [activeNav, setActiveNav] = useState('Dashboard');
   const [chartView, setChartView] = useState('24H');
@@ -889,7 +1071,7 @@ function App() {
       <main style={{ maxWidth: 1220, margin: '0 auto', padding: isMobile ? '0 14px 32px' : '0 24px 48px' }}>
 
         {/* ── HERO STRIP ── */}
-        <div style={{ position: 'relative', marginTop: 20, borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--shadow-md)', aspectRatio: isMobile ? 'auto' : '1672 / 941', minHeight: isMobile ? 480 : undefined, background: '#2a3a50' }}>
+        <div style={{ position: 'relative', marginTop: 20, borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: 300, background: '#2a3a50' }}>
 
           {/* Full-bleed photo */}
           <img src="/dashboard-assets/amsterdam-day.png" alt={city.name} style={{
@@ -900,114 +1082,56 @@ function App() {
           {/* Subtle gradient overlay for legibility */}
           <div style={{
             position: 'absolute', inset: 0,
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.0) 60%, rgba(15,28,46,0.08) 100%)',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.0) 60%, rgba(15,28,46,0.06) 100%)',
             zIndex: 1, pointerEvents: 'none'
           }} />
 
-          {/* Briefing — collapsible liquid-glass pill */}
-          <div style={{
-            position: 'absolute',
-            top: 16, left: 16,
-            zIndex: 10,
-            display: isBriefingPill ? 'block' : 'none',
-            width: briefingOpen ? 'calc(50% - 24px)' : 210,
-            maxHeight: briefingOpen ? 'calc(100% - 32px)' : 46,
-            overflow: 'hidden',
-            color: '#0f1c2e',
-            background: 'rgba(255, 255, 255, 0.52)',
-            backdropFilter: 'blur(28px) saturate(180%)',
-            WebkitBackdropFilter: 'blur(28px) saturate(180%)',
-            border: '1px solid rgba(255,255,255,0.65)',
-            borderRadius: briefingOpen ? 14 : 999,
-            boxShadow: '0 8px 32px rgba(15,28,46,0.18), inset 0 1px 0 rgba(255,255,255,0.6)',
-            transition: 'width .44s, max-height .46s, border-radius .38s cubic-bezier(0.4, 0, 0.2, 1)'
-          }}>
-            <button
-              type="button"
-              aria-label="Today's Briefing"
-              aria-expanded={briefingOpen}
-              onClick={() => setBriefingOpen(true)}
-              style={{
-                width: '100%', height: briefingOpen ? 0 : 44, border: 0, background: 'transparent',
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: briefingOpen ? 0 : '0 11px 0 13px',
-                overflow: 'hidden',
-                color: '#0f1c2e', cursor: 'pointer',
-                font: 'inherit', fontSize: 13, fontWeight: 800,
-                opacity: briefingOpen ? 0 : 1,
-                pointerEvents: briefingOpen ? 'none' : 'auto',
-                transition: 'opacity .16s ease'
-              }}>
-              <MetricIcon type="spark" size={19} />
-              <span>Today's Briefing</span>
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 'auto' }}>
-                <path d="M7 5l5 5-5 5" />
+          {/* Briefing — compact / collapsible (< 1092px) */}
+          <div className={`glass-panel briefing-collapsible${briefingOpen ? ' open' : ''}`} onClick={() => setBriefingOpen(true)}>
+            <div className="briefing-pill">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+                <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" fill="#1d4ed8" />
+                <circle cx="19" cy="5" r="2" fill="#1d4ed8" />
+                <circle cx="21" cy="9" r="1.2" fill="#1d4ed8" />
               </svg>
-            </button>
+              <span className="pill-label">Today's Briefing</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0f1c2e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 2, flexShrink: 0 }}><polyline points="9 18 15 12 9 6" /></svg>
+            </div>
 
-            {briefingOpen &&
-            <div role="region" aria-label="Expanded briefing" style={{ padding: '2px 14px 16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 8 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#ea580c' }}>Today's Briefing</div>
-                <button
-                  type="button"
-                  aria-label="Close briefing panel"
-                  onClick={() => setBriefingOpen(false)}
-                  style={{
-                    width: 30, height: 30, border: 0, borderRadius: 999,
-                    background: 'rgba(255,255,255,0.46)', color: '#0f1c2e',
-                    cursor: 'pointer', display: 'grid', placeItems: 'center', flexShrink: 0
-                  }}>
-                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                    <path d="M5 5l10 10M15 5L5 15" />
+            <div className="briefing-expanded">
+              <div className="briefing-header">
+                <span className="briefing-eyebrow">Today's Briefing</span>
+                <button className="briefing-close" onClick={(event) => { event.stopPropagation(); setBriefingOpen(false); }} aria-label="Close">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
                 </button>
               </div>
-              <div style={{
-                maxHeight: 210,
-                overflowY: 'auto',
-                scrollbarWidth: 'none',
-                WebkitMaskImage: 'linear-gradient(to bottom, transparent 0px, black 16px)',
-                maskImage: 'linear-gradient(to bottom, transparent 0px, black 16px)'
-              }}>
-                <div style={{ fontSize: 21, fontWeight: 800, lineHeight: 1.0, color: '#0f1c2e', marginBottom: 10 }}>{todayStr}</div>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(59,130,246,0.30)', borderRadius: 999, padding: '4px 12px 4px 10px', fontSize: 13, color: '#1e3a8a', width: 'fit-content', fontWeight: 500 }}>
-                  <MetricIcon type="spark" size={14} />
+
+              <div className="briefing-scroll">
+                <div style={{ fontSize: 12, fontWeight: 800, lineHeight: 1.2, letterSpacing: '-0.01em', color: '#0f1c2e', marginTop: 6 }}>{todayStr}</div>
+
+                <div className="ai-badge sm">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" fill="#1d4ed8" /></svg>
                   <span>AI summary</span>
                 </div>
-                <BriefingItems items={city.aiSummary} />
+
+                <BriefingItems items={city.aiSummary} size="sm" />
               </div>
             </div>
-            }
           </div>
 
-          {/* Briefing — desktop liquid-glass panel (light) */}
-          <div style={{
-            position: 'absolute',
-            top: 24, left: 24,
-            height: isMobile ? 'auto' : 'fit-content',
-            width: 400,
-            zIndex: 2,
-            color: '#0f1c2e',
-            padding: '22px 24px',
-            display: isBriefingPill ? 'none' : 'flex', flexDirection: 'column', gap: 10,
-            background: 'rgba(255, 255, 255, 0.42)',
-            backdropFilter: 'blur(28px) saturate(180%)',
-            WebkitBackdropFilter: 'blur(28px) saturate(180%)',
-            border: '1px solid rgba(255,255,255,0.55)',
-            borderRadius: 16,
-            boxShadow: '0 12px 40px rgba(15,28,46,0.18), inset 0 1px 0 rgba(255,255,255,0.55)'
-          }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#ea580c' }}>Today's Briefing</div>
-            <div style={{ fontSize: 30, fontWeight: 800, lineHeight: 1.0, letterSpacing: '-0.02em', color: '#0f1c2e' }}>{todayStr}</div>
+          {/* Briefing — desktop static (≥ 1092px) */}
+          <div className="briefing-static">
+            <div className="static-eyebrow">Today's Briefing</div>
+            <div className="static-date">{todayStr}</div>
 
-            {/* AI badge */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(59,130,246,0.30)', borderRadius: 999, padding: '4px 12px 4px 10px', fontSize: 13, color: '#1e3a8a', width: 'fit-content', fontWeight: 500 }}>
-              <MetricIcon type="spark" size={14} />
+            <div className="ai-badge md">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" fill="#1d4ed8" /><circle cx="19" cy="5" r="2" fill="#1d4ed8" /></svg>
               <span>AI summary</span>
             </div>
 
-            <BriefingItems items={city.aiSummary} />
+            <BriefingItems items={city.aiSummary} size="md" />
           </div>
 
           {/* Temp card — top-right of image */}

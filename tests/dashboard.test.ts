@@ -326,20 +326,32 @@ describe("provided dashboard HTML hero contract", () => {
   it("keeps the desktop briefing panel content-fit instead of fixed to half the hero", () => {
     const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
 
-    expect(html).toContain("height: isMobile ? 'auto' : 'fit-content'");
+    expect(html).toContain(".briefing-static {");
+    expect(html).toContain("width: 400px;");
+    expect(html).toContain("padding: 22px 24px;");
+    expect(html).toContain("display: flex; flex-direction: column; gap: 12px;");
     expect(html).not.toContain("height: isMobile ? 'auto' : 'calc(50% - 20px)'");
+    expect(html).not.toContain("height: isMobile ? 'auto' : 'fit-content'");
   });
 
   it("renders the responsive briefing pill in the public dashboard HTML", () => {
     const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
 
     expect(html).toContain("const [briefingOpen, setBriefingOpen] = useState(false)");
-    expect(html).toContain("const isBriefingPill = w < 1092");
-    expect(html).toContain("aria-label=\"Today's Briefing\"");
-    expect(html).toContain("aria-label=\"Close briefing panel\"");
-    expect(html).toContain("width: briefingOpen ? 'calc(50% - 24px)' : 210");
-    expect(html).toContain("height: briefingOpen ? 0 : 44");
-    expect(html).toContain("display: isBriefingPill ? 'block' : 'none'");
-    expect(html).toContain("display: isBriefingPill ? 'none' : 'flex'");
+    expect(html).toContain(".briefing-collapsible.open {");
+    expect(html).toContain("--sans: 'DM Sans', Arial, sans-serif;");
+    expect(html).toContain("width: calc(50% - 24px);");
+    expect(html).toContain("max-height: calc(100% - 32px);");
+    expect(html).toContain(".briefing-pill {");
+    expect(html).toContain("position: absolute; top: 0; left: 0;");
+    expect(html).toContain("height: 46px;");
+    expect(html).toContain(".briefing-header {");
+    expect(html).toContain("padding: 10px 14px 5px;");
+    expect(html).toContain(".briefing-scroll {");
+    expect(html).toContain("padding: 2px 14px 10px;");
+    expect(html).toContain("<BriefingItems items={city.aiSummary} size=\"sm\" />");
+    expect(html).toContain("<BriefingItems items={city.aiSummary} size=\"md\" />");
+    expect(html).not.toContain("isBriefingPill");
+    expect(html).not.toContain("height: briefingOpen ? 0 : 44");
   });
 });
