@@ -329,4 +329,16 @@ describe("provided dashboard HTML hero contract", () => {
     expect(html).toContain("height: isMobile ? 'auto' : 'fit-content'");
     expect(html).not.toContain("height: isMobile ? 'auto' : 'calc(50% - 20px)'");
   });
+
+  it("renders the responsive briefing pill in the public dashboard HTML", () => {
+    const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
+
+    expect(html).toContain("const [briefingOpen, setBriefingOpen] = useState(false)");
+    expect(html).toContain("const isBriefingPill = w < 1092");
+    expect(html).toContain("aria-label=\"Today's Briefing\"");
+    expect(html).toContain("aria-label=\"Close briefing panel\"");
+    expect(html).toContain("width: briefingOpen ? 'calc(50% - 24px)' : 210");
+    expect(html).toContain("display: isBriefingPill ? 'block' : 'none'");
+    expect(html).toContain("display: isBriefingPill ? 'none' : 'flex'");
+  });
 });

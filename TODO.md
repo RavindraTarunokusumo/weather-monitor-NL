@@ -16,6 +16,8 @@ Spec: `docs/specs/briefing-panel-glass-overlay.md`
   - [x] Commit: `45a2216`, `22d9e6d`
 - [x] Add export-matched responsive CSS tokens for the glass overlay and repositioned weather card.
   - [x] Commit: `45a2216`
+- [ ] Apply the responsive briefing pill to the public `Dutch Weather Dashboard.html` shell served at `/`.
+  - [ ] Commit: pending
 
 ## Future Backlog
 
