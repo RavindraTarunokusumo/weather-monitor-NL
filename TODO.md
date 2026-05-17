@@ -18,8 +18,8 @@ Spec: `docs/specs/briefing-panel-glass-overlay.md`
   - [x] Commit: `45a2216`
 - [x] Apply the responsive briefing pill to the public `Dutch Weather Dashboard.html` shell served at `/`.
   - [x] Commit: `627548c`
-- [ ] Move the expanded briefing header up by removing the hidden collapsed pill from layout flow.
-  - [ ] Commit: pending
+- [x] Move the expanded briefing header up by removing the hidden collapsed pill from layout flow.
+  - [x] Commit: `449c2af`
 
 ## Future Backlog
 
