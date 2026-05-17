@@ -50,11 +50,11 @@ export function BriefingHero({ dashboard }: BriefingHeroProps) {
         alt={`${dashboard.city.name} weather scene`}
         className="hero-image"
       />
+      <h2 className="sr-only">{dashboard.city.name}</h2>
       <BriefingCollapsiblePanel date={date} items={summaryItems} />
       <div className="briefing-static">
         <p className="eyebrow orange">Today&apos;s briefing</p>
         <h1>{date}</h1>
-        <h2 className="sr-only">{dashboard.city.name}</h2>
         <span className="ai-badge">
           <img src="/dashboard-assets/icon-spark.png" alt="" />
           AI summary

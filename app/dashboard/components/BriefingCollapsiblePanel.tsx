@@ -39,7 +39,13 @@ export function BriefingCollapsiblePanel({ date, items }: BriefingCollapsiblePan
       >
         <div className="briefing-expanded-header">
           <p className="eyebrow orange">Today&apos;s briefing</p>
-          <button type="button" className="briefing-close" aria-label="Close briefing panel" onClick={() => setOpen(false)}>
+          <button
+            type="button"
+            className="briefing-close"
+            aria-label="Close briefing panel"
+            tabIndex={open ? 0 : -1}
+            onClick={() => setOpen(false)}
+          >
             <svg viewBox="0 0 20 20" focusable="false">
               <path d="M5 5l10 10M15 5L5 15" />
             </svg>
