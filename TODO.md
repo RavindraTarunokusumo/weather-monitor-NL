@@ -20,8 +20,8 @@ Spec: `docs/specs/briefing-panel-glass-overlay.md`
   - [x] Commit: `627548c`
 - [x] Move the expanded briefing header up by removing the hidden collapsed pill from layout flow.
   - [x] Commit: `449c2af`
-- [ ] Match the public briefing panel shell exactly to the provided HTML export while preserving API-driven briefing data.
-  - [ ] Commit: pending
+- [x] Match the public briefing panel shell exactly to the provided HTML export while preserving API-driven briefing data.
+  - [x] Commit: `1f735ab`
 
 ## Future Backlog
 
