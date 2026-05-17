@@ -400,6 +400,14 @@ p {
   font-weight: 800;
 }
 
+.briefing-collapsible.open .briefing-pill {
+  height: 0;
+  padding: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .briefing-pill img {
   width: 19px;
   height: 19px;

@@ -338,6 +338,7 @@ describe("provided dashboard HTML hero contract", () => {
     expect(html).toContain("aria-label=\"Today's Briefing\"");
     expect(html).toContain("aria-label=\"Close briefing panel\"");
     expect(html).toContain("width: briefingOpen ? 'calc(50% - 24px)' : 210");
+    expect(html).toContain("height: briefingOpen ? 0 : 44");
     expect(html).toContain("display: isBriefingPill ? 'block' : 'none'");
     expect(html).toContain("display: isBriefingPill ? 'none' : 'flex'");
   });

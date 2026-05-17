@@ -928,9 +928,10 @@ function App() {
               aria-expanded={briefingOpen}
               onClick={() => setBriefingOpen(true)}
               style={{
-                width: '100%', height: 44, border: 0, background: 'transparent',
+                width: '100%', height: briefingOpen ? 0 : 44, border: 0, background: 'transparent',
                 display: 'flex', alignItems: 'center', gap: 8,
-                padding: '0 11px 0 13px',
+                padding: briefingOpen ? 0 : '0 11px 0 13px',
+                overflow: 'hidden',
                 color: '#0f1c2e', cursor: 'pointer',
                 font: 'inherit', fontSize: 13, fontWeight: 800,
                 opacity: briefingOpen ? 0 : 1,
