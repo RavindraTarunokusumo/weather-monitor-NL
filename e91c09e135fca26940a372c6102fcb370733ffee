@@ -1,0 +1,6 @@
+Task: Record exact briefing export fix
+Summary: Marked the exact public briefing panel export correction complete in TODO.md with the implementation commit hash.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: TODO.md
+TODO: TODO.md Active Session / Match the public briefing panel shell exactly to the provided HTML export while preserving API-driven briefing data
+Validation: N/A metadata-only follow-up after validated implementation commit
