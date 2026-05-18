@@ -6,7 +6,7 @@ Created: 2026-05-17
 
 ## Goal
 
-Replace the current two-column `BriefingHero` layout with a full-bleed hero image and a responsive glass overlay panel that follows the `Briefing Panel Export.html` design exactly. The overlay has two CSS-responsive variants: a collapsible pill (< 1092 px) and a static 400 px panel (≥ 1092 px). No new backend data is required.
+Replace the current two-column `BriefingHero` layout with a full-bleed hero image and a responsive glass overlay panel that follows the `Briefing Panel Export.html` design exactly. The overlay has two CSS-responsive variants: a collapsible pill (< 1092 px) and a static 400 px panel (≥ 1092 px). At smartphone widths (<= 599 px), the collapsed pill becomes a 46 px circle that shows only the AI sparkle icon. No new backend data is required.
 
 This spec extends `docs/specs/dashboard-ui-liquid-glass-panel-polish.md`. It is a focused UI refinement to the briefing hero and does not change weather data semantics, API routes, or dashboard response fields.
 
@@ -55,7 +55,8 @@ BriefingHero (server component)
 Props: date: string, items: BriefingItem[]
 State: open: boolean
 Renders:
-  - Collapsed pill: spark icon + "Today's Briefing" label + chevron
+  - Collapsed pill: AI sparkle icon + "Today's Briefing" label + chevron
+  - Smartphone collapsed pill: AI sparkle icon only, circular 46 px target
   - Expanded panel: fixed header (eyebrow + close button) + scrollable body
     (date, AI badge, items list)
 Transitions: width / max-height / border-radius via CSS cubic-bezier(0.4,0,0.2,1)
@@ -168,6 +169,11 @@ All new classes are added to `app/globals.css`. Tokens are transcribed directly 
 ```css
 @media (min-width: 1092px) { .briefing-collapsible { display: none; } }
 @media (max-width: 1091px) { .briefing-static { display: none; } }
+@media (max-width: 599px) {
+  .briefing-collapsible:not(.open) { width: 46px; }
+  .briefing-collapsible:not(.open) .pill-label,
+  .briefing-collapsible:not(.open) .briefing-chevron { display: none; }
+}
 ```
 
 ### Shared tokens
@@ -181,6 +187,7 @@ All new classes are added to `app/globals.css`. Tokens are transcribed directly 
 | Dot — item 1     | `#fb923c` (orange-400)                  | Both              |
 | Dot — item 2     | `#60a5fa` (blue-400)                    | Both              |
 | Breakpoint       | `1092px`                                | CSS media query   |
+| Smartphone breakpoint | `599px`                           | Collapsed circle pill |
 | Scroll fade      | `16px` top mask                         | Variant A scroll  |
 
 ### Current weather card
@@ -191,6 +198,8 @@ All new classes are added to `app/globals.css`. Tokens are transcribed directly 
 
 - At ≥ 1092 px: the static glass panel (Variant B) is visible; the collapsible pill is hidden; the weather card remains in its current position.
 - At < 1092 px: the glass pill is visible; the static panel is hidden; clicking the pill morphs it to an expanded scrollable panel; the close button collapses it back.
+- At <= 599 px: the collapsed glass pill is a circle showing only the AI sparkle icon; expanding still reveals the same scrollable panel.
+- The briefing pill and AI badges use the AI sparkle icon asset, not the star SVG.
 - The hero image fills the full container at all widths via `object-fit: cover`.
 - The expanded Variant A panel does not overlap the weather card.
 - All three summary items render with correct labels, values, and fallback text.

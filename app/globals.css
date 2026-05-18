@@ -550,6 +550,23 @@ p {
   }
 }
 
+@media (max-width: 599px) {
+  .briefing-collapsible:not(.open) {
+    width: 46px;
+  }
+
+  .briefing-collapsible:not(.open) .briefing-pill {
+    justify-content: center;
+    gap: 0;
+    padding: 0;
+  }
+
+  .briefing-collapsible:not(.open) .pill-label,
+  .briefing-collapsible:not(.open) .briefing-chevron {
+    display: none;
+  }
+}
+
 .metric-strip {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));

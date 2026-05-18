@@ -23,7 +23,7 @@ export function BriefingCollapsiblePanel({ date, items }: BriefingCollapsiblePan
         onClick={() => setOpen(true)}
       >
         <img src="/dashboard-assets/icon-spark.png" alt="" />
-        <span>Today&apos;s Briefing</span>
+        <span className="pill-label">Today&apos;s Briefing</span>
         <span className="briefing-chevron" aria-hidden="true">
           <svg viewBox="0 0 20 20" focusable="false">
             <path d="M7 5l5 5-5 5" />

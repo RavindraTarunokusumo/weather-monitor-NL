@@ -236,6 +236,17 @@
     @media (max-width: 1091px) {
       .briefing-static { display: none; }
     }
+
+    @media (max-width: 599px) {
+      .briefing-collapsible:not(.open) { width: 46px; }
+      .briefing-collapsible:not(.open) .briefing-pill {
+        justify-content: center;
+        gap: 0;
+        padding: 0;
+      }
+      .briefing-collapsible:not(.open) .pill-label,
+      .briefing-collapsible:not(.open) .briefing-chevron { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -481,8 +492,8 @@ const METRIC_ICON_SRC = {
   warn: '/dashboard-assets/icon-warn.png',
   trend: '/dashboard-assets/icon-trend.png'
 };
-const MetricIcon = ({ type, size = 38 }) =>
-<img src={METRIC_ICON_SRC[type] || METRIC_ICON_SRC.spark} width={size} height={size} alt={type} style={{ objectFit: 'contain', display: 'block', flexShrink: 0 }} />;
+const MetricIcon = ({ type, size = 38, className }) =>
+<img className={className} src={METRIC_ICON_SRC[type] || METRIC_ICON_SRC.spark} width={size} height={size} alt={type} style={{ objectFit: 'contain', display: 'block', flexShrink: 0 }} />;
 
 
 // ─── UTILITY ICONS ───────────────────────────────────────────────────────────
@@ -1089,13 +1100,9 @@ function App() {
           {/* Briefing — compact / collapsible (< 1092px) */}
           <div className={`glass-panel briefing-collapsible${briefingOpen ? ' open' : ''}`} onClick={() => setBriefingOpen(true)}>
             <div className="briefing-pill">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
-                <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" fill="#1d4ed8" />
-                <circle cx="19" cy="5" r="2" fill="#1d4ed8" />
-                <circle cx="21" cy="9" r="1.2" fill="#1d4ed8" />
-              </svg>
+              <MetricIcon type="spark" size={16} className="ai-sparkle-icon" />
               <span className="pill-label">Today's Briefing</span>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0f1c2e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 2, flexShrink: 0 }}><polyline points="9 18 15 12 9 6" /></svg>
+              <svg className="briefing-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0f1c2e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 2, flexShrink: 0 }}><polyline points="9 18 15 12 9 6" /></svg>
             </div>
 
             <div className="briefing-expanded">
@@ -1112,7 +1119,7 @@ function App() {
                 <div style={{ fontSize: 12, fontWeight: 800, lineHeight: 1.2, letterSpacing: '-0.01em', color: '#0f1c2e', marginTop: 6 }}>{todayStr}</div>
 
                 <div className="ai-badge sm">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" fill="#1d4ed8" /></svg>
+                  <MetricIcon type="spark" size={12} className="ai-sparkle-icon" />
                   <span>AI summary</span>
                 </div>
 
@@ -1127,7 +1134,7 @@ function App() {
             <div className="static-date">{todayStr}</div>
 
             <div className="ai-badge md">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" fill="#1d4ed8" /><circle cx="19" cy="5" r="2" fill="#1d4ed8" /></svg>
+              <MetricIcon type="spark" size={14} className="ai-sparkle-icon" />
               <span>AI summary</span>
             </div>
 

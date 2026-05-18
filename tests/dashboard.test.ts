@@ -354,4 +354,17 @@ describe("provided dashboard HTML hero contract", () => {
     expect(html).not.toContain("isBriefingPill");
     expect(html).not.toContain("height: briefingOpen ? 0 : 44");
   });
+
+  it("renders the smartphone briefing pill as an AI-only circle", () => {
+    const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
+
+    expect(html).toContain("@media (max-width: 599px) {");
+    expect(html).toContain(".briefing-collapsible:not(.open) { width: 46px; }");
+    expect(html).toContain(".briefing-collapsible:not(.open) .pill-label,");
+    expect(html).toContain(".briefing-collapsible:not(.open) .briefing-chevron { display: none; }");
+    expect(html).toContain("className=\"ai-sparkle-icon\"");
+    expect(html).toContain("className=\"briefing-chevron\"");
+    expect(html).toContain("<MetricIcon type=\"spark\" size={16} className=\"ai-sparkle-icon\" />");
+    expect(html).not.toContain("M12 2l2.4 7.4H22");
+  });
 });
