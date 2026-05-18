@@ -2,6 +2,14 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-18 - Briefing Panel Glass Overlay
+
+- What worked: matching the provided HTML export directly in `Dutch Weather Dashboard.html` kept the visible `/` shell aligned with the requested sizing, spacing, and typography while React component tests kept the typed dashboard path consistent.
+- What failed: implementing only the React `BriefingHero` path did not affect the currently served iframe shell, so browser verification against `http://localhost:3001/` is required for this UI surface.
+- Useful commands: `npm test -- tests/dashboard.test.ts`, `npm test -- app/dashboard/__tests__/BriefingHero.test.tsx`, `npm run lint`, `npm run typecheck`, and `npm run build` with the local PostgreSQL `DATABASE_URL`.
+- Workflow improvement: when a feature worktree depends on uncommitted public assets from the original workspace, copy the exact files into the worktree before validating image-driven UI behavior.
+- Recurring failure mode: Windows builds can hit Prisma engine file locks when the dev server is running, so stop `next dev` before `npm run build` and restart it afterward for browser checks.
+
 ## 2026-05-16 - Provided HTML Dashboard Data Wiring
 
 - What worked: keeping `Dutch Weather Dashboard.html` as the UI source satisfied the handoff constraint while still allowing `/api/cities` and `/api/dashboard?city=<slug>` to drive the visible values.
