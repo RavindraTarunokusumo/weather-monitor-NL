@@ -290,13 +290,22 @@ p {
   -webkit-backdrop-filter: blur(28px) saturate(180%);
 }
 
-.briefing-static h1,
+.briefing-static h1 {
+  margin-bottom: 0;
+  color: #0f1c2e;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
 .briefing-expanded h1 {
   margin-bottom: 0;
   color: #0f1c2e;
-  font-size: 21px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 800;
   line-height: 1.1;
+  letter-spacing: -0.01em;
 }
 
 .ai-badge {
@@ -345,7 +354,7 @@ p {
   width: 16px;
   height: 16px;
   fill: none;
-  stroke: #0f1c2e;
+  stroke: #ffffff;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 2;
@@ -373,8 +382,8 @@ p {
   overflow: hidden;
   border-radius: 999px;
   transition:
-    width 0.44s,
-    max-height 0.46s,
+    width 0.44s cubic-bezier(0.4, 0, 0.2, 1),
+    max-height 0.46s cubic-bezier(0.4, 0, 0.2, 1),
     border-radius 0.38s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -387,7 +396,7 @@ p {
 .briefing-pill {
   display: flex;
   width: 100%;
-  height: 44px;
+  height: 46px;
   align-items: center;
   gap: 8px;
   padding: 0 11px 0 13px;
@@ -406,6 +415,10 @@ p {
   overflow: hidden;
   opacity: 0;
   pointer-events: none;
+}
+
+.briefing-pill:disabled {
+  cursor: default;
 }
 
 .briefing-pill img {

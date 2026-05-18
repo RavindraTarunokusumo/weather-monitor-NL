@@ -22,8 +22,8 @@ This spec extends `docs/specs/dashboard-ui-liquid-glass-panel-polish.md`. It is 
 ## Scope
 
 - Rewrite `BriefingHero.tsx` to a full-bleed hero with both variants in the DOM.
-- Extract `BriefingCollapsiblePanel.tsx` as the sole `'use client'` component (Variant A).
-- Implement Variant B (desktop static panel) as plain server JSX inside `BriefingHero`.
+- Extract `BriefingCollapsiblePanel.tsx` as the sole new `'use client'` component (Variant A).
+- Implement Variant B (desktop static panel) as plain JSX inside `BriefingHero`.
 - Add all required CSS classes to `app/globals.css` using the export's exact design tokens.
 - Keep the existing `current-weather-card` aside element; reposition it as a direct absolute child of the hero container.
 - Add component-level tests for the collapsible pill behavior and summary item rendering.
@@ -38,13 +38,13 @@ This spec extends `docs/specs/dashboard-ui-liquid-glass-panel-polish.md`. It is 
 
 ## Component Structure
 
-`BriefingHero.tsx` is rewritten in-place as a server component. The two-column `.hero-briefing-panel` / `.hero-image-panel` structure is replaced by a single full-bleed container with positioned children:
+`BriefingHero.tsx` is rewritten in-place as a plain component imported from the client `DashboardShell` boundary. The two-column `.hero-briefing-panel` / `.hero-image-panel` structure is replaced by a single full-bleed container with positioned children:
 
 ```
-BriefingHero (server component)
+BriefingHero
 ├── <img class="hero-image">             full-bleed, position absolute, object-fit cover
 ├── <BriefingCollapsiblePanel>           'use client', Variant A, hidden at ≥ 1092px via CSS
-├── <div class="briefing-static">        Variant B, plain server JSX, hidden at < 1092px via CSS
+├── <div class="briefing-static">        Variant B, plain JSX, hidden at < 1092px via CSS
 └── <aside class="current-weather-card"> unchanged content, repositioned as direct absolute child
 ```
 
@@ -213,7 +213,7 @@ All new classes are added to `app/globals.css`. Tokens are transcribed directly 
 ## Constraints
 
 - Use the existing Next.js App Router and TypeScript component structure.
-- Keep `BriefingCollapsiblePanel.tsx` as the only new file; keep `'use client'` contained to it.
+- Keep `BriefingCollapsiblePanel.tsx` as the only new file; do not add additional client-only files for this feature.
 - Do not add new external libraries, fonts, or runtime browser dependencies.
 - Do not derive or invent weather values in the browser.
 - Keep `fallbackLabel` guards intact.

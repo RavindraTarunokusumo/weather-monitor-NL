@@ -18,8 +18,11 @@ export function BriefingCollapsiblePanel({ date, items }: BriefingCollapsiblePan
       <button
         type="button"
         className="briefing-pill"
+        aria-label="Today's Briefing"
         aria-expanded={open}
         aria-controls="briefing-collapsible-content"
+        disabled={open}
+        tabIndex={open ? -1 : 0}
         onClick={() => setOpen(true)}
       >
         <img src="/dashboard-assets/icon-spark.png" alt="" />

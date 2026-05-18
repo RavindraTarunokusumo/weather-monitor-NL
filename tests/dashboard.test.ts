@@ -364,7 +364,7 @@ describe("provided dashboard HTML hero contract", () => {
     expect(html).toContain(".briefing-collapsible:not(.open) .briefing-chevron { display: none; }");
     expect(html).toContain("className=\"ai-sparkle-icon\"");
     expect(html).toContain("className=\"briefing-chevron\"");
-    expect(html).toContain("<MetricIcon type=\"spark\" size={16} className=\"ai-sparkle-icon\" />");
+    expect(html).toContain("<MetricIcon type=\"spark\" size={16} className=\"ai-sparkle-icon\" alt=\"\" />");
     expect(html).not.toContain("M12 2l2.4 7.4H22");
   });
 
@@ -377,5 +377,7 @@ describe("provided dashboard HTML hero contract", () => {
     expect(html).toContain("utrecht: '/dashboard-assets/utrecht-day.png'");
     expect(html).toContain("src={heroImageSrc}");
     expect(html).not.toContain("src=\"/dashboard-assets/amsterdam-day.png\"");
+    expect(html).not.toContain("src='/dashboard-assets/amsterdam-day.png'");
+    expect(html).not.toContain("src={'/dashboard-assets/amsterdam-day.png'}");
   });
 });
