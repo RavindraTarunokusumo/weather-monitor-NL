@@ -1,0 +1,6 @@
+Task: Mark briefing overlay spec accepted
+Summary: Updated the active briefing overlay spec status from Draft to Accepted before PR submission.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: docs/specs/briefing-panel-glass-overlay.md
+TODO: N/A
+Validation: final Step 6 validation already passed after implementation; metadata-only follow-up
