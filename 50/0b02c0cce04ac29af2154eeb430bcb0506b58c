@@ -1,0 +1,6 @@
+Task: Record briefing overlay PR link
+Summary: Added the Step 7 PR URL to the archived briefing overlay iteration record.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: docs/iterations/archive/2026-05-18-briefing-panel-glass-overlay.md
+TODO: N/A
+Validation: N/A metadata-only follow-up after PR creation
