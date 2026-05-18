@@ -1,0 +1,6 @@
+Task: Record blank dashboard hotfix progress
+Summary: Marked the implemented loading-crash fix and contract test in TODO.md while leaving production verification open until deployment is checked.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: TODO.md
+TODO: Active Session - 2026-05-18 - Production Blank Dashboard Hotfix
+Validation: documentation-only progress update after local validation
