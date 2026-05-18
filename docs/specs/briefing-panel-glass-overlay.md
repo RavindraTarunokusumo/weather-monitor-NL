@@ -1,6 +1,6 @@
 # Briefing Panel Glass Overlay Spec
 
-Status: Draft
+Status: Accepted
 Spec path: `docs/specs/briefing-panel-glass-overlay.md`
 Created: 2026-05-17
 
