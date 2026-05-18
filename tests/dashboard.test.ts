@@ -380,4 +380,14 @@ describe("provided dashboard HTML hero contract", () => {
     expect(html).not.toContain("src='/dashboard-assets/amsterdam-day.png'");
     expect(html).not.toContain("src={'/dashboard-assets/amsterdam-day.png'}");
   });
+
+  it("does not read city-specific hero fields before the loading guard", () => {
+    const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
+    const guardIndex = html.indexOf("if (!city) {");
+    const heroLookupIndex = html.indexOf("const heroImageSrc = HERO_IMAGE_SRC[city.slug]");
+
+    expect(guardIndex).toBeGreaterThan(-1);
+    expect(heroLookupIndex).toBeGreaterThan(-1);
+    expect(heroLookupIndex).toBeGreaterThan(guardIndex);
+  });
 });

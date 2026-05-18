@@ -927,7 +927,6 @@ function App() {
   const qaRef = useRef(null);
 
   const city = cityData;
-  const heroImageSrc = HERO_IMAGE_SRC[city.slug] || HERO_IMAGE_SRC.amsterdam;
   const navItems = ['Dashboard', 'Forecast', 'Maps', 'Insights', 'Alerts'];
   const quickQs = ['Will it rain this evening?', 'Is it a good day for cycling?', 'How windy will it be tomorrow?', 'Weekend outlook'];
 
@@ -1013,6 +1012,8 @@ function App() {
       </div>
     );
   }
+
+  const heroImageSrc = HERO_IMAGE_SRC[city.slug] || HERO_IMAGE_SRC.amsterdam;
 
   // Score color helper
   const scoreColor = city.cycleScore >= 75 ? '#16a34a' : city.cycleScore >= 50 ? '#0f766e' : '#b45309';
