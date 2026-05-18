@@ -1,0 +1,6 @@
+Task: Archive briefing overlay session
+Summary: Moved the completed briefing overlay TODO session into docs/iterations/archive and recorded session lessons in docs/insights.md.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: TODO.md, docs/iterations/archive/2026-05-18-briefing-panel-glass-overlay.md, docs/insights.md
+TODO: Archived Active Session / Briefing Panel Glass Overlay
+Validation: git diff --check
