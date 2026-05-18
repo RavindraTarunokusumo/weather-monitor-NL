@@ -6,7 +6,7 @@ Spec: `docs/specs/briefing-panel-glass-overlay.md`
 
 Parent spec: `docs/specs/dashboard-ui-liquid-glass-panel-polish.md`
 
-PR: pending Step 7 submission.
+PR: `https://github.com/RavindraTarunokusumo/weather-monitor-NL/pull/14`
 
 ## Completed tasks
 
