@@ -30,6 +30,12 @@ PR: `https://github.com/RavindraTarunokusumo/weather-monitor-NL/pull/14`
 - In-app browser `srcdoc` check for `/` - PASS: city image map includes Rotterdam and Utrecht, dynamic `src={heroImageSrc}` is served, and hard-coded Amsterdam hero `src` is absent.
 - In-app browser smartphone check - PASS: the collapsed pill has no visible label text and uses `/dashboard-assets/icon-spark.png`.
 
+## Post-PR
+
+- Review follow-up commit: `6dc14cb` fixed the accessibility and export-parity review comments before merge.
+- Merge commit: `145cd9d`.
+- Production verification after merge - PASS: `https://weather-monitor-nl.vercel.app/api/dashboard?city=amsterdam`, `?city=utrecht`, and `?city=rotterdam` all returned `knmi`, `luchtmeetnet`, and `rijkswaterstaat` with no `mock_*` source identifiers.
+
 ## Notes
 
 - `rotterdam-day.png` and `utrecht-day.png` were copied from the original workspace `public/dashboard-assets` into this feature worktree.
