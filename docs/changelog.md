@@ -7,6 +7,7 @@ Record notable behavior, architecture, API, persistence, or workflow changes.
 Summary:
 
 - What changed: the dashboard hero now uses the accepted glass-overlay briefing design in both the visible provided HTML shell and the typed React dashboard path, including the responsive collapsible pill, smartphone icon-only circle, and city-specific Amsterdam/Rotterdam/Utrecht hero images.
+- Follow-up fix: moved the public HTML shell hero image lookup behind the async city-data loading guard so production no longer crashes to a blank white screen before dashboard data loads.
 - Why: match the accepted `briefing-panel-glass-overlay` spec exactly while keeping the existing dashboard API wiring unchanged.
 - User-visible impact: `/` now shows the export-matched briefing overlay behavior and typography, and the briefing trigger/expanded panel semantics are keyboard- and screen-reader-safe.
 - Migration notes: no schema or API changes are required.

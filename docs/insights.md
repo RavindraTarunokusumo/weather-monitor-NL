@@ -6,8 +6,10 @@ Record reusable lessons from completed sessions.
 
 - What worked: matching the provided HTML export directly in `Dutch Weather Dashboard.html` kept the visible `/` shell aligned with the requested sizing, spacing, and typography while React component tests kept the typed dashboard path consistent.
 - What failed: implementing only the React `BriefingHero` path did not affect the currently served iframe shell, so browser verification against the active `/` dev URL is required for this UI surface.
+- What failed: the public HTML shell computed `heroImageSrc` from `city.slug` before the async loading guard, which rendered fine in static source checks but crashed production on first client render.
 - Useful commands: `npm test -- tests/dashboard.test.ts`, `npm test -- app/dashboard/__tests__/BriefingHero.test.tsx`, `npm run lint`, `npm run typecheck`, and `npm run build` with the local PostgreSQL `DATABASE_URL`.
 - Useful commands: post-merge production verification should include `https://weather-monitor-nl.vercel.app/api/dashboard?city=amsterdam`, `?city=utrecht`, and `?city=rotterdam` so the source IDs are checked directly instead of inferred from the UI.
+- Useful commands: a headless browser check with console/pageerror capture is required for iframe `srcdoc` changes because HTTP checks can pass while the embedded React app crashes to a blank screen.
 - Workflow improvement: when a feature worktree depends on uncommitted public assets from the original workspace, copy the exact files into the worktree before validating image-driven UI behavior.
 - Recurring failure mode: Windows builds can hit Prisma engine file locks when the dev server is running, so stop `next dev` before `npm run build` and restart it afterward for browser checks.
 
