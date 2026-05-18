@@ -1,0 +1,6 @@
+Task: Record briefing overlay post-PR closeout
+Summary: Documented the final review-fix commit, merge commit, and production no-mock verification in the archived session record and insights.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: docs/iterations/archive/2026-05-18-briefing-panel-glass-overlay.md, docs/insights.md
+TODO: docs/iterations/archive/2026-05-18-briefing-panel-glass-overlay.md
+Validation: archive and insights updated to reflect merged PR and production API verification
