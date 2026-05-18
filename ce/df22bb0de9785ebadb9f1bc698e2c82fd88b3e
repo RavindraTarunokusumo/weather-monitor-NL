@@ -1,0 +1,6 @@
+Task: Fix production blank dashboard
+Summary: Moved the public dashboard shell hero image lookup behind the city loading guard and added a contract test so the iframe shell no longer crashes before dashboard data loads.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: TODO.md
+TODO: Active Session - 2026-05-18 - Production Blank Dashboard Hotfix
+Validation: npm test -- tests/dashboard.test.ts; npm run lint; npm run typecheck; DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dutch_weather npm run build; headless browser check against local next start on port 3002
