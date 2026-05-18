@@ -1,0 +1,6 @@
+Task: Address PR review follow-ups
+Summary: Fixed briefing overlay accessibility gaps in the visible HTML shell and React component path, aligned the component CSS with the accepted export, and updated docs/tests to match the delivered behavior.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: docs/changelog.md, docs/insights.md, docs/specs/briefing-panel-glass-overlay.md
+TODO: docs/iterations/archive/2026-05-18-briefing-panel-glass-overlay.md
+Validation: npm run lint; npm run typecheck; npm test; DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dutch_weather npm run build
