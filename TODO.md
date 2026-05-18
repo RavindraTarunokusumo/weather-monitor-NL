@@ -22,8 +22,8 @@ Spec: `docs/specs/briefing-panel-glass-overlay.md`
   - [x] Commit: `449c2af`
 - [x] Match the public briefing panel shell exactly to the provided HTML export while preserving API-driven briefing data.
   - [x] Commit: `1f735ab`
-- [ ] Add the smartphone circular briefing pill and replace the star glyph with the AI sparkle icon.
-  - [ ] Commit: pending
+- [x] Add the smartphone circular briefing pill and replace the star glyph with the AI sparkle icon.
+  - [x] Commit: `a18e7fe`
 
 ## Future Backlog
 
