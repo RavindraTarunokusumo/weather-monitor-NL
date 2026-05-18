@@ -367,4 +367,15 @@ describe("provided dashboard HTML hero contract", () => {
     expect(html).toContain("<MetricIcon type=\"spark\" size={16} className=\"ai-sparkle-icon\" />");
     expect(html).not.toContain("M12 2l2.4 7.4H22");
   });
+
+  it("uses city-specific public hero images in the dashboard shell", () => {
+    const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
+
+    expect(html).toContain("const HERO_IMAGE_SRC = {");
+    expect(html).toContain("amsterdam: '/dashboard-assets/amsterdam-day.png'");
+    expect(html).toContain("rotterdam: '/dashboard-assets/rotterdam-day.png'");
+    expect(html).toContain("utrecht: '/dashboard-assets/utrecht-day.png'");
+    expect(html).toContain("src={heroImageSrc}");
+    expect(html).not.toContain("src=\"/dashboard-assets/amsterdam-day.png\"");
+  });
 });

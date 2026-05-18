@@ -104,6 +104,22 @@ describe("BriefingHero", () => {
     expect(screen.getAllByText(/Warmer than yesterday/)).toHaveLength(2);
   });
 
+  it("uses the city-specific hero image for supported city slugs", () => {
+    render(
+      <BriefingHero
+        dashboard={{
+          ...dashboard,
+          city: { ...dashboard.city, slug: "rotterdam", name: "Rotterdam" },
+        }}
+      />,
+    );
+
+    expect(screen.getByAltText("Rotterdam weather scene")).toHaveAttribute(
+      "src",
+      "/dashboard-assets/rotterdam-day.png",
+    );
+  });
+
   it("renders the no known risk fallback when main risk is unavailable", () => {
     render(
       <BriefingHero

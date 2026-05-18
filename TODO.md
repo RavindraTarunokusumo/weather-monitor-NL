@@ -24,6 +24,8 @@ Spec: `docs/specs/briefing-panel-glass-overlay.md`
   - [x] Commit: `1f735ab`
 - [x] Add the smartphone circular briefing pill and replace the star glyph with the AI sparkle icon.
   - [x] Commit: `a18e7fe`
+- [ ] Use city-specific Rotterdam and Utrecht hero images from public assets.
+  - [ ] Commit: pending
 
 ## Future Backlog
 

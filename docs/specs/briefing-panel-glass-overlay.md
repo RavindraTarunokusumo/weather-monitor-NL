@@ -6,7 +6,7 @@ Created: 2026-05-17
 
 ## Goal
 
-Replace the current two-column `BriefingHero` layout with a full-bleed hero image and a responsive glass overlay panel that follows the `Briefing Panel Export.html` design exactly. The overlay has two CSS-responsive variants: a collapsible pill (< 1092 px) and a static 400 px panel (≥ 1092 px). At smartphone widths (<= 599 px), the collapsed pill becomes a 46 px circle that shows only the AI sparkle icon. No new backend data is required.
+Replace the current two-column `BriefingHero` layout with a full-bleed hero image and a responsive glass overlay panel that follows the `Briefing Panel Export.html` design exactly. The overlay has two CSS-responsive variants: a collapsible pill (< 1092 px) and a static 400 px panel (≥ 1092 px). At smartphone widths (<= 599 px), the collapsed pill becomes a 46 px circle that shows only the AI sparkle icon. The hero image is city-aware and uses the Amsterdam, Rotterdam, or Utrecht image from `public/dashboard-assets` based on the active city slug. No new backend data is required.
 
 This spec extends `docs/specs/dashboard-ui-liquid-glass-panel-polish.md`. It is a focused UI refinement to the briefing hero and does not change weather data semantics, API routes, or dashboard response fields.
 
@@ -84,6 +84,7 @@ No new API fields. All panel content comes from the existing `DashboardResponse`
 
 | Panel element        | Source                                           |
 |----------------------|--------------------------------------------------|
+| Hero image           | Active city slug mapped to `amsterdam-day.png`, `rotterdam-day.png`, or `utrecht-day.png` |
 | Date heading         | `formatToday(dashboard.city.timezone)`           |
 | Best outdoor window  | `ui_summary.best_window` + `ui_summary.outdoor_window_detail`   |
 | Main risk            | `ui_summary.main_risk` + `ui_summary.risk_detail`               |
@@ -200,6 +201,7 @@ All new classes are added to `app/globals.css`. Tokens are transcribed directly 
 - At < 1092 px: the glass pill is visible; the static panel is hidden; clicking the pill morphs it to an expanded scrollable panel; the close button collapses it back.
 - At <= 599 px: the collapsed glass pill is a circle showing only the AI sparkle icon; expanding still reveals the same scrollable panel.
 - The briefing pill and AI badges use the AI sparkle icon asset, not the star SVG.
+- City switching updates the hero image to the active city's public asset; unknown city slugs fall back to Amsterdam.
 - The hero image fills the full container at all widths via `object-fit: cover`.
 - The expanded Variant A panel does not overlap the weather card.
 - All three summary items render with correct labels, values, and fallback text.

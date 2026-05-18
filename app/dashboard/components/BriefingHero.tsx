@@ -17,8 +17,15 @@ export type BriefingItem = {
   detail: string | null;
 };
 
+const HERO_IMAGE_SRC: Record<string, string> = {
+  amsterdam: "/dashboard-assets/amsterdam-day.png",
+  rotterdam: "/dashboard-assets/rotterdam-day.png",
+  utrecht: "/dashboard-assets/utrecht-day.png",
+};
+
 export function BriefingHero({ dashboard }: BriefingHeroProps) {
   const date = formatToday(dashboard.city.timezone);
+  const heroImageSrc = HERO_IMAGE_SRC[dashboard.city.slug] ?? HERO_IMAGE_SRC.amsterdam;
   const summaryItems: BriefingItem[] = [
     {
       dotColor: "#5eead4",
@@ -46,7 +53,7 @@ export function BriefingHero({ dashboard }: BriefingHeroProps) {
   return (
     <section className="briefing-hero" aria-label="Today briefing">
       <img
-        src="/dashboard-assets/amsterdam-day.png"
+        src={heroImageSrc}
         alt={`${dashboard.city.name} weather scene`}
         className="hero-image"
       />
