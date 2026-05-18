@@ -326,7 +326,58 @@ describe("provided dashboard HTML hero contract", () => {
   it("keeps the desktop briefing panel content-fit instead of fixed to half the hero", () => {
     const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
 
-    expect(html).toContain("height: isMobile ? 'auto' : 'fit-content'");
+    expect(html).toContain(".briefing-static {");
+    expect(html).toContain("width: 400px;");
+    expect(html).toContain("padding: 22px 24px;");
+    expect(html).toContain("display: flex; flex-direction: column; gap: 12px;");
     expect(html).not.toContain("height: isMobile ? 'auto' : 'calc(50% - 20px)'");
+    expect(html).not.toContain("height: isMobile ? 'auto' : 'fit-content'");
+  });
+
+  it("renders the responsive briefing pill in the public dashboard HTML", () => {
+    const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
+
+    expect(html).toContain("const [briefingOpen, setBriefingOpen] = useState(false)");
+    expect(html).toContain(".briefing-collapsible.open {");
+    expect(html).toContain("--sans: 'DM Sans', Arial, sans-serif;");
+    expect(html).toContain("width: calc(50% - 24px);");
+    expect(html).toContain("max-height: calc(100% - 32px);");
+    expect(html).toContain(".briefing-pill {");
+    expect(html).toContain("position: absolute; top: 0; left: 0;");
+    expect(html).toContain("height: 46px;");
+    expect(html).toContain(".briefing-header {");
+    expect(html).toContain("padding: 10px 14px 5px;");
+    expect(html).toContain(".briefing-scroll {");
+    expect(html).toContain("padding: 2px 14px 10px;");
+    expect(html).toContain("<BriefingItems items={city.aiSummary} size=\"sm\" />");
+    expect(html).toContain("<BriefingItems items={city.aiSummary} size=\"md\" />");
+    expect(html).not.toContain("isBriefingPill");
+    expect(html).not.toContain("height: briefingOpen ? 0 : 44");
+  });
+
+  it("renders the smartphone briefing pill as an AI-only circle", () => {
+    const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
+
+    expect(html).toContain("@media (max-width: 599px) {");
+    expect(html).toContain(".briefing-collapsible:not(.open) { width: 46px; }");
+    expect(html).toContain(".briefing-collapsible:not(.open) .pill-label,");
+    expect(html).toContain(".briefing-collapsible:not(.open) .briefing-chevron { display: none; }");
+    expect(html).toContain("className=\"ai-sparkle-icon\"");
+    expect(html).toContain("className=\"briefing-chevron\"");
+    expect(html).toContain("<MetricIcon type=\"spark\" size={16} className=\"ai-sparkle-icon\" alt=\"\" />");
+    expect(html).not.toContain("M12 2l2.4 7.4H22");
+  });
+
+  it("uses city-specific public hero images in the dashboard shell", () => {
+    const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
+
+    expect(html).toContain("const HERO_IMAGE_SRC = {");
+    expect(html).toContain("amsterdam: '/dashboard-assets/amsterdam-day.png'");
+    expect(html).toContain("rotterdam: '/dashboard-assets/rotterdam-day.png'");
+    expect(html).toContain("utrecht: '/dashboard-assets/utrecht-day.png'");
+    expect(html).toContain("src={heroImageSrc}");
+    expect(html).not.toContain("src=\"/dashboard-assets/amsterdam-day.png\"");
+    expect(html).not.toContain("src='/dashboard-assets/amsterdam-day.png'");
+    expect(html).not.toContain("src={'/dashboard-assets/amsterdam-day.png'}");
   });
 });

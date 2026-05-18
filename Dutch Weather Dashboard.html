@@ -6,7 +6,7 @@
   <title>Dutch Weather Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
@@ -47,6 +47,218 @@
     /* scrollbar */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.52);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      box-shadow:
+        0 8px 32px rgba(15, 28, 46, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      color: var(--navy);
+    }
+
+    .briefing-collapsible,
+    .briefing-static {
+      --navy: #0f1c2e;
+      --sans: 'DM Sans', Arial, sans-serif;
+      font-family: var(--sans);
+    }
+
+    .briefing-collapsible {
+      position: absolute;
+      top: 16px; left: 16px;
+      z-index: 10;
+      transition:
+        width      0.44s cubic-bezier(0.4, 0, 0.2, 1),
+        max-height 0.46s cubic-bezier(0.4, 0, 0.2, 1),
+        border-radius 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 210px;
+      max-height: 46px;
+      border-radius: 999px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .briefing-collapsible.open {
+      width: calc(50% - 24px);
+      max-height: calc(100% - 32px);
+      border-radius: 14px;
+      cursor: default;
+    }
+
+    .briefing-pill {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 46px;
+      display: flex; align-items: center; gap: 8px;
+      padding: 0 14px 0 12px;
+      border: none;
+      background: none;
+      white-space: nowrap;
+      opacity: 1;
+      transition: opacity 0.16s ease;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    .briefing-collapsible.open .briefing-pill {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .briefing-pill:disabled {
+      cursor: default;
+    }
+
+    .pill-label {
+      font-size: 14px; font-weight: 600;
+      color: var(--navy); font-family: var(--sans);
+    }
+
+    .briefing-expanded {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease 0.18s;
+      color: var(--navy);
+    }
+
+    .briefing-expanded[aria-hidden="true"] {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .briefing-collapsible.open .briefing-expanded {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .briefing-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px 5px;
+    }
+
+    .briefing-eyebrow {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--accent-orange);
+    }
+
+    .briefing-close {
+      background: none; border: none; cursor: pointer;
+      padding: 3px; color: var(--muted);
+      display: flex; border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .briefing-close:hover { background: rgba(0,0,0,0.06); }
+
+    .briefing-scroll {
+      overflow-y: auto;
+      max-height: 210px;
+      padding: 2px 14px 10px;
+      display: flex; flex-direction: column; gap: 5px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0px, black 16px);
+      mask-image: linear-gradient(to bottom, transparent 0px, black 16px);
+    }
+
+    .briefing-scroll::-webkit-scrollbar { display: none; }
+
+    .briefing-static {
+      position: absolute;
+      top: 24px; left: 24px;
+      width: 400px;
+      z-index: 2;
+      padding: 22px 24px;
+      display: flex; flex-direction: column; gap: 12px;
+      border-radius: 16px;
+      box-shadow:
+        0 12px 40px rgba(15, 28, 46, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.55);
+      background: rgba(255, 255, 255, 0.42);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      color: var(--navy);
+    }
+
+    .static-eyebrow {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--accent-orange);
+    }
+
+    .static-date {
+      font-size: 30px; font-weight: 800;
+      line-height: 1.0; letter-spacing: -0.02em;
+      color: var(--navy);
+      margin-top: 10px;
+    }
+
+    .ai-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(59, 130, 246, 0.30);
+      border-radius: 999px;
+      color: #1e3a8a;
+      font-weight: 500;
+      width: fit-content;
+    }
+
+    .ai-badge.sm { padding: 2px 8px 2px 6px; font-size: 10px; gap: 4px; }
+    .ai-badge.md { padding: 4px 12px 4px 10px; font-size: 13px; gap: 6px; }
+
+    .items-list { display: flex; flex-direction: column; }
+
+    .item-row {
+      display: flex; align-items: flex-start;
+      border-top: 1px solid rgba(15, 28, 46, 0.08);
+    }
+
+    .item-row:first-child { border-top: none; }
+    .item-row.sm { gap: 7px; padding: 5px 0; }
+    .item-row.md { gap: 12px; padding: 10px 0; }
+
+    .item-dot {
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .item-dot.sm { width: 20px; height: 20px; margin-top: 1px; }
+    .item-dot.md {
+      width: 32px; height: 32px;
+      box-shadow: 0 2px 6px rgba(15, 28, 46, 0.12);
+    }
+
+    .item-text { min-width: 0; line-height: 1.4; }
+    .item-title { color: var(--navy); font-weight: 700; }
+    .item-title.sm { font-size: 11px; margin-bottom: 1px; }
+    .item-title.md { font-size: 13px; margin-bottom: 2px; }
+    .item-desc { color: #4b5563; }
+    .item-desc.sm { font-size: 11px; }
+    .item-desc.md { font-size: 12px; }
+
+    @media (min-width: 1092px) {
+      .briefing-collapsible { display: none; }
+    }
+
+    @media (max-width: 1091px) {
+      .briefing-static { display: none; }
+    }
+
+    @media (max-width: 599px) {
+      .briefing-collapsible:not(.open) { width: 46px; }
+      .briefing-collapsible:not(.open) .briefing-pill {
+        justify-content: center;
+        gap: 0;
+        padding: 0;
+      }
+      .briefing-collapsible:not(.open) .pill-label,
+      .briefing-collapsible:not(.open) .briefing-chevron { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -292,8 +504,13 @@ const METRIC_ICON_SRC = {
   warn: '/dashboard-assets/icon-warn.png',
   trend: '/dashboard-assets/icon-trend.png'
 };
-const MetricIcon = ({ type, size = 38 }) =>
-<img src={METRIC_ICON_SRC[type] || METRIC_ICON_SRC.spark} width={size} height={size} alt={type} style={{ objectFit: 'contain', display: 'block', flexShrink: 0 }} />;
+const HERO_IMAGE_SRC = {
+  amsterdam: '/dashboard-assets/amsterdam-day.png',
+  rotterdam: '/dashboard-assets/rotterdam-day.png',
+  utrecht: '/dashboard-assets/utrecht-day.png'
+};
+const MetricIcon = ({ type, size = 38, className, alt = type, ariaHidden = alt === '' ? true : undefined }) =>
+<img className={className} src={METRIC_ICON_SRC[type] || METRIC_ICON_SRC.spark} width={size} height={size} alt={alt} aria-hidden={ariaHidden} style={{ objectFit: 'contain', display: 'block', flexShrink: 0 }} />;
 
 
 // ─── UTILITY ICONS ───────────────────────────────────────────────────────────
@@ -646,6 +863,40 @@ const TweakToggle = window.TweakToggle || (() => null);
 const TweakColor = window.TweakColor || (() => null);
 const TweakRadio = window.TweakRadio || (() => null);
 
+function BriefingItems({ items, size }) {
+  const iconSize = size === 'sm' ? 10 : 16;
+
+  return (
+    <div className="items-list" style={size === 'md' ? { marginTop: 6 } : undefined}>
+      {items.map((item, i) => {
+        const bg = i === 0 ? '#5eead4' : i === 1 ? '#fb923c' : '#60a5fa';
+        return (
+          <div key={i} className={`item-row ${size}`}>
+            <div className={`item-dot ${size}`} style={{ background: bg }}>
+              {i === 0 ?
+                <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></svg>
+              : i === 1 ?
+                <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+              :
+                <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" /></svg>
+              }
+            </div>
+            <div className="item-text">
+              <div className={`item-title ${size}`}>
+                {item.label}:{'  '}
+                <span>{item.value}</span>
+              </div>
+              <div className={`item-desc ${size}`}>
+                {item.text}
+              </div>
+            </div>
+          </div>);
+
+      })}
+    </div>
+  );
+}
+
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
 function App() {
   const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
@@ -664,6 +915,7 @@ function App() {
   const [activeNav, setActiveNav] = useState('Dashboard');
   const [chartView, setChartView] = useState('24H');
   const [chartMetric, setChartMetric] = useState('rain');
+  const [briefingOpen, setBriefingOpen] = useState(false);
   const [cityDropOpen, setCityDropOpen] = useState(false);
   const [qaInput, setQaInput] = useState('');
   const [qaMessages, setQaMessages] = useState([]);
@@ -675,6 +927,7 @@ function App() {
   const qaRef = useRef(null);
 
   const city = cityData;
+  const heroImageSrc = HERO_IMAGE_SRC[city.slug] || HERO_IMAGE_SRC.amsterdam;
   const navItems = ['Dashboard', 'Forecast', 'Maps', 'Insights', 'Alerts'];
   const quickQs = ['Will it rain this evening?', 'Is it a good day for cycling?', 'How windy will it be tomorrow?', 'Weekend outlook'];
 
@@ -847,10 +1100,10 @@ function App() {
       <main style={{ maxWidth: 1220, margin: '0 auto', padding: isMobile ? '0 14px 32px' : '0 24px 48px' }}>
 
         {/* ── HERO STRIP ── */}
-        <div style={{ position: 'relative', marginTop: 20, borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--shadow-md)', aspectRatio: isMobile ? 'auto' : '1672 / 941', minHeight: isMobile ? 480 : undefined, background: '#2a3a50' }}>
+        <div style={{ position: 'relative', marginTop: 20, borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: 300, background: '#2a3a50' }}>
 
           {/* Full-bleed photo */}
-          <img src="/dashboard-assets/amsterdam-day.png" alt={city.name} style={{
+          <img src={heroImageSrc} alt={city.name} style={{
             position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
             zIndex: 0
           }} />
@@ -858,73 +1111,61 @@ function App() {
           {/* Subtle gradient overlay for legibility */}
           <div style={{
             position: 'absolute', inset: 0,
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.0) 60%, rgba(15,28,46,0.08) 100%)',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.0) 60%, rgba(15,28,46,0.06) 100%)',
             zIndex: 1, pointerEvents: 'none'
           }} />
 
-          {/* Briefing — liquid-glass panel (light) */}
-          <div style={{
-            position: isMobile ? 'static' : 'absolute',
-            top: isMobile ? undefined : 20, left: isMobile ? undefined : 20,
-            height: isMobile ? 'auto' : 'fit-content',
-            margin: isMobile ? '16px' : undefined,
-            width: isMobile ? 'auto' : 390,
-            zIndex: 2,
-            color: '#0f1c2e',
-            padding: '20px 22px',
-            display: 'flex', flexDirection: 'column', gap: 10,
-            background: 'rgba(255, 255, 255, 0.42)',
-            backdropFilter: 'blur(28px) saturate(180%)',
-            WebkitBackdropFilter: 'blur(28px) saturate(180%)',
-            border: '1px solid rgba(255,255,255,0.55)',
-            borderRadius: 16,
-            boxShadow: '0 12px 40px rgba(15,28,46,0.18), inset 0 1px 0 rgba(255,255,255,0.55)'
-          }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#ea580c' }}>Today's Briefing</div>
-            <div style={{ fontSize: isMobile ? 26 : 30, fontWeight: 800, lineHeight: 1.0, letterSpacing: '-0.02em', color: '#0f1c2e' }}>{todayStr}</div>
+          {/* Briefing — compact / collapsible (< 1092px) */}
+          <div className={`glass-panel briefing-collapsible${briefingOpen ? ' open' : ''}`}>
+            <button
+              type="button"
+              className="briefing-pill"
+              aria-label="Today's Briefing"
+              aria-expanded={briefingOpen}
+              aria-controls="today-briefing-expanded"
+              disabled={briefingOpen}
+              tabIndex={briefingOpen ? -1 : 0}
+              onClick={() => setBriefingOpen(true)}
+            >
+              <MetricIcon type="spark" size={16} className="ai-sparkle-icon" alt="" />
+              <span className="pill-label">Today's Briefing</span>
+              <svg className="briefing-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0f1c2e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 2, flexShrink: 0 }}><polyline points="9 18 15 12 9 6" /></svg>
+            </button>
 
-            {/* AI badge */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.55)', border: '1px solid rgba(59,130,246,0.30)', borderRadius: 999, padding: '4px 12px 4px 10px', fontSize: 13, color: '#1e3a8a', width: 'fit-content', fontWeight: 500 }}>
-              <MetricIcon type="spark" size={14} />
+            <div id="today-briefing-expanded" className="briefing-expanded" aria-hidden={!briefingOpen}>
+              <div className="briefing-header">
+                <span className="briefing-eyebrow">Today's Briefing</span>
+                <button className="briefing-close" onClick={(event) => { event.stopPropagation(); setBriefingOpen(false); }} aria-label="Close" tabIndex={briefingOpen ? 0 : -1}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="briefing-scroll">
+                <div style={{ fontSize: 12, fontWeight: 800, lineHeight: 1.2, letterSpacing: '-0.01em', color: '#0f1c2e', marginTop: 6 }}>{todayStr}</div>
+
+                <div className="ai-badge sm">
+                  <MetricIcon type="spark" size={12} className="ai-sparkle-icon" alt="" />
+                  <span>AI summary</span>
+                </div>
+
+                <BriefingItems items={city.aiSummary} size="sm" />
+              </div>
+            </div>
+          </div>
+
+          {/* Briefing — desktop static (≥ 1092px) */}
+          <div className="briefing-static">
+            <div className="static-eyebrow">Today's Briefing</div>
+            <div className="static-date">{todayStr}</div>
+
+            <div className="ai-badge md">
+              <MetricIcon type="spark" size={14} className="ai-sparkle-icon" alt="" />
               <span>AI summary</span>
             </div>
 
-            {/* Briefing items */}
-            <div style={{ display: 'flex', flexDirection: 'column', marginTop: 6, flex: 1, justifyContent: 'flex-start' }}>
-              {city.aiSummary.map((item, i) => {
-                const bg = i === 0 ? '#5eead4' : i === 1 ? '#fb923c' : '#60a5fa';
-                return (
-                  <div key={i} style={{
-                    display: 'flex', alignItems: 'flex-start', gap: 12,
-                    padding: '10px 0',
-                    borderTop: i === 0 ? 'none' : '1px solid rgba(15,28,46,0.08)'
-                  }}>
-                    <div style={{
-                      width: 32, height: 32, borderRadius: '50%', background: bg,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                      boxShadow: '0 2px 6px rgba(15,28,46,0.12)'
-                    }}>
-                      {i === 0 ?
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></svg>
-                      : i === 1 ?
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
-                      :
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" /></svg>
-                      }
-                    </div>
-                    <div style={{ minWidth: 0, fontSize: 13, lineHeight: 1.4 }}>
-                      <div style={{ color: '#0f1c2e', fontWeight: 700, marginBottom: 2, fontSize: 13 }}>
-                        {item.label}:{'  '}
-                        <span>{item.value}</span>
-                      </div>
-                      <div style={{ color: '#4b5563', fontSize: 12 }}>
-                        {item.text}
-                      </div>
-                    </div>
-                  </div>);
-
-              })}
-            </div>
+            <BriefingItems items={city.aiSummary} size="md" />
           </div>
 
           {/* Temp card — top-right of image */}
