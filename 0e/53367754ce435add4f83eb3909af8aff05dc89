@@ -1,0 +1,11 @@
+Task: Mark Ask deterministic answer boundary complete
+
+Summary: Updated TODO.md to mark Task 3 complete with implementation commit hash.
+
+Spec: docs/specs/ask-the-dashboard-langgraph-qna.md
+
+Docs: N/A
+
+TODO: Ask the Dashboard LangGraph Q&A / Deterministic answer and model boundary.
+
+Validation: git diff --check -- TODO.md; npm run lint
