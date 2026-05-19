@@ -1,0 +1,11 @@
+Task: Accept spec and draft Ask the Dashboard implementation plan
+
+Summary: Marked the Ask the Dashboard LangGraph Q&A spec accepted and added a detailed TDD implementation plan covering router, context assembly, deterministic answers, quota/logging, LangGraph route, UI wiring, and validation.
+
+Spec: docs/specs/ask-the-dashboard-langgraph-qna.md
+
+Docs: docs/specs/ask-the-dashboard-langgraph-qna.md, docs/superpowers/plans/2026-05-19-ask-the-dashboard-langgraph-qna.md
+
+TODO: N/A - plan drafting only; implementation plan instructs first implementation task to log TODO.md
+
+Validation: npm run lint; npm run typecheck; npm test
