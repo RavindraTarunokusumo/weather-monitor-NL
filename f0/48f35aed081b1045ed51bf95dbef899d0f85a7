@@ -1,0 +1,11 @@
+Task: Router TODO completion
+
+Summary: Marked the Ask router task complete with the feature commit hash.
+
+Spec: docs/specs/ask-the-dashboard-langgraph-qna.md
+
+Docs: N/A
+
+TODO: TODO.md Ask the Dashboard LangGraph Q&A / Router and shared ask types
+
+Validation: npm test -- tests/ask-router.test.ts; npm run typecheck
