@@ -1101,11 +1101,11 @@ function App() {
       <main style={{ maxWidth: 1220, margin: '0 auto', padding: isMobile ? '0 14px 32px' : '0 24px 48px' }}>
 
         {/* ── HERO STRIP ── */}
-        <div style={{ position: 'relative', marginTop: 20, borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--shadow-md)', height: 300, background: '#2a3a50' }}>
+        <div style={{ position: 'relative', marginTop: 20, borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--shadow-md)', aspectRatio: '1672 / 941', minHeight: isMobile ? 480 : undefined, background: '#2a3a50' }}>
 
           {/* Full-bleed photo */}
           <img src={heroImageSrc} alt={city.name} style={{
-            position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
+            position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain',
             zIndex: 0
           }} />
 

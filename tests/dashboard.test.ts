@@ -381,6 +381,16 @@ describe("provided dashboard HTML hero contract", () => {
     expect(html).not.toContain("src={'/dashboard-assets/amsterdam-day.png'}");
   });
 
+  it("shows the full hero image and keeps enough height for the briefing panel", () => {
+    const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
+
+    expect(html).toContain("aspectRatio: '1672 / 941'");
+    expect(html).toContain("minHeight: isMobile ? 480 : undefined");
+    expect(html).toContain("objectFit: 'contain'");
+    expect(html).not.toContain("height: 300, background: '#2a3a50'");
+    expect(html).not.toContain("objectFit: 'cover'");
+  });
+
   it("does not read city-specific hero fields before the loading guard", () => {
     const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
     const guardIndex = html.indexOf("if (!city) {");
