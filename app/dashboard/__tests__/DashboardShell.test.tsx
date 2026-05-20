@@ -269,6 +269,16 @@ describe("DashboardShell", () => {
     expect(within(cycleTile as HTMLElement).queryByText("/100")).not.toBeInTheDocument();
   });
 
+  it("marks only the temperature metric for mobile compact sizing", () => {
+    render(<MetricStrip dashboard={amsterdamDashboard} />);
+
+    const temperatureTile = screen.getByRole("heading", { name: /temperature/i }).closest("article");
+    const rainTile = screen.getByRole("heading", { name: /rain/i }).closest("article");
+
+    expect(temperatureTile).toHaveClass("metric-tile-compact-mobile");
+    expect(rainTile).not.toHaveClass("metric-tile-compact-mobile");
+  });
+
   it("renders unavailable copy for missing detail data and selected metric chart gaps", () => {
     render(
       <DetailPanels

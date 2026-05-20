@@ -393,6 +393,18 @@ describe("provided dashboard HTML hero contract", () => {
     expect(html).not.toContain("minHeight: isMobile ? 480 : undefined");
   });
 
+  it("keeps the React mobile hero image rule after broader phone overrides", () => {
+    const css = readFileSync(path.join(process.cwd(), "app/globals.css"), "utf8");
+    const phoneOverrideIndex = css.indexOf("@media (max-width: 760px)");
+    const finalMobileIndex = css.lastIndexOf("@media (max-width: 639px)");
+    const finalMobileCss = css.slice(finalMobileIndex);
+
+    expect(phoneOverrideIndex).toBeGreaterThan(-1);
+    expect(finalMobileIndex).toBeGreaterThan(phoneOverrideIndex);
+    expect(finalMobileCss).toContain(".briefing-hero .hero-image");
+    expect(finalMobileCss).toContain("object-fit: contain;");
+  });
+
   it("keeps mobile hero and metric cards from forcing horizontal overflow", () => {
     const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
 
@@ -401,6 +413,14 @@ describe("provided dashboard HTML hero contract", () => {
     expect(html).toContain("repeat(3, minmax(0, 1fr))");
     expect(html).toContain("repeat(5, minmax(0, 1fr))");
     expect(html).toContain("flexDirection: 'column', minWidth: 0");
+  });
+
+  it("compacts only the top-left temperature metric on mobile", () => {
+    const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
+
+    expect(html).toContain("compactMobile: true");
+    expect(html).toContain("isMobile && m.compactMobile");
+    expect(html).toContain("MetricIcon type={m.icon} size={isMobile && m.compactMobile ? 20 : 24}");
   });
 
   it("does not read city-specific hero fields before the loading guard", () => {
