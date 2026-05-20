@@ -1,0 +1,6 @@
+Task: restore mobile Temperature metric sizing
+Summary: Removed the mobile-only compact treatment from the top-left Temperature metric card and restored original/default metric tile sizing while preserving the current-weather overlay compaction.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: docs/specs/briefing-panel-glass-overlay.md
+TODO: TODO.md Backlog / Restore mobile Temperature metric original sizing
+Validation: npm run lint; npm run typecheck; npm test; npm run build; review/mobile/tablet/desktop screenshot checks
