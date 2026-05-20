@@ -2,6 +2,13 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-20 - Mobile Temperature Metric Sizing
+
+- What worked: a single mobile-only modifier on the Temperature metric let the metric shrink without changing Rain, tablet, or desktop card sizing.
+- What failed: the in-app browser screenshot API timed out on the local iframe page, so local Chrome headless screenshots were used for visual verification.
+- Useful commands: `npm test -- app/dashboard/__tests__/DashboardShell.test.tsx`, `npm test -- tests/dashboard.test.ts`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`.
+- Workflow improvement: after adding narrower mobile rules, check CSS order against broader phone media queries because later rules can silently override accepted breakpoint behavior.
+
 ## 2026-05-20 - Mobile Briefing Panel Breakpoint
 
 - What worked: checking the live `/` route early showed the iframe-backed `Dutch Weather Dashboard.html` was the visible dashboard surface, so the mobile fix had to be applied there as well as in the typed React component path.
