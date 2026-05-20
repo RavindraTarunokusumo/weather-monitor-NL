@@ -20,7 +20,6 @@ export function MetricStrip({ dashboard }: MetricStripProps) {
         typeof dashboard.current.feels_like_c === "number"
           ? `Feels like ${dashboard.current.feels_like_c.toFixed(1)}°C`
           : "Feels-like unavailable",
-      compactOnMobile: true,
     },
     {
       label: "Rain",
@@ -78,10 +77,7 @@ export function MetricStrip({ dashboard }: MetricStripProps) {
   return (
     <section className="metric-strip" aria-label="Dashboard metrics">
       {metrics.map((metric) => (
-        <article
-          className={`dashboard-card metric-tile${metric.compactOnMobile ? " metric-tile-compact-mobile" : ""}`}
-          key={metric.label}
-        >
+        <article className="dashboard-card metric-tile" key={metric.label}>
           <div className="metric-heading">
             <img src={metric.icon} alt="" className="metric-icon" />
             <h2>{metric.label}</h2>

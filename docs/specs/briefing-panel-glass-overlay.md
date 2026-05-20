@@ -10,7 +10,7 @@ Replace the current two-column `BriefingHero` layout with a full-bleed hero imag
 
 2026-05-20 mobile-only amendment: at mobile widths (< 640 px), the collapsible top-left briefing control is removed from the visual layout, the hero image keeps non-cropping resize behavior, and a static `Today's Briefing` panel is placed below the hero image. Tablet and desktop breakpoints must remain visually unchanged.
 
-2026-05-20 mobile temperature-card amendment: at mobile widths (< 640 px), the top-left Temperature metric card should be visually smaller/more compact than the other metric cards. Tablet and desktop metric card sizing must remain unchanged.
+2026-05-20 mobile temperature-card amendment, superseded: the earlier mobile-only compact Temperature metric card treatment is removed. The top-left Temperature metric card should use the original/default metric card sizing at mobile, tablet, and desktop breakpoints.
 
 2026-05-20 mobile current-weather amendment: at mobile widths (< 640 px), the top-right current-weather overlay card should be visually smaller/more compact. Tablet and desktop overlay sizing must remain unchanged.
 
@@ -34,7 +34,7 @@ This spec extends `docs/specs/dashboard-ui-liquid-glass-panel-polish.md`. It is 
 - Keep the existing `current-weather-card` aside element; reposition it as a direct absolute child of the hero container.
 - Add component-level tests for the collapsible pill behavior and summary item rendering.
 - Add a mobile-only static briefing panel below the hero image while keeping the desktop static panel and tablet collapsible pill behavior unchanged.
-- Add a mobile-only compact treatment for the top-left Temperature metric card while keeping tablet and desktop metric sizing unchanged.
+- Restore the top-left Temperature metric card to the original/default metric card sizing at mobile, tablet, and desktop breakpoints.
 - Add a mobile-only compact treatment for the top-right current-weather overlay while keeping tablet and desktop overlay sizing unchanged.
 
 ## Non-Goals
@@ -214,7 +214,7 @@ All new classes are added to `app/globals.css`. Tokens are transcribed directly 
 - The briefing pill and AI badges use the AI sparkle icon asset, not the star SVG.
 - City switching updates the hero image to the active city's public asset; unknown city slugs fall back to Amsterdam.
 - The hero image preserves non-cropping resize behavior at the mobile breakpoint.
-- At < 640 px, the top-left Temperature metric card is compacted without changing the other metric cards or any tablet/desktop metric sizing.
+- At < 640 px, the top-left Temperature metric card uses the original/default metric card sizing and does not receive a compact mobile treatment.
 - At < 640 px, the top-right current-weather overlay is compacted without changing tablet or desktop overlay sizing.
 - The expanded Variant A panel does not overlap the weather card.
 - All three summary items render with correct labels, values, and fallback text.
@@ -250,7 +250,7 @@ New file: `app/dashboard/__tests__/BriefingHero.test.tsx`
 - Clicking the pill sets `open` and shows the expanded panel content.
 - Clicking the close button removes `open` and hides the expanded panel.
 - The mobile briefing panel is rendered after the hero image section for CSS-only mobile placement.
-- The Temperature metric card exposes a mobile-only compact treatment.
+- The Temperature metric card does not expose a mobile-only compact treatment.
 - The current-weather overlay exposes a mobile-only compact treatment.
 - All three summary item labels render correctly from mock dashboard data.
 - `fallbackLabel` guard renders "No known risk" when `main_risk` is null.
@@ -268,7 +268,7 @@ Existing tests:
 - At ≥ 1092 px: confirm static panel visible, pill hidden, weather card in place.
 - At < 1092 px: confirm pill visible, tap to expand, close to collapse.
 - At < 640 px: confirm no top-left collapsible control is visible, the image is not cropped, and the static briefing panel sits below the hero image.
-- At < 640 px: confirm the top-left Temperature metric card is visibly smaller/more compact, without affecting tablet or desktop metric cards.
+- At < 640 px: confirm the top-left Temperature metric card uses the original/default metric card size.
 - At < 640 px: confirm the top-right current-weather overlay is visibly smaller/more compact, without affecting tablet or desktop overlay sizing.
 - Compare hero against `Briefing Panel Export.html` for glass treatment, spacing, and typography.
 - Verify no overlap between briefing panel and weather card at any width.

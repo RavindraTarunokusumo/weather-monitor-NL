@@ -1470,31 +1470,4 @@ p {
     height: 4px;
   }
 
-  .metric-tile-compact-mobile {
-    min-height: 0;
-    align-self: start;
-    padding: 10px 12px;
-  }
-
-  .metric-tile-compact-mobile .metric-heading {
-    margin-bottom: 6px;
-  }
-
-  .metric-tile-compact-mobile .metric-icon {
-    width: 30px;
-    height: 30px;
-  }
-
-  .metric-tile-compact-mobile .metric-main {
-    min-height: 24px;
-    margin-bottom: 3px;
-  }
-
-  .metric-tile-compact-mobile .metric-main span {
-    font-size: 21px;
-  }
-
-  .metric-tile-compact-mobile .metric-sub {
-    font-size: 10px;
-  }
 }

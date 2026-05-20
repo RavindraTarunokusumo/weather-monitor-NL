@@ -1231,7 +1231,7 @@ function App() {
             {/* Metric bar */}
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, minmax(0, 1fr))' : isTablet ? 'repeat(3, minmax(0, 1fr))' : 'repeat(5, minmax(0, 1fr))', gap: 10 }}>
             {[
-              { label: 'Temperature', icon: 'temp', tint: 'rgba(249,115,22,0.14)', value: city.temp, unit: '°C', sub: 'Feels like', subAfter: <span style={{ color: '#d4571a', fontWeight: 600, marginLeft: 8 }}>{city.feelsLike.toFixed(1)}°C</span>, compactMobile: true },
+              { label: 'Temperature', icon: 'temp', tint: 'rgba(249,115,22,0.14)', value: city.temp, unit: '°C', sub: 'Feels like', subAfter: <span style={{ color: '#d4571a', fontWeight: 600, marginLeft: 8 }}>{city.feelsLike.toFixed(1)}°C</span> },
               { label: 'Rain', icon: 'rain', tint: 'rgba(148,163,212,0.22)', value: city.rain, unit: 'mm', sub: 'Today so far', subAfter: <span style={{ color: '#3b82f6', fontWeight: 600, marginLeft: 8 }}>{city.rainProb}% chance</span> },
               { label: 'Wind / Gusts', icon: 'wind', tint: 'rgba(148,163,212,0.22)', value: city.wind, unit: 'km/h', sub: <span style={{ color: '#3b82f6' }}>↗ {city.windDir}</span>, subAfter: <span style={{ marginLeft: 10, color: 'var(--muted)' }}>Gusts <span style={{ color: '#3b82f6', fontWeight: 600 }}>{city.gust} km/h</span></span> },
               { label: 'Air Quality', icon: 'leaf', tint: 'rgba(22,163,74,0.13)', value: city.aqi, unit: '', sub: city.aqiLabel, subAfter: <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: '#16a34a', marginLeft: 6, verticalAlign: 'middle' }} /> },
@@ -1239,27 +1239,26 @@ function App() {
               map((m, i) =>
               <div key={i} style={{
                 background: 'var(--surface)', border: '1px solid var(--border)',
-                borderRadius: var_radius, padding: isMobile && m.compactMobile ? '10px 12px' : '14px 14px 12px',
-                boxShadow: 'var(--shadow)', display: 'flex', flexDirection: 'column', minWidth: 0,
-                alignSelf: isMobile && m.compactMobile ? 'start' : 'stretch'
+                borderRadius: var_radius, padding: '14px 14px 12px',
+                boxShadow: 'var(--shadow)', display: 'flex', flexDirection: 'column', minWidth: 0
               }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: isMobile && m.compactMobile ? 8 : 10, marginBottom: isMobile && m.compactMobile ? 6 : 10 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
                   <div style={{
-                    width: isMobile && m.compactMobile ? 32 : 38, height: isMobile && m.compactMobile ? 32 : 38, borderRadius: '50%', background: m.tint,
+                    width: 38, height: 38, borderRadius: '50%', background: m.tint,
                     display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
                   }}>
-                    <MetricIcon type={m.icon} size={isMobile && m.compactMobile ? 20 : 24} />
+                    <MetricIcon type={m.icon} size={24} />
                   </div>
-                  <span style={{ fontSize: isMobile && m.compactMobile ? 9 : 10, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--muted)', marginTop: 4 }}>{m.label}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--muted)', marginTop: 4 }}>{m.label}</span>
                 </div>
                 {m.special ?
                 <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>{m.special}</div> :
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, marginBottom: 4 }}>
-                    <span style={{ fontSize: isMobile && m.compactMobile ? 22 : 26, fontWeight: 800, color: 'var(--text)', fontFamily: 'var(--mono)', lineHeight: 1 }}>{m.value}</span>
+                    <span style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', fontFamily: 'var(--mono)', lineHeight: 1 }}>{m.value}</span>
                     <span style={{ fontSize: 12, color: 'var(--muted)', fontFamily: 'var(--mono)' }}>{m.unit}</span>
                   </div>
                 }
-                <div style={{ fontSize: isMobile && m.compactMobile ? 10 : 11, color: 'var(--muted)', marginTop: isMobile && m.compactMobile ? 0 : 'auto' }}>
+                <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 'auto' }}>
                   {m.sub}{m.subAfter}
                 </div>
               </div>

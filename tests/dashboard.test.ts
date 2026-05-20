@@ -416,6 +416,7 @@ describe("provided dashboard HTML hero contract", () => {
     expect(finalMobileCss).toContain("left: min(calc(100% - 112px), calc(100vw - 126px));");
     expect(finalMobileCss).toContain(".current-weather-card .weather-card-top img");
     expect(finalMobileCss).toContain("font-size: 18px;");
+    expect(finalMobileCss).not.toContain(".metric-tile-compact-mobile");
   });
 
   it("keeps mobile hero and metric cards from forcing horizontal overflow", () => {
@@ -428,12 +429,14 @@ describe("provided dashboard HTML hero contract", () => {
     expect(html).toContain("flexDirection: 'column', minWidth: 0");
   });
 
-  it("compacts only the top-left temperature metric on mobile", () => {
+  it("keeps the top-left temperature metric at the original size on mobile", () => {
     const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
 
-    expect(html).toContain("compactMobile: true");
-    expect(html).toContain("isMobile && m.compactMobile");
-    expect(html).toContain("MetricIcon type={m.icon} size={isMobile && m.compactMobile ? 20 : 24}");
+    expect(html).not.toContain("compactMobile: true");
+    expect(html).not.toContain("isMobile && m.compactMobile");
+    expect(html).toContain("padding: '14px 14px 12px'");
+    expect(html).toContain("MetricIcon type={m.icon} size={24}");
+    expect(html).toContain("fontSize: 26");
   });
 
   it("compacts the current weather overlay on mobile in the public dashboard HTML", () => {
