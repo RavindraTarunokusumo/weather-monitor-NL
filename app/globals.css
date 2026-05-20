@@ -230,6 +230,7 @@ p {
   position: relative;
   aspect-ratio: 1672 / 941;
   min-height: 520px;
+  max-width: calc(100% - 48px);
   margin-top: 20px;
   overflow: hidden;
   border-radius: 14px;
@@ -1352,7 +1353,14 @@ p {
   }
 
   .briefing-hero {
-    min-height: 480px;
+    aspect-ratio: auto;
+    height: 480px;
+    min-height: 0;
+    max-width: calc(100% - 28px);
+  }
+
+  .briefing-hero .hero-image {
+    object-fit: cover;
   }
 
   .current-weather-card {

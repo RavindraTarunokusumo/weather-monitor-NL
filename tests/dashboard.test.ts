@@ -384,11 +384,21 @@ describe("provided dashboard HTML hero contract", () => {
   it("shows the full hero image and keeps enough height for the briefing panel", () => {
     const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
 
-    expect(html).toContain("aspectRatio: '1672 / 941'");
-    expect(html).toContain("minHeight: isMobile ? 480 : undefined");
-    expect(html).toContain("objectFit: 'contain'");
+    expect(html).toContain("aspectRatio: isMobile ? undefined : '1672 / 941'");
+    expect(html).toContain("height: isMobile ? 480 : undefined");
+    expect(html).toContain("objectFit: isMobile ? 'cover' : 'contain'");
     expect(html).not.toContain("height: 300, background: '#2a3a50'");
-    expect(html).not.toContain("objectFit: 'cover'");
+    expect(html).not.toContain("minHeight: isMobile ? 480 : undefined");
+  });
+
+  it("keeps mobile hero and metric cards from forcing horizontal overflow", () => {
+    const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
+
+    expect(html).toContain("width: '100%', maxWidth: '100%'");
+    expect(html).toContain("repeat(2, minmax(0, 1fr))");
+    expect(html).toContain("repeat(3, minmax(0, 1fr))");
+    expect(html).toContain("repeat(5, minmax(0, 1fr))");
+    expect(html).toContain("flexDirection: 'column', minWidth: 0");
   });
 
   it("does not read city-specific hero fields before the loading guard", () => {
