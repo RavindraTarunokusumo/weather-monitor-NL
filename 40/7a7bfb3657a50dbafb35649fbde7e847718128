@@ -1,0 +1,6 @@
+Task: mobile current-weather overlay chip
+Summary: Collapse the mobile top-right current-weather overlay into an aligned icon-and-temperature chip while keeping tablet and desktop full-card content unchanged.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: docs/specs/briefing-panel-glass-overlay.md
+TODO: TODO.md Backlog / Fix mobile current-weather overlay clipping
+Validation: npm test -- tests/dashboard.test.ts; npm run lint; npm run typecheck; npm test; npm run build; mobile/tablet/desktop browser screenshots
