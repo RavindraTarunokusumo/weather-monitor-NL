@@ -355,13 +355,14 @@ describe("provided dashboard HTML hero contract", () => {
     expect(html).not.toContain("height: briefingOpen ? 0 : 44");
   });
 
-  it("renders the smartphone briefing pill as an AI-only circle", () => {
+  it("renders the smartphone briefing panel below the non-cropping hero image", () => {
     const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
 
-    expect(html).toContain("@media (max-width: 599px) {");
-    expect(html).toContain(".briefing-collapsible:not(.open) { width: 46px; }");
-    expect(html).toContain(".briefing-collapsible:not(.open) .pill-label,");
-    expect(html).toContain(".briefing-collapsible:not(.open) .briefing-chevron { display: none; }");
+    expect(html).toContain("@media (max-width: 639px) {");
+    expect(html).toContain(".briefing-collapsible { display: none; }");
+    expect(html).toContain(".briefing-mobile-panel { display: flex; }");
+    expect(html).toContain("className=\"briefing-mobile-panel\"");
+    expect(html).toContain("aria-label=\"Today's mobile briefing\"");
     expect(html).toContain("className=\"ai-sparkle-icon\"");
     expect(html).toContain("className=\"briefing-chevron\"");
     expect(html).toContain("<MetricIcon type=\"spark\" size={16} className=\"ai-sparkle-icon\" alt=\"\" />");
@@ -384,9 +385,10 @@ describe("provided dashboard HTML hero contract", () => {
   it("shows the full hero image and keeps enough height for the briefing panel", () => {
     const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
 
-    expect(html).toContain("aspectRatio: isMobile ? undefined : '1672 / 941'");
-    expect(html).toContain("height: isMobile ? 480 : undefined");
-    expect(html).toContain("objectFit: isMobile ? 'cover' : 'contain'");
+    expect(html).toContain("aspectRatio: '1672 / 941'");
+    expect(html).toContain("objectFit: 'contain'");
+    expect(html).not.toContain("height: isMobile ? 480 : undefined");
+    expect(html).not.toContain("objectFit: isMobile ? 'cover' : 'contain'");
     expect(html).not.toContain("height: 300, background: '#2a3a50'");
     expect(html).not.toContain("minHeight: isMobile ? 480 : undefined");
   });

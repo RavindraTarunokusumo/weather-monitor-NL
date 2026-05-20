@@ -60,7 +60,8 @@
     }
 
     .briefing-collapsible,
-    .briefing-static {
+    .briefing-static,
+    .briefing-mobile-panel {
       --navy: #0f1c2e;
       --sans: 'DM Sans', Arial, sans-serif;
       font-family: var(--sans);
@@ -241,6 +242,24 @@
     .item-desc.sm { font-size: 11px; }
     .item-desc.md { font-size: 12px; }
 
+    .briefing-mobile-panel {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .briefing-mobile-panel .static-date {
+      margin-top: 0;
+      font-size: 24px;
+      line-height: 1.05;
+    }
+
     @media (min-width: 1092px) {
       .briefing-collapsible { display: none; }
     }
@@ -249,15 +268,9 @@
       .briefing-static { display: none; }
     }
 
-    @media (max-width: 599px) {
-      .briefing-collapsible:not(.open) { width: 46px; }
-      .briefing-collapsible:not(.open) .briefing-pill {
-        justify-content: center;
-        gap: 0;
-        padding: 0;
-      }
-      .briefing-collapsible:not(.open) .pill-label,
-      .briefing-collapsible:not(.open) .briefing-chevron { display: none; }
+    @media (max-width: 639px) {
+      .briefing-collapsible { display: none; }
+      .briefing-mobile-panel { display: flex; }
     }
   </style>
 </head>
@@ -1101,11 +1114,11 @@ function App() {
       <main style={{ maxWidth: 1220, margin: '0 auto', padding: isMobile ? '0 14px 32px' : '0 24px 48px' }}>
 
         {/* ── HERO STRIP ── */}
-        <div style={{ position: 'relative', width: '100%', maxWidth: '100%', marginTop: 20, borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--shadow-md)', aspectRatio: isMobile ? undefined : '1672 / 941', height: isMobile ? 480 : undefined, background: '#2a3a50' }}>
+        <div style={{ position: 'relative', width: '100%', maxWidth: '100%', marginTop: 20, borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--shadow-md)', aspectRatio: '1672 / 941', background: '#2a3a50' }}>
 
           {/* Full-bleed photo */}
           <img src={heroImageSrc} alt={city.name} style={{
-            position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: isMobile ? 'cover' : 'contain',
+            position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain',
             zIndex: 0
           }} />
 
@@ -1194,6 +1207,18 @@ function App() {
               <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
             </div>
           </div>
+        </div>
+
+        <div className="briefing-mobile-panel" aria-label="Today's mobile briefing">
+          <div className="static-eyebrow">Today's Briefing</div>
+          <div className="static-date">{todayStr}</div>
+
+          <div className="ai-badge md">
+            <MetricIcon type="spark" size={14} className="ai-sparkle-icon" alt="" />
+            <span>AI summary</span>
+          </div>
+
+          <BriefingItems items={city.aiSummary} size="md" />
         </div>
 
         {/* ── MAIN GRID: left content | right rail ── */}

@@ -2,6 +2,14 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-20 - Mobile Briefing Panel Breakpoint
+
+- What worked: checking the live `/` route early showed the iframe-backed `Dutch Weather Dashboard.html` was the visible dashboard surface, so the mobile fix had to be applied there as well as in the typed React component path.
+- What worked: browser viewport checks at mobile, tablet, and desktop confirmed the breakpoint split directly: mobile hides the collapsible panel and shows the below-hero briefing panel, while tablet and desktop keep their existing briefing variants.
+- What failed: the first full test run exposed older HTML contract assertions that still encoded the superseded mobile circle-pill behavior.
+- Useful commands: `npm test -- tests/dashboard.test.ts app/dashboard/__tests__/BriefingHero.test.tsx`, `npm run lint`, `npm run typecheck`, `npx prisma validate`, and `npm run build`.
+- Windows note: if `npm run build` fails with Prisma DLL locks, stop project-local `next dev` processes; if it fails on stale `.next` readlink state, remove only the generated `.next` directory and rerun build.
+
 ## 2026-05-18 - Briefing Panel Glass Overlay
 
 - What worked: matching the provided HTML export directly in `Dutch Weather Dashboard.html` kept the visible `/` shell aligned with the requested sizing, spacing, and typography while React component tests kept the typed dashboard path consistent.

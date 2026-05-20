@@ -51,15 +51,38 @@ export function BriefingHero({ dashboard }: BriefingHeroProps) {
   ];
 
   return (
-    <section className="briefing-hero" aria-label="Today briefing">
-      <img
-        src={heroImageSrc}
-        alt={`${dashboard.city.name} weather scene`}
-        className="hero-image"
-      />
-      <h2 className="sr-only">{dashboard.city.name}</h2>
-      <BriefingCollapsiblePanel date={date} items={summaryItems} />
-      <div className="briefing-static">
+    <>
+      <section className="briefing-hero" aria-label="Today briefing">
+        <img
+          src={heroImageSrc}
+          alt={`${dashboard.city.name} weather scene`}
+          className="hero-image"
+        />
+        <h2 className="sr-only">{dashboard.city.name}</h2>
+        <BriefingCollapsiblePanel date={date} items={summaryItems} />
+        <div className="briefing-static">
+          <p className="eyebrow orange">Today&apos;s briefing</p>
+          <h1>{date}</h1>
+          <span className="ai-badge">
+            <img src="/dashboard-assets/icon-spark.png" alt="" />
+            AI summary
+          </span>
+          <SummaryList items={summaryItems} />
+        </div>
+        <aside className="current-weather-card" aria-label="Current weather summary">
+          <div className="weather-card-top">
+            <img src="/dashboard-assets/icon-rain.png" alt="" />
+            <strong>{formatTemperature(dashboard.current.temperature_c).replace("°C", "°")}</strong>
+          </div>
+          <p>Feels like {formatTemperature(dashboard.current.feels_like_c).replace("°C", "°")}</p>
+          <p className="condition-label">{fallbackLabel(dashboard.current.condition_label, "Condition unavailable")}</p>
+          <p className="updated-line">
+            <span aria-hidden="true" />
+            Updated {formatDateTime(dashboard.generated_at, dashboard.city.timezone)}
+          </p>
+        </aside>
+      </section>
+      <div className="briefing-mobile-panel dashboard-card" aria-label="Today's mobile briefing">
         <p className="eyebrow orange">Today&apos;s briefing</p>
         <h1>{date}</h1>
         <span className="ai-badge">
@@ -68,19 +91,7 @@ export function BriefingHero({ dashboard }: BriefingHeroProps) {
         </span>
         <SummaryList items={summaryItems} />
       </div>
-      <aside className="current-weather-card" aria-label="Current weather summary">
-        <div className="weather-card-top">
-          <img src="/dashboard-assets/icon-rain.png" alt="" />
-          <strong>{formatTemperature(dashboard.current.temperature_c).replace("°C", "°")}</strong>
-        </div>
-        <p>Feels like {formatTemperature(dashboard.current.feels_like_c).replace("°C", "°")}</p>
-        <p className="condition-label">{fallbackLabel(dashboard.current.condition_label, "Condition unavailable")}</p>
-        <p className="updated-line">
-          <span aria-hidden="true" />
-          Updated {formatDateTime(dashboard.generated_at, dashboard.city.timezone)}
-        </p>
-      </aside>
-    </section>
+    </>
   );
 }
 
