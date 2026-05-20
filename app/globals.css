@@ -1427,6 +1427,49 @@ p {
     object-fit: contain;
   }
 
+  .current-weather-card {
+    top: 8px;
+    right: auto;
+    left: min(calc(100% - 112px), calc(100vw - 126px));
+    min-width: 96px;
+    max-width: 112px;
+    padding: 6px 8px;
+    border-radius: 10px;
+  }
+
+  .current-weather-card .weather-card-top {
+    gap: 4px;
+    margin-bottom: 1px;
+  }
+
+  .current-weather-card .weather-card-top img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .current-weather-card .weather-card-top strong {
+    font-size: 18px;
+  }
+
+  .current-weather-card p {
+    margin-bottom: 1px;
+    font-size: 9px;
+  }
+
+  .current-weather-card .condition-label {
+    font-size: 10px;
+  }
+
+  .current-weather-card .updated-line {
+    gap: 3px;
+    font-size: 9px;
+  }
+
+  .current-weather-card .updated-line span {
+    width: 4px;
+    height: 4px;
+  }
+
   .metric-tile-compact-mobile {
     min-height: 0;
     align-self: start;

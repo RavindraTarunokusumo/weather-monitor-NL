@@ -1027,6 +1027,7 @@ function App() {
   }
 
   const heroImageSrc = HERO_IMAGE_SRC[city.slug] || HERO_IMAGE_SRC.amsterdam;
+  const compactWeatherCard = isMobile;
 
   // Score color helper
   const scoreColor = city.cycleScore >= 75 ? '#16a34a' : city.cycleScore >= 50 ? '#0f766e' : '#b45309';
@@ -1184,27 +1185,27 @@ function App() {
 
           {/* Temp card — top-right of image */}
           <div style={{
-            position: 'absolute', top: 20, right: 20, zIndex: 2,
+            position: 'absolute', top: compactWeatherCard ? 10 : 20, right: compactWeatherCard ? 'auto' : 20, left: compactWeatherCard ? 'calc(100vw - 124px)' : undefined, zIndex: 2,
             background: 'rgba(255,255,255,0.78)',
             backdropFilter: 'blur(22px) saturate(180%)',
             WebkitBackdropFilter: 'blur(22px) saturate(180%)',
             border: '1px solid rgba(255,255,255,0.6)',
-            borderRadius: 14, padding: '12px 14px', minWidth: 140,
+            borderRadius: compactWeatherCard ? 12 : 14, padding: compactWeatherCard ? '8px 10px' : '12px 14px', minWidth: compactWeatherCard ? 104 : 140,
             boxShadow: '0 8px 24px rgba(15,28,46,0.18), inset 0 1px 0 rgba(255,255,255,0.6)'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
-              <WeatherIcon condition={city.rainProb > 50 ? 'rain' : city.rainProb > 25 ? 'partly' : 'sunny'} size={28} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: compactWeatherCard ? 6 : 8, marginBottom: compactWeatherCard ? 2 : 3 }}>
+              <WeatherIcon condition={city.rainProb > 50 ? 'rain' : city.rainProb > 25 ? 'partly' : 'sunny'} size={compactWeatherCard ? 20 : 28} />
               <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                <span style={{ fontSize: 26, fontWeight: 800, color: '#0f1c2e', lineHeight: 1, fontFamily: 'var(--sans)' }}>{Math.round(city.temp)}</span>
-                <span style={{ fontSize: 16, fontWeight: 700, color: '#0f1c2e', lineHeight: 1, marginTop: 2 }}>°</span>
+                <span style={{ fontSize: compactWeatherCard ? 21 : 26, fontWeight: 800, color: '#0f1c2e', lineHeight: 1, fontFamily: 'var(--sans)' }}>{Math.round(city.temp)}</span>
+                <span style={{ fontSize: compactWeatherCard ? 13 : 16, fontWeight: 700, color: '#0f1c2e', lineHeight: 1, marginTop: 2 }}>°</span>
               </div>
             </div>
-            <div style={{ fontSize: 10, color: '#4b5563', textAlign: 'right', marginBottom: 6 }}>Feels like {Math.round(city.feelsLike)}°</div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#0f1c2e', marginBottom: 3 }}>{city.condition}</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10, color: '#6b7280' }}>
+            <div style={{ fontSize: compactWeatherCard ? 9 : 10, color: '#4b5563', textAlign: 'right', marginBottom: compactWeatherCard ? 4 : 6 }}>Feels like {Math.round(city.feelsLike)}°</div>
+            <div style={{ fontSize: compactWeatherCard ? 10 : 12, fontWeight: 700, color: '#0f1c2e', marginBottom: compactWeatherCard ? 2 : 3 }}>{city.condition}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: compactWeatherCard ? 3 : 5, fontSize: compactWeatherCard ? 9 : 10, color: '#6b7280' }}>
               <span>Updated</span>
               <span style={{ fontFamily: 'var(--mono)', color: '#0f1c2e', fontWeight: 600 }}>{city.sources[0].time}</span>
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
+              <span style={{ width: compactWeatherCard ? 4 : 5, height: compactWeatherCard ? 4 : 5, borderRadius: '50%', background: '#16a34a', display: 'inline-block' }} />
             </div>
           </div>
         </div>
