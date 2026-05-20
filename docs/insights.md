@@ -2,6 +2,42 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-20 - Mobile Current Weather Overlay Chip
+
+- What worked: reducing the phone overlay to an icon and rounded temperature text solved the clipping concern without touching the tablet or desktop full-card branch.
+- What failed: the first mobile screenshot captured a browser hover tooltip, so moving the pointer away before the final screenshot is necessary for clean visual evidence.
+- Useful commands: `npm test -- tests/dashboard.test.ts`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`.
+- Workflow improvement: when the visible dashboard is iframe-backed, pair source contract tests with actual viewport screenshots because the iframe can visually expose alignment issues before DOM access is practical.
+
+## 2026-05-20 - Restore Mobile Temperature Metric Sizing
+
+- What worked: removing the `compactMobile` flag and its CSS modifier restored the Temperature metric to the same default card sizing as the neighboring metric tiles.
+- What failed: the in-app browser screenshot command continued to time out on the iframe page, so local Chrome headless screenshots remained the reliable visual verification path.
+- Useful commands: `npm test -- app/dashboard/__tests__/DashboardShell.test.tsx`, `npm test -- tests/dashboard.test.ts`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`.
+- Workflow improvement: keep review-comment reversions covered by negative assertions (`not.toContain`, `not.toHaveClass`) so previously requested UI tweaks can be removed deliberately.
+
+## 2026-05-20 - Mobile Current Weather Overlay Sizing
+
+- What worked: keeping the current-weather overlay compaction under the final `< 640px` media block preserved tablet and desktop sizing while making the phone overlay smaller.
+- What failed: the in-app browser screenshot path still timed out on the iframe page, so visual verification used local Chrome headless captures after reloading the in-app browser.
+- Useful commands: `npm test -- tests/dashboard.test.ts`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`.
+- Workflow improvement: for viewport-specific inline styles in the standalone dashboard HTML, mirror the same contract in `tests/dashboard.test.ts` so mobile-only sizing cannot drift from the typed React path.
+
+## 2026-05-20 - Mobile Temperature Metric Sizing
+
+- What worked: a single mobile-only modifier on the Temperature metric let the metric shrink without changing Rain, tablet, or desktop card sizing.
+- What failed: the in-app browser screenshot API timed out on the local iframe page, so local Chrome headless screenshots were used for visual verification.
+- Useful commands: `npm test -- app/dashboard/__tests__/DashboardShell.test.tsx`, `npm test -- tests/dashboard.test.ts`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`.
+- Workflow improvement: after adding narrower mobile rules, check CSS order against broader phone media queries because later rules can silently override accepted breakpoint behavior.
+
+## 2026-05-20 - Mobile Briefing Panel Breakpoint
+
+- What worked: checking the live `/` route early showed the iframe-backed `Dutch Weather Dashboard.html` was the visible dashboard surface, so the mobile fix had to be applied there as well as in the typed React component path.
+- What worked: browser viewport checks at mobile, tablet, and desktop confirmed the breakpoint split directly: mobile hides the collapsible panel and shows the below-hero briefing panel, while tablet and desktop keep their existing briefing variants.
+- What failed: the first full test run exposed older HTML contract assertions that still encoded the superseded mobile circle-pill behavior.
+- Useful commands: `npm test -- tests/dashboard.test.ts app/dashboard/__tests__/BriefingHero.test.tsx`, `npm run lint`, `npm run typecheck`, `npx prisma validate`, and `npm run build`.
+- Windows note: if `npm run build` fails with Prisma DLL locks, stop project-local `next dev` processes; if it fails on stale `.next` readlink state, remove only the generated `.next` directory and rerun build.
+
 ## 2026-05-18 - Briefing Panel Glass Overlay
 
 - What worked: matching the provided HTML export directly in `Dutch Weather Dashboard.html` kept the visible `/` shell aligned with the requested sizing, spacing, and typography while React component tests kept the typed dashboard path consistent.

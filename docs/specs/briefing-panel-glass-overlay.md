@@ -6,7 +6,13 @@ Created: 2026-05-17
 
 ## Goal
 
-Replace the current two-column `BriefingHero` layout with a full-bleed hero image and a responsive glass overlay panel that follows the `Briefing Panel Export.html` design exactly. The overlay has two CSS-responsive variants: a collapsible pill (< 1092 px) and a static 400 px panel (≥ 1092 px). At smartphone widths (<= 599 px), the collapsed pill becomes a 46 px circle that shows only the AI sparkle icon. The hero image is city-aware and uses the Amsterdam, Rotterdam, or Utrecht image from `public/dashboard-assets` based on the active city slug. No new backend data is required.
+Replace the current two-column `BriefingHero` layout with a full-bleed hero image and a responsive glass overlay panel that follows the `Briefing Panel Export.html` design exactly. The overlay has two CSS-responsive variants: a collapsible pill (< 1092 px) and a static 400 px panel (≥ 1092 px). The hero image is city-aware and uses the Amsterdam, Rotterdam, or Utrecht image from `public/dashboard-assets` based on the active city slug. No new backend data is required.
+
+2026-05-20 mobile-only amendment: at mobile widths (< 640 px), the collapsible top-left briefing control is removed from the visual layout, the hero image keeps non-cropping resize behavior, and a static `Today's Briefing` panel is placed below the hero image. Tablet and desktop breakpoints must remain visually unchanged.
+
+2026-05-20 mobile temperature-card amendment, superseded: the earlier mobile-only compact Temperature metric card treatment is removed. The top-left Temperature metric card should use the original/default metric card sizing at mobile, tablet, and desktop breakpoints.
+
+2026-05-20 mobile current-weather amendment: at mobile widths (< 640 px), the top-right current-weather overlay card should collapse into a smaller aligned chip that shows only the weather icon and temperature, remain fully inside the hero image bounds, and avoid clipped text. Tablet and desktop overlay sizing and full text content must remain unchanged.
 
 This spec extends `docs/specs/dashboard-ui-liquid-glass-panel-polish.md`. It is a focused UI refinement to the briefing hero and does not change weather data semantics, API routes, or dashboard response fields.
 
@@ -27,6 +33,9 @@ This spec extends `docs/specs/dashboard-ui-liquid-glass-panel-polish.md`. It is 
 - Add all required CSS classes to `app/globals.css` using the export's exact design tokens.
 - Keep the existing `current-weather-card` aside element; reposition it as a direct absolute child of the hero container.
 - Add component-level tests for the collapsible pill behavior and summary item rendering.
+- Add a mobile-only static briefing panel below the hero image while keeping the desktop static panel and tablet collapsible pill behavior unchanged.
+- Restore the top-left Temperature metric card to the original/default metric card sizing at mobile, tablet, and desktop breakpoints.
+- Add a mobile-only compact treatment for the top-right current-weather overlay while keeping tablet and desktop overlay sizing and full text content unchanged; anchor it inside the hero image bounds and show only the icon and temperature.
 
 ## Non-Goals
 
@@ -46,6 +55,7 @@ BriefingHero
 ├── <BriefingCollapsiblePanel>           'use client', Variant A, hidden at ≥ 1092px via CSS
 ├── <div class="briefing-static">        Variant B, plain JSX, hidden at < 1092px via CSS
 └── <aside class="current-weather-card"> unchanged content, repositioned as direct absolute child
+└── <div class="briefing-mobile-panel">  mobile-only static panel rendered below the hero section
 ```
 
 ### BriefingCollapsiblePanel.tsx (new file)
@@ -170,10 +180,11 @@ All new classes are added to `app/globals.css`. Tokens are transcribed directly 
 ```css
 @media (min-width: 1092px) { .briefing-collapsible { display: none; } }
 @media (max-width: 1091px) { .briefing-static { display: none; } }
-@media (max-width: 599px) {
-  .briefing-collapsible:not(.open) { width: 46px; }
-  .briefing-collapsible:not(.open) .pill-label,
-  .briefing-collapsible:not(.open) .briefing-chevron { display: none; }
+@media (max-width: 639px) {
+  .briefing-collapsible { display: none; }
+  .briefing-mobile-panel { display: flex; }
+  .briefing-hero { aspect-ratio: 1672 / 941; height: auto; }
+  .briefing-hero .hero-image { object-fit: contain; }
 }
 ```
 
@@ -188,7 +199,7 @@ All new classes are added to `app/globals.css`. Tokens are transcribed directly 
 | Dot — item 1     | `#fb923c` (orange-400)                  | Both              |
 | Dot — item 2     | `#60a5fa` (blue-400)                    | Both              |
 | Breakpoint       | `1092px`                                | CSS media query   |
-| Smartphone breakpoint | `599px`                           | Collapsed circle pill |
+| Mobile breakpoint | `< 640px`                           | Static briefing panel below hero |
 | Scroll fade      | `16px` top mask                         | Variant A scroll  |
 
 ### Current weather card
@@ -199,10 +210,12 @@ All new classes are added to `app/globals.css`. Tokens are transcribed directly 
 
 - At ≥ 1092 px: the static glass panel (Variant B) is visible; the collapsible pill is hidden; the weather card remains in its current position.
 - At < 1092 px: the glass pill is visible; the static panel is hidden; clicking the pill morphs it to an expanded scrollable panel; the close button collapses it back.
-- At <= 599 px: the collapsed glass pill is a circle showing only the AI sparkle icon; expanding still reveals the same scrollable panel.
+- At < 640 px: the collapsible top-left briefing control is visually removed, a static `Today's Briefing` panel appears directly below the hero image, and the tablet/desktop breakpoints are unchanged.
 - The briefing pill and AI badges use the AI sparkle icon asset, not the star SVG.
 - City switching updates the hero image to the active city's public asset; unknown city slugs fall back to Amsterdam.
-- The hero image fills the full container at all widths via `object-fit: cover`.
+- The hero image preserves non-cropping resize behavior at the mobile breakpoint.
+- At < 640 px, the top-left Temperature metric card uses the original/default metric card sizing and does not receive a compact mobile treatment.
+- At < 640 px, the top-right current-weather overlay is compacted into an aligned icon + temperature chip, remains fully inside the hero image bounds, and does not show or clip the "Feels like", condition, or "Updated" text.
 - The expanded Variant A panel does not overlap the weather card.
 - All three summary items render with correct labels, values, and fallback text.
 - `fallbackLabel` renders "No known risk" when `main_risk` is null.
@@ -236,6 +249,9 @@ New file: `app/dashboard/__tests__/BriefingHero.test.tsx`
 - Pill renders with "Today's Briefing" label in collapsed state.
 - Clicking the pill sets `open` and shows the expanded panel content.
 - Clicking the close button removes `open` and hides the expanded panel.
+- The mobile briefing panel is rendered after the hero image section for CSS-only mobile placement.
+- The Temperature metric card does not expose a mobile-only compact treatment.
+- The current-weather overlay exposes a mobile-only compact treatment.
 - All three summary item labels render correctly from mock dashboard data.
 - `fallbackLabel` guard renders "No known risk" when `main_risk` is null.
 
@@ -251,6 +267,9 @@ Existing tests:
 - Open `http://localhost:3000/`
 - At ≥ 1092 px: confirm static panel visible, pill hidden, weather card in place.
 - At < 1092 px: confirm pill visible, tap to expand, close to collapse.
+- At < 640 px: confirm no top-left collapsible control is visible, the image is not cropped, and the static briefing panel sits below the hero image.
+- At < 640 px: confirm the top-left Temperature metric card uses the original/default metric card size.
+- At < 640 px: confirm the top-right current-weather overlay is visibly smaller/more compact, shows only the icon and temperature, stays inside the hero image bounds, and does not affect tablet or desktop overlay sizing/content.
 - Compare hero against `Briefing Panel Export.html` for glass treatment, spacing, and typography.
 - Verify no overlap between briefing panel and weather card at any width.
 - Confirm city switching still updates the date and summary items.

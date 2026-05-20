@@ -355,13 +355,14 @@ describe("provided dashboard HTML hero contract", () => {
     expect(html).not.toContain("height: briefingOpen ? 0 : 44");
   });
 
-  it("renders the smartphone briefing pill as an AI-only circle", () => {
+  it("renders the smartphone briefing panel below the non-cropping hero image", () => {
     const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
 
-    expect(html).toContain("@media (max-width: 599px) {");
-    expect(html).toContain(".briefing-collapsible:not(.open) { width: 46px; }");
-    expect(html).toContain(".briefing-collapsible:not(.open) .pill-label,");
-    expect(html).toContain(".briefing-collapsible:not(.open) .briefing-chevron { display: none; }");
+    expect(html).toContain("@media (max-width: 639px) {");
+    expect(html).toContain(".briefing-collapsible { display: none; }");
+    expect(html).toContain(".briefing-mobile-panel { display: flex; }");
+    expect(html).toContain("className=\"briefing-mobile-panel\"");
+    expect(html).toContain("aria-label=\"Today's mobile briefing\"");
     expect(html).toContain("className=\"ai-sparkle-icon\"");
     expect(html).toContain("className=\"briefing-chevron\"");
     expect(html).toContain("<MetricIcon type=\"spark\" size={16} className=\"ai-sparkle-icon\" alt=\"\" />");
@@ -384,11 +385,42 @@ describe("provided dashboard HTML hero contract", () => {
   it("shows the full hero image and keeps enough height for the briefing panel", () => {
     const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
 
-    expect(html).toContain("aspectRatio: isMobile ? undefined : '1672 / 941'");
-    expect(html).toContain("height: isMobile ? 480 : undefined");
-    expect(html).toContain("objectFit: isMobile ? 'cover' : 'contain'");
+    expect(html).toContain("aspectRatio: '1672 / 941'");
+    expect(html).toContain("objectFit: 'contain'");
+    expect(html).not.toContain("height: isMobile ? 480 : undefined");
+    expect(html).not.toContain("objectFit: isMobile ? 'cover' : 'contain'");
     expect(html).not.toContain("height: 300, background: '#2a3a50'");
     expect(html).not.toContain("minHeight: isMobile ? 480 : undefined");
+  });
+
+  it("keeps the React mobile hero image rule after broader phone overrides", () => {
+    const css = readFileSync(path.join(process.cwd(), "app/globals.css"), "utf8");
+    const phoneOverrideIndex = css.indexOf("@media (max-width: 760px)");
+    const finalMobileIndex = css.lastIndexOf("@media (max-width: 639px)");
+    const finalMobileCss = css.slice(finalMobileIndex);
+
+    expect(phoneOverrideIndex).toBeGreaterThan(-1);
+    expect(finalMobileIndex).toBeGreaterThan(phoneOverrideIndex);
+    expect(finalMobileCss).toContain(".briefing-hero .hero-image");
+    expect(finalMobileCss).toContain("object-fit: contain;");
+  });
+
+  it("collapses the React current-weather overlay into an aligned mobile chip only in final mobile CSS", () => {
+    const css = readFileSync(path.join(process.cwd(), "app/globals.css"), "utf8");
+    const finalMobileIndex = css.lastIndexOf("@media (max-width: 639px)");
+    const finalMobileCss = css.slice(finalMobileIndex);
+
+    expect(finalMobileCss).toContain(".current-weather-card {");
+    expect(finalMobileCss).toContain("width: 76px;");
+    expect(finalMobileCss).toContain("min-width: 0;");
+    expect(finalMobileCss).toContain("right: 8px;");
+    expect(finalMobileCss).not.toContain("right: auto;");
+    expect(finalMobileCss).not.toContain("left: min(calc(100% - 112px), calc(100vw - 126px));");
+    expect(finalMobileCss).toContain(".current-weather-card .weather-card-top img");
+    expect(finalMobileCss).toContain("font-size: 18px;");
+    expect(finalMobileCss).toContain("justify-content: center;");
+    expect(finalMobileCss).toContain("display: none;");
+    expect(finalMobileCss).not.toContain(".metric-tile-compact-mobile");
   });
 
   it("keeps mobile hero and metric cards from forcing horizontal overflow", () => {
@@ -399,6 +431,34 @@ describe("provided dashboard HTML hero contract", () => {
     expect(html).toContain("repeat(3, minmax(0, 1fr))");
     expect(html).toContain("repeat(5, minmax(0, 1fr))");
     expect(html).toContain("flexDirection: 'column', minWidth: 0");
+  });
+
+  it("keeps the top-left temperature metric at the original size on mobile", () => {
+    const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
+
+    expect(html).not.toContain("compactMobile: true");
+    expect(html).not.toContain("isMobile && m.compactMobile");
+    expect(html).toContain("padding: '14px 14px 12px'");
+    expect(html).toContain("MetricIcon type={m.icon} size={24}");
+    expect(html).toContain("fontSize: 26");
+  });
+
+  it("collapses the current weather overlay into an aligned mobile chip in the public dashboard HTML", () => {
+    const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
+
+    expect(html).toContain("const compactWeatherCard = isMobile;");
+    expect(html).not.toContain("calc(100vw - 124px)");
+    expect(html).toContain("right: compactWeatherCard ? 10 : 20");
+    expect(html).toContain("left: undefined");
+    expect(html).toContain("padding: compactWeatherCard ? '6px 8px' : '12px 14px'");
+    expect(html).toContain("minWidth: compactWeatherCard ? 0 : 140");
+    expect(html).toContain("width: compactWeatherCard ? 76 : undefined");
+    expect(html).toContain("maxWidth: compactWeatherCard ? 76 : undefined");
+    expect(html).toContain("justifyContent: compactWeatherCard ? 'center' : undefined");
+    expect(html).toContain("marginBottom: compactWeatherCard ? 0 : 3");
+    expect(html).toContain("WeatherIcon condition={city.rainProb > 50 ? 'rain' : city.rainProb > 25 ? 'partly' : 'sunny'} size={compactWeatherCard ? 18 : 28}");
+    expect(html).toContain("fontSize: compactWeatherCard ? 20 : 26");
+    expect(html).toContain("{!compactWeatherCard && <React.Fragment>");
   });
 
   it("does not read city-specific hero fields before the loading guard", () => {

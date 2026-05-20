@@ -96,12 +96,21 @@ describe("BriefingHero", () => {
   it("renders all summary item labels and values", () => {
     render(<BriefingHero dashboard={dashboard} />);
 
-    expect(screen.getAllByText("Best outdoor window:")).toHaveLength(2);
-    expect(screen.getAllByText("Main risk:")).toHaveLength(2);
-    expect(screen.getAllByText("What changed:")).toHaveLength(2);
-    expect(screen.getAllByText(/10:00-16:00/)).toHaveLength(2);
-    expect(screen.getAllByText(/Evening showers/)).toHaveLength(2);
-    expect(screen.getAllByText(/Warmer than yesterday/)).toHaveLength(2);
+    expect(screen.getAllByText("Best outdoor window:")).toHaveLength(3);
+    expect(screen.getAllByText("Main risk:")).toHaveLength(3);
+    expect(screen.getAllByText("What changed:")).toHaveLength(3);
+    expect(screen.getAllByText(/10:00-16:00/)).toHaveLength(3);
+    expect(screen.getAllByText(/Evening showers/)).toHaveLength(3);
+    expect(screen.getAllByText(/Warmer than yesterday/)).toHaveLength(3);
+  });
+
+  it("renders the smartphone briefing panel directly after the hero image section", () => {
+    const { container } = render(<BriefingHero dashboard={dashboard} />);
+
+    const hero = container.querySelector(".briefing-hero");
+    expect(hero).not.toBeNull();
+    expect(hero?.nextElementSibling).toHaveClass("briefing-mobile-panel");
+    expect(hero?.nextElementSibling).toHaveAttribute("aria-label", "Today's mobile briefing");
   });
 
   it("uses the city-specific hero image for supported city slugs", () => {
@@ -134,6 +143,6 @@ describe("BriefingHero", () => {
       />,
     );
 
-    expect(screen.getAllByText(/No known risk/)).toHaveLength(2);
+    expect(screen.getAllByText(/No known risk/)).toHaveLength(3);
   });
 });

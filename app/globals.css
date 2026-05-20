@@ -215,6 +215,7 @@ p {
 }
 
 .briefing-hero,
+.briefing-mobile-panel,
 .metric-strip,
 .dashboard-grid,
 .source-footer,
@@ -299,6 +300,10 @@ p {
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.02em;
+}
+
+.briefing-mobile-panel {
+  display: none;
 }
 
 .briefing-expanded h1 {
@@ -565,20 +570,34 @@ p {
   }
 }
 
-@media (max-width: 599px) {
-  .briefing-collapsible:not(.open) {
-    width: 46px;
+@media (max-width: 639px) {
+  .briefing-hero {
+    aspect-ratio: 1672 / 941;
+    height: auto;
   }
 
-  .briefing-collapsible:not(.open) .briefing-pill {
-    justify-content: center;
-    gap: 0;
-    padding: 0;
+  .briefing-hero .hero-image {
+    object-fit: contain;
   }
 
-  .briefing-collapsible:not(.open) .pill-label,
-  .briefing-collapsible:not(.open) .briefing-chevron {
+  .briefing-collapsible {
     display: none;
+  }
+
+  .briefing-mobile-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px;
+    margin-top: 12px;
+  }
+
+  .briefing-mobile-panel h1 {
+    margin-bottom: 0;
+    color: #0f1c2e;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1.05;
   }
 }
 
@@ -1316,6 +1335,7 @@ p {
 @media (max-width: 760px) {
   .top-nav-inner,
   .briefing-hero,
+  .briefing-mobile-panel,
   .metric-strip,
   .dashboard-grid,
   .source-footer,
@@ -1395,4 +1415,45 @@ p {
     justify-content: flex-start;
     text-align: left;
   }
+}
+
+@media (max-width: 639px) {
+  .briefing-hero {
+    aspect-ratio: 1672 / 941;
+    height: auto;
+  }
+
+  .briefing-hero .hero-image {
+    object-fit: contain;
+  }
+
+  .current-weather-card {
+    top: 8px;
+    right: 8px;
+    width: 76px;
+    min-width: 0;
+    max-width: 76px;
+    padding: 6px 8px;
+    border-radius: 12px;
+  }
+
+  .current-weather-card .weather-card-top {
+    gap: 4px;
+    justify-content: center;
+    margin-bottom: 0;
+  }
+
+  .current-weather-card .weather-card-top img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .current-weather-card .weather-card-top strong {
+    font-size: 18px;
+  }
+
+  .current-weather-card p {
+    display: none;
+  }
+
 }
