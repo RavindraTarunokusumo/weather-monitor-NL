@@ -1,0 +1,6 @@
+Task: archive mobile current-weather overlay chip work
+Summary: Move the completed mobile overlay chip TODO session into the archive and record the reusable verification lesson.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: docs/iterations/archive/2026-05-20-mobile-current-weather-overlay-chip.md, docs/insights.md
+TODO: TODO.md Backlog / Fix mobile current-weather overlay clipping
+Validation: npm test -- tests/dashboard.test.ts; npm run lint; npm run typecheck; npm test; npm run build; mobile/tablet/desktop browser screenshots
