@@ -2,6 +2,13 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-20 - Mobile Current Weather Overlay Chip
+
+- What worked: reducing the phone overlay to an icon and rounded temperature text solved the clipping concern without touching the tablet or desktop full-card branch.
+- What failed: the first mobile screenshot captured a browser hover tooltip, so moving the pointer away before the final screenshot is necessary for clean visual evidence.
+- Useful commands: `npm test -- tests/dashboard.test.ts`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`.
+- Workflow improvement: when the visible dashboard is iframe-backed, pair source contract tests with actual viewport screenshots because the iframe can visually expose alignment issues before DOM access is practical.
+
 ## 2026-05-20 - Restore Mobile Temperature Metric Sizing
 
 - What worked: removing the `compactMobile` flag and its CSS modifier restored the Temperature metric to the same default card sizing as the neighboring metric tiles.
