@@ -12,7 +12,7 @@ Replace the current two-column `BriefingHero` layout with a full-bleed hero imag
 
 2026-05-20 mobile temperature-card amendment, superseded: the earlier mobile-only compact Temperature metric card treatment is removed. The top-left Temperature metric card should use the original/default metric card sizing at mobile, tablet, and desktop breakpoints.
 
-2026-05-20 mobile current-weather amendment: at mobile widths (< 640 px), the top-right current-weather overlay card should be visually smaller/more compact. Tablet and desktop overlay sizing must remain unchanged.
+2026-05-20 mobile current-weather amendment: at mobile widths (< 640 px), the top-right current-weather overlay card should collapse into a smaller aligned chip that shows only the weather icon and temperature, remain fully inside the hero image bounds, and avoid clipped text. Tablet and desktop overlay sizing and full text content must remain unchanged.
 
 This spec extends `docs/specs/dashboard-ui-liquid-glass-panel-polish.md`. It is a focused UI refinement to the briefing hero and does not change weather data semantics, API routes, or dashboard response fields.
 
@@ -35,7 +35,7 @@ This spec extends `docs/specs/dashboard-ui-liquid-glass-panel-polish.md`. It is 
 - Add component-level tests for the collapsible pill behavior and summary item rendering.
 - Add a mobile-only static briefing panel below the hero image while keeping the desktop static panel and tablet collapsible pill behavior unchanged.
 - Restore the top-left Temperature metric card to the original/default metric card sizing at mobile, tablet, and desktop breakpoints.
-- Add a mobile-only compact treatment for the top-right current-weather overlay while keeping tablet and desktop overlay sizing unchanged.
+- Add a mobile-only compact treatment for the top-right current-weather overlay while keeping tablet and desktop overlay sizing and full text content unchanged; anchor it inside the hero image bounds and show only the icon and temperature.
 
 ## Non-Goals
 
@@ -215,7 +215,7 @@ All new classes are added to `app/globals.css`. Tokens are transcribed directly 
 - City switching updates the hero image to the active city's public asset; unknown city slugs fall back to Amsterdam.
 - The hero image preserves non-cropping resize behavior at the mobile breakpoint.
 - At < 640 px, the top-left Temperature metric card uses the original/default metric card sizing and does not receive a compact mobile treatment.
-- At < 640 px, the top-right current-weather overlay is compacted without changing tablet or desktop overlay sizing.
+- At < 640 px, the top-right current-weather overlay is compacted into an aligned icon + temperature chip, remains fully inside the hero image bounds, and does not show or clip the "Feels like", condition, or "Updated" text.
 - The expanded Variant A panel does not overlap the weather card.
 - All three summary items render with correct labels, values, and fallback text.
 - `fallbackLabel` renders "No known risk" when `main_risk` is null.
@@ -269,7 +269,7 @@ Existing tests:
 - At < 1092 px: confirm pill visible, tap to expand, close to collapse.
 - At < 640 px: confirm no top-left collapsible control is visible, the image is not cropped, and the static briefing panel sits below the hero image.
 - At < 640 px: confirm the top-left Temperature metric card uses the original/default metric card size.
-- At < 640 px: confirm the top-right current-weather overlay is visibly smaller/more compact, without affecting tablet or desktop overlay sizing.
+- At < 640 px: confirm the top-right current-weather overlay is visibly smaller/more compact, shows only the icon and temperature, stays inside the hero image bounds, and does not affect tablet or desktop overlay sizing/content.
 - Compare hero against `Briefing Panel Export.html` for glass treatment, spacing, and typography.
 - Verify no overlap between briefing panel and weather card at any width.
 - Confirm city switching still updates the date and summary items.

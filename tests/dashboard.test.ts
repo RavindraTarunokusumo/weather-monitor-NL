@@ -405,17 +405,21 @@ describe("provided dashboard HTML hero contract", () => {
     expect(finalMobileCss).toContain("object-fit: contain;");
   });
 
-  it("compacts the React current-weather overlay only in final mobile CSS", () => {
+  it("collapses the React current-weather overlay into an aligned mobile chip only in final mobile CSS", () => {
     const css = readFileSync(path.join(process.cwd(), "app/globals.css"), "utf8");
     const finalMobileIndex = css.lastIndexOf("@media (max-width: 639px)");
     const finalMobileCss = css.slice(finalMobileIndex);
 
     expect(finalMobileCss).toContain(".current-weather-card {");
-    expect(finalMobileCss).toContain("min-width: 96px;");
-    expect(finalMobileCss).toContain("right: auto;");
-    expect(finalMobileCss).toContain("left: min(calc(100% - 112px), calc(100vw - 126px));");
+    expect(finalMobileCss).toContain("width: 76px;");
+    expect(finalMobileCss).toContain("min-width: 0;");
+    expect(finalMobileCss).toContain("right: 8px;");
+    expect(finalMobileCss).not.toContain("right: auto;");
+    expect(finalMobileCss).not.toContain("left: min(calc(100% - 112px), calc(100vw - 126px));");
     expect(finalMobileCss).toContain(".current-weather-card .weather-card-top img");
     expect(finalMobileCss).toContain("font-size: 18px;");
+    expect(finalMobileCss).toContain("justify-content: center;");
+    expect(finalMobileCss).toContain("display: none;");
     expect(finalMobileCss).not.toContain(".metric-tile-compact-mobile");
   });
 
@@ -439,16 +443,22 @@ describe("provided dashboard HTML hero contract", () => {
     expect(html).toContain("fontSize: 26");
   });
 
-  it("compacts the current weather overlay on mobile in the public dashboard HTML", () => {
+  it("collapses the current weather overlay into an aligned mobile chip in the public dashboard HTML", () => {
     const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
 
     expect(html).toContain("const compactWeatherCard = isMobile;");
-    expect(html).toContain("left: compactWeatherCard ? 'calc(100vw - 124px)' : undefined");
-    expect(html).toContain("right: compactWeatherCard ? 'auto' : 20");
-    expect(html).toContain("padding: compactWeatherCard ? '8px 10px' : '12px 14px'");
-    expect(html).toContain("minWidth: compactWeatherCard ? 104 : 140");
-    expect(html).toContain("WeatherIcon condition={city.rainProb > 50 ? 'rain' : city.rainProb > 25 ? 'partly' : 'sunny'} size={compactWeatherCard ? 20 : 28}");
-    expect(html).toContain("fontSize: compactWeatherCard ? 21 : 26");
+    expect(html).not.toContain("calc(100vw - 124px)");
+    expect(html).toContain("right: compactWeatherCard ? 10 : 20");
+    expect(html).toContain("left: undefined");
+    expect(html).toContain("padding: compactWeatherCard ? '6px 8px' : '12px 14px'");
+    expect(html).toContain("minWidth: compactWeatherCard ? 0 : 140");
+    expect(html).toContain("width: compactWeatherCard ? 76 : undefined");
+    expect(html).toContain("maxWidth: compactWeatherCard ? 76 : undefined");
+    expect(html).toContain("justifyContent: compactWeatherCard ? 'center' : undefined");
+    expect(html).toContain("marginBottom: compactWeatherCard ? 0 : 3");
+    expect(html).toContain("WeatherIcon condition={city.rainProb > 50 ? 'rain' : city.rainProb > 25 ? 'partly' : 'sunny'} size={compactWeatherCard ? 18 : 28}");
+    expect(html).toContain("fontSize: compactWeatherCard ? 20 : 26");
+    expect(html).toContain("{!compactWeatherCard && <React.Fragment>");
   });
 
   it("does not read city-specific hero fields before the loading guard", () => {

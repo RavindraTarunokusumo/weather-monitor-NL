@@ -1429,17 +1429,18 @@ p {
 
   .current-weather-card {
     top: 8px;
-    right: auto;
-    left: min(calc(100% - 112px), calc(100vw - 126px));
-    min-width: 96px;
-    max-width: 112px;
+    right: 8px;
+    width: 76px;
+    min-width: 0;
+    max-width: 76px;
     padding: 6px 8px;
-    border-radius: 10px;
+    border-radius: 12px;
   }
 
   .current-weather-card .weather-card-top {
     gap: 4px;
-    margin-bottom: 1px;
+    justify-content: center;
+    margin-bottom: 0;
   }
 
   .current-weather-card .weather-card-top img {
@@ -1452,22 +1453,7 @@ p {
   }
 
   .current-weather-card p {
-    margin-bottom: 1px;
-    font-size: 9px;
-  }
-
-  .current-weather-card .condition-label {
-    font-size: 10px;
-  }
-
-  .current-weather-card .updated-line {
-    gap: 3px;
-    font-size: 9px;
-  }
-
-  .current-weather-card .updated-line span {
-    width: 4px;
-    height: 4px;
+    display: none;
   }
 
 }
