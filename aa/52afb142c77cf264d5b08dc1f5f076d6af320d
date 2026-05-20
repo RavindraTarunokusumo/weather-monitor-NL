@@ -1,0 +1,6 @@
+Task: archive mobile current-weather overlay work
+Summary: Archive the completed mobile current-weather overlay TODO and record session lessons.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: docs/iterations/archive/2026-05-20-mobile-current-weather-overlay-sizing.md, docs/insights.md
+TODO: TODO.md Backlog / Mobile-only compact current-weather overlay archived
+Validation: git diff --check
