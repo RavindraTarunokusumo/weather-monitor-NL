@@ -2,6 +2,13 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-20 - Mobile Current Weather Overlay Sizing
+
+- What worked: keeping the current-weather overlay compaction under the final `< 640px` media block preserved tablet and desktop sizing while making the phone overlay smaller.
+- What failed: the in-app browser screenshot path still timed out on the iframe page, so visual verification used local Chrome headless captures after reloading the in-app browser.
+- Useful commands: `npm test -- tests/dashboard.test.ts`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`.
+- Workflow improvement: for viewport-specific inline styles in the standalone dashboard HTML, mirror the same contract in `tests/dashboard.test.ts` so mobile-only sizing cannot drift from the typed React path.
+
 ## 2026-05-20 - Mobile Temperature Metric Sizing
 
 - What worked: a single mobile-only modifier on the Temperature metric let the metric shrink without changing Rain, tablet, or desktop card sizing.
