@@ -1,0 +1,6 @@
+Task: mobile current-weather overlay sizing
+Summary: Compact the top-right current-weather overlay at mobile widths only while preserving tablet and desktop overlay sizing.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: docs/specs/briefing-panel-glass-overlay.md
+TODO: TODO.md Backlog / Mobile-only compact current-weather overlay
+Validation: npm run lint; npm run typecheck; npm test; npm run build; review/mobile/tablet/desktop screenshot checks
