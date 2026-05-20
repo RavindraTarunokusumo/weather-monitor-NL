@@ -2,6 +2,13 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-20 - Restore Mobile Temperature Metric Sizing
+
+- What worked: removing the `compactMobile` flag and its CSS modifier restored the Temperature metric to the same default card sizing as the neighboring metric tiles.
+- What failed: the in-app browser screenshot command continued to time out on the iframe page, so local Chrome headless screenshots remained the reliable visual verification path.
+- Useful commands: `npm test -- app/dashboard/__tests__/DashboardShell.test.tsx`, `npm test -- tests/dashboard.test.ts`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`.
+- Workflow improvement: keep review-comment reversions covered by negative assertions (`not.toContain`, `not.toHaveClass`) so previously requested UI tweaks can be removed deliberately.
+
 ## 2026-05-20 - Mobile Current Weather Overlay Sizing
 
 - What worked: keeping the current-weather overlay compaction under the final `< 640px` media block preserved tablet and desktop sizing while making the phone overlay smaller.
