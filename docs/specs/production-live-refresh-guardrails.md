@@ -31,7 +31,7 @@ Production must not silently present mock dashboard snapshots as if they were li
 - A dashboard response containing `mock_knmi`, `mock_luchtmeetnet`, or `mock_rijkswaterstaat` renders those sources with an explicit mock label in the footer.
 - A production refresh route rejects unauthenticated requests and accepts the existing `CRON_SECRET` bearer authorization.
 - The refresh route runs all live ingestion sources for all active cities before dashboard snapshot regeneration.
-- Vercel Cron is configured to call the refresh route every 10 minutes.
+- Vercel Cron is configured to call the refresh route with a schedule compatible with the Hobby plan daily limit.
 - Postbuild seeding is skipped on Vercel deployments using the Vercel system environment flag, while local and GitHub smoke builds can still seed their isolated databases.
 - Documentation explains how production refresh happens and how to manually invoke it when needed.
 - Future sessions have explicit instructions to verify production source IDs through `/api/dashboard`, not by trusting footer labels alone.

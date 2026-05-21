@@ -2,6 +2,13 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-21 - Restore Daily Refresh-Live Cron
+
+- What worked: the Vercel cron skill surfaced the Hobby/free-plan limit directly, so the revert restored both `vercel.json` and the contract test to the daily cadence.
+- What failed: none.
+- Useful commands: `npm test -- tests/production-refresh.test.ts`, `npm run lint`, `npm test`, `npm run typecheck`, `npm run build`.
+- Workflow improvement: before increasing Vercel cron frequency, check the target account plan because `*/10 * * * *` is not valid for Hobby/free deployments.
+
 ## 2026-05-21 - Refresh-Live Cron Every 10 Minutes
 
 - What worked: pinning the schedule in both `vercel.json` and `tests/production-refresh.test.ts` kept the cron change explicit instead of burying it in docs.
