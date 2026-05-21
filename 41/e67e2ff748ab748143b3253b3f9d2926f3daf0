@@ -1,0 +1,6 @@
+Task: refresh-live cron archive
+Summary: Archive the completed cron schedule change and record the session lesson in docs/insights.md.
+Spec: docs/specs/production-live-refresh-guardrails.md
+Docs: docs/iterations/archive/2026-05-21-refresh-live-cron-10m.md, docs/insights.md
+TODO: TODO.md Backlog / Update the production refresh cron schedule to every 10 minutes
+Validation: npm test -- tests/production-refresh.test.ts; npm run lint; npm test
