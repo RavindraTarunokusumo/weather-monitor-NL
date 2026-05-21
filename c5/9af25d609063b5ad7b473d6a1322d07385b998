@@ -1,0 +1,6 @@
+Task: restore daily refresh-live cron
+Summary: Revert the production refresh cron from every 10 minutes back to the daily Hobby/free-plan-compatible schedule and keep refresh route behavior unchanged.
+Spec: docs/specs/production-live-refresh-guardrails.md
+Docs: docs/commands.md, docs/specs/production-live-refresh-guardrails.md
+TODO: TODO.md Backlog / Revert the production refresh cron schedule to daily
+Validation: npm test -- tests/production-refresh.test.ts; npm run lint; npm test; npm run typecheck; npm run build
