@@ -120,7 +120,7 @@ describe("production live refresh automation", () => {
     });
   });
 
-  it("registers a daily Vercel Cron for the production refresh route", () => {
+  it("registers a 10-minute Vercel Cron for the production refresh route", () => {
     const vercelConfigPath = path.join(process.cwd(), "vercel.json");
 
     expect(existsSync(vercelConfigPath)).toBe(true);
@@ -131,7 +131,7 @@ describe("production live refresh automation", () => {
 
     expect(config.crons).toContainEqual({
       path: "/api/jobs/refresh-live",
-      schedule: "0 5 * * *",
+      schedule: "*/10 * * * *",
     });
   });
 });

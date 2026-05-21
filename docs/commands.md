@@ -91,7 +91,7 @@ Production also exposes one all-in refresh route for Vercel Cron and manual post
 curl -X POST "https://weather-monitor-nl.vercel.app/api/jobs/refresh-live?force=true" -H "Authorization: Bearer $CRON_SECRET"
 ```
 
-`vercel.json` registers `/api/jobs/refresh-live` as a daily Vercel Cron at `05:00 UTC`. Vercel automatically sends `Authorization: Bearer $CRON_SECRET` to cron invocations when `CRON_SECRET` is configured in the project environment.
+`vercel.json` registers `/api/jobs/refresh-live` as a Vercel Cron that runs every 10 minutes. Vercel automatically sends `Authorization: Bearer $CRON_SECRET` to cron invocations when `CRON_SECRET` is configured in the project environment.
 
 Future production checks must verify source identifiers from the dashboard API, not only the rendered footer:
 

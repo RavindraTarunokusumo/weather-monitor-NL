@@ -2,6 +2,13 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-05-21 - Refresh-Live Cron Every 10 Minutes
+
+- What worked: pinning the schedule in both `vercel.json` and `tests/production-refresh.test.ts` kept the cron change explicit instead of burying it in docs.
+- What failed: none.
+- Useful commands: `npm test -- tests/production-refresh.test.ts`, `npm run lint`, `npm test`.
+- Workflow improvement: when a cron cadence changes, update the accepted spec wording first so the config, docs, and test all point at the same schedule.
+
 ## 2026-05-20 - Mobile Current Weather Overlay Chip
 
 - What worked: reducing the phone overlay to an icon and rounded temperature text solved the clipping concern without touching the tablet or desktop full-card branch.
