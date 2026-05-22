@@ -1,6 +1,4 @@
-# Dutch Weather Intelligence
-
-Dutch Weather Intelligence is a single full-stack Next.js app for a seeded Amsterdam weather, air-quality, and water dashboard.
+# Dutch Weather Intelligence - WIP
 
 Start with [AGENTS.md](AGENTS.md), [docs/index.md](docs/index.md), and the active spec in [docs/specs/project-scaffold-vercel-postgres-foundation.md](docs/specs/project-scaffold-vercel-postgres-foundation.md).
 
