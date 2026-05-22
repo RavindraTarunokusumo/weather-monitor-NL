@@ -1,0 +1,6 @@
+Task: repo readme refresh
+Summary: Refresh the root README so it matches the current Next.js app, scripts, docs, and production notes.
+Spec: N/A
+Docs: README.md, docs/insights.md
+TODO: N/A
+Validation: git diff --check
