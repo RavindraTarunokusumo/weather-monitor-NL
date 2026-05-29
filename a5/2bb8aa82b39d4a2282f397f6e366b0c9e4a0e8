@@ -1,0 +1,6 @@
+Task: Plan 10-city Dutch city rollout
+Summary: Added the implementation plan for expanding the dashboard to 10 reliable Dutch cities.
+Spec: docs/specs/major-dutch-cities-10.md
+Docs: docs/superpowers/plans/2026-05-28-major-dutch-cities-10.md
+TODO: N/A - plan before implementation TODO logging
+Validation: npm run lint
