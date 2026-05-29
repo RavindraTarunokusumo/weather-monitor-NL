@@ -28,6 +28,68 @@ const cities: CityConfig[] = [
     latitude: 51.9244,
     longitude: 4.4777,
   },
+  {
+    id: "city-den-haag",
+    slug: "den-haag",
+    name: "Den Haag",
+    latitude: 52.0705,
+    longitude: 4.3007,
+  },
+  {
+    id: "city-groningen",
+    slug: "groningen",
+    name: "Groningen",
+    latitude: 53.2194,
+    longitude: 6.5665,
+  },
+  {
+    id: "city-arnhem",
+    slug: "arnhem",
+    name: "Arnhem",
+    latitude: 51.9851,
+    longitude: 5.8987,
+  },
+  {
+    id: "city-maastricht",
+    slug: "maastricht",
+    name: "Maastricht",
+    latitude: 50.8514,
+    longitude: 5.691,
+  },
+  {
+    id: "city-breda",
+    slug: "breda",
+    name: "Breda",
+    latitude: 51.5719,
+    longitude: 4.7683,
+  },
+  {
+    id: "city-nijmegen",
+    slug: "nijmegen",
+    name: "Nijmegen",
+    latitude: 51.8126,
+    longitude: 5.8372,
+  },
+  {
+    id: "city-dordrecht",
+    slug: "dordrecht",
+    name: "Dordrecht",
+    latitude: 51.8133,
+    longitude: 4.6901,
+  },
+];
+
+const supportedCitySlugs = [
+  "amsterdam",
+  "arnhem",
+  "breda",
+  "den-haag",
+  "dordrecht",
+  "groningen",
+  "maastricht",
+  "nijmegen",
+  "rotterdam",
+  "utrecht",
 ];
 
 function jsonResponse(data: unknown, init: ResponseInit = {}) {
@@ -40,11 +102,9 @@ function jsonResponse(data: unknown, init: ResponseInit = {}) {
 
 describe("source configuration", () => {
   it("defines explicit source configuration for all seeded cities", () => {
-    expect(SEEDED_CITY_SOURCE_CONFIGS.map((config) => config.citySlug).sort()).toEqual([
-      "amsterdam",
-      "rotterdam",
-      "utrecht",
-    ]);
+    expect(SEEDED_CITY_SOURCE_CONFIGS.map((config) => config.citySlug).sort()).toEqual(
+      supportedCitySlugs,
+    );
 
     for (const city of cities) {
       const config = getSourceConfig(city.slug);
@@ -60,10 +120,19 @@ describe("source configuration", () => {
     expect(getSourceConfig("rotterdam").rijkswaterstaat.locationCode).toBe(
       "rotterdam.nieuwemaas.boerengat",
     );
+    expect(getSourceConfig("den-haag").luchtmeetnet.stationId).toBe("NL10404");
+    expect(getSourceConfig("groningen").rijkswaterstaat.locationCode).toBe("groningen");
+    expect(getSourceConfig("arnhem").rijkswaterstaat.locationCode).toBe("arnhem.nederrijn");
+    expect(getSourceConfig("maastricht").rijkswaterstaat.locationCode).toBe(
+      "maastricht.borgharen.julianakanaal",
+    );
+    expect(getSourceConfig("breda").luchtmeetnet.stationId).toBe("NL10241");
+    expect(getSourceConfig("nijmegen").rijkswaterstaat.locationCode).toBe("nijmegen.waal");
+    expect(getSourceConfig("dordrecht").luchtmeetnet.stationId).toBe("NL10442");
   });
 
   it("rejects unsupported city source configuration lookups", () => {
-    expect(() => getSourceConfig("den-haag")).toThrow("No source configuration for city: den-haag");
+    expect(() => getSourceConfig("zwolle")).toThrow("No source configuration for city: zwolle");
   });
 });
 
@@ -268,6 +337,90 @@ describe("live-capable adapters", () => {
       warning: {
         level: "yellow",
         region: "Noord-Holland",
+      },
+    });
+  });
+
+  it.each([
+    ["den-haag", "Zuid-Holland"],
+    ["groningen", "Groningen"],
+    ["arnhem", "Gelderland"],
+    ["maastricht", "Limburg"],
+    ["breda", "Noord-Brabant"],
+    ["nijmegen", "Gelderland"],
+    ["dordrecht", "Zuid-Holland"],
+  ])("maps %s to the correct official KNMI warning region", async (citySlug, region) => {
+    const city = cities.find((item) => item.slug === citySlug);
+    if (!city) {
+      throw new Error(`Missing test city fixture: ${citySlug}`);
+    }
+    const fetcher = vi.fn().mockImplementation((input: string) => {
+      if (input.includes("/edr/")) {
+        return Promise.resolve(
+          jsonResponse({
+            type: "CoverageCollection",
+            coverages: [
+              {
+                domain: { axes: { t: { values: ["2026-05-05T10:20:00Z"] } } },
+                ranges: {
+                  ta: { values: [17.1] },
+                  ff: { values: [6] },
+                  dd: { values: [245] },
+                  fx: { values: [8] },
+                  R1H: { values: [0.1] },
+                },
+              },
+            ],
+          }),
+        );
+      }
+
+      if (input.includes("api.open-meteo.com")) {
+        return Promise.resolve(
+          jsonResponse({
+            hourly: {
+              time: ["2026-05-05T12:00"],
+              temperature_2m: [17],
+              precipitation_probability: [20],
+              weather_code: [2],
+              wind_speed_10m: [18],
+              wind_gusts_10m: [30],
+            },
+            daily: {
+              time: ["2026-05-05"],
+              temperature_2m_max: [18],
+              temperature_2m_min: [10],
+              precipitation_probability_max: [80],
+              weather_code: [61],
+            },
+          }),
+        );
+      }
+
+      if (input.endsWith("/files/warnings.json/url")) {
+        return Promise.resolve(
+          jsonResponse({
+            temporaryDownloadUrl: "https://download.test/warnings.json",
+          }),
+        );
+      }
+
+      if (input.includes("/datasets/waarschuwingen_nederland_48h/")) {
+        return Promise.resolve(jsonResponse({ files: [{ filename: "warnings.json" }] }));
+      }
+
+      return Promise.resolve(jsonResponse({ warnings: [{ region, level: "yellow" }] }));
+    });
+    const adapter = new KnmiAdapter({ mode: "live", apiKey: "test-key", fetcher });
+
+    const raw = await adapter.fetch(city);
+    const normalized = await adapter.normalize(raw, city);
+
+    expect(normalized[0].warningLevel).toBe("yellow");
+    expect(normalized[0].sourcePayload).toMatchObject({
+      warning: {
+        region,
+        level: "yellow",
       },
     });
   });

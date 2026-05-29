@@ -76,6 +76,19 @@ const utrechtDashboard: DashboardResponse = {
   briefing: "Utrecht enjoys the best conditions in the Netherlands today.",
 };
 
+const supportedCities = [
+  { slug: "amsterdam", name: "Amsterdam", timezone: "Europe/Amsterdam" },
+  { slug: "arnhem", name: "Arnhem", timezone: "Europe/Amsterdam" },
+  { slug: "breda", name: "Breda", timezone: "Europe/Amsterdam" },
+  { slug: "den-haag", name: "Den Haag", timezone: "Europe/Amsterdam" },
+  { slug: "dordrecht", name: "Dordrecht", timezone: "Europe/Amsterdam" },
+  { slug: "groningen", name: "Groningen", timezone: "Europe/Amsterdam" },
+  { slug: "maastricht", name: "Maastricht", timezone: "Europe/Amsterdam" },
+  { slug: "nijmegen", name: "Nijmegen", timezone: "Europe/Amsterdam" },
+  { slug: "rotterdam", name: "Rotterdam", timezone: "Europe/Amsterdam" },
+  { slug: "utrecht", name: "Utrecht", timezone: "Europe/Amsterdam" },
+];
+
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
@@ -90,10 +103,7 @@ describe("DashboardShell", () => {
         const url = input.toString();
         if (url.includes("/api/cities")) {
           return Response.json({
-            cities: [
-              { slug: "amsterdam", name: "Amsterdam", timezone: "Europe/Amsterdam" },
-              { slug: "utrecht", name: "Utrecht", timezone: "Europe/Amsterdam" },
-            ],
+            cities: supportedCities,
           });
         }
         if (url.includes("city=utrecht")) {
@@ -107,6 +117,7 @@ describe("DashboardShell", () => {
 
     expect(screen.getByRole("heading", { name: /amsterdam/i })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /select city/i }));
+    expect(await screen.findByRole("menuitemradio", { name: /den haag/i })).toBeInTheDocument();
     await user.click(await screen.findByRole("menuitemradio", { name: /utrecht/i }));
     expect(await screen.findByRole("heading", { name: /utrecht/i })).toBeInTheDocument();
 
