@@ -2,6 +2,16 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-05-28 - Major Dutch Cities 10-City Rollout
+
+Summary:
+
+- What changed: expanded the supported dashboard city catalog from 3 to 10 total cities with deterministic seed snapshots and explicit source mappings for Amsterdam, Arnhem, Breda, Den Haag, Dordrecht, Groningen, Maastricht, Nijmegen, Rotterdam, and Utrecht.
+- Why: add reliable Dutch city coverage while avoiding unverified provincial-capital mappings.
+- User-visible impact: after seeding or live refresh, `/api/cities` and the public dashboard city switcher can expose 10 supported cities.
+- Migration notes: no schema migration is required; run `npx prisma db seed` for local seeded snapshots, or run live ingestion plus dashboard regeneration when provider-backed values are desired.
+- Related spec: `docs/specs/major-dutch-cities-10.md`.
+
 ## 2026-05-18 - Briefing Panel Glass Overlay
 
 Summary:

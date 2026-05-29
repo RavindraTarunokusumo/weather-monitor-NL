@@ -48,6 +48,13 @@ RUN_DB_SEED_AFTER_BUILD=true npm run build
 curl http://localhost:3000/api/health
 curl http://localhost:3000/api/cities
 curl "http://localhost:3000/api/dashboard?city=amsterdam"
+curl "http://localhost:3000/api/dashboard?city=arnhem"
+curl "http://localhost:3000/api/dashboard?city=breda"
+curl "http://localhost:3000/api/dashboard?city=den-haag"
+curl "http://localhost:3000/api/dashboard?city=dordrecht"
+curl "http://localhost:3000/api/dashboard?city=groningen"
+curl "http://localhost:3000/api/dashboard?city=maastricht"
+curl "http://localhost:3000/api/dashboard?city=nijmegen"
 curl "http://localhost:3000/api/dashboard?city=utrecht"
 curl "http://localhost:3000/api/dashboard?city=rotterdam"
 ```
@@ -97,6 +104,13 @@ Future production checks must verify source identifiers from the dashboard API, 
 
 ```bash
 curl "https://weather-monitor-nl.vercel.app/api/dashboard?city=amsterdam"
+curl "https://weather-monitor-nl.vercel.app/api/dashboard?city=arnhem"
+curl "https://weather-monitor-nl.vercel.app/api/dashboard?city=breda"
+curl "https://weather-monitor-nl.vercel.app/api/dashboard?city=den-haag"
+curl "https://weather-monitor-nl.vercel.app/api/dashboard?city=dordrecht"
+curl "https://weather-monitor-nl.vercel.app/api/dashboard?city=groningen"
+curl "https://weather-monitor-nl.vercel.app/api/dashboard?city=maastricht"
+curl "https://weather-monitor-nl.vercel.app/api/dashboard?city=nijmegen"
 curl "https://weather-monitor-nl.vercel.app/api/dashboard?city=utrecht"
 curl "https://weather-monitor-nl.vercel.app/api/dashboard?city=rotterdam"
 ```
