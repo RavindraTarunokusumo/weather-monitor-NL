@@ -1,0 +1,6 @@
+Task: Accept 10-city Dutch city rollout spec
+Summary: Added the accepted feature spec for expanding the dashboard to 10 reliable Dutch cities with documented source mappings.
+Spec: docs/specs/major-dutch-cities-10.md
+Docs: docs/specs/major-dutch-cities-10.md
+TODO: N/A - spec acceptance before implementation TODO logging
+Validation: npm run lint
