@@ -1,0 +1,6 @@
+Task: Archive 10-city rollout session
+Summary: Moved the completed 10-city rollout TODO session into the archive and recorded reusable session lessons.
+Spec: docs/specs/major-dutch-cities-10.md
+Docs: TODO.md, docs/iterations/archive/2026-05-28-major-dutch-cities-10.md, docs/insights.md
+TODO: Run validation and archive the completed session
+Validation: npm run lint; npm run typecheck; npm test; npx prisma validate; npm run build; npx prisma db seed; local API smoke checks
