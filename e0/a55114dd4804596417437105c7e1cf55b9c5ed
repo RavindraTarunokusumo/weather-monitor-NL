@@ -1,0 +1,6 @@
+Task: Address PR 19 code review feedback
+Summary: Made generated seed hourly labels unique and changed unmapped KNMI warning-region fallback to Unknown.
+Spec: docs/specs/major-dutch-cities-10.md
+Docs: N/A
+TODO: PR review follow-up
+Validation: npm test -- tests/dashboard.test.ts tests/ingestion-live-adapters.test.ts; npm run lint; npm run typecheck; npx prisma validate; npm test; npx prisma generate; npx next build; npm run postbuild. npm run build was attempted but local prisma migrate deploy failed with Schema engine error against localhost:5432 before next build.
