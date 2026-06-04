@@ -1,0 +1,6 @@
+Task: Complete configured city dashboard data and simplify future city additions
+Summary: Added deterministic configured fallback outlook/current metadata for supported cities, used it during dashboard regeneration when live weather is observation-only, and derived source config from the canonical supported-city catalog.
+Spec: docs/specs/major-dutch-cities-10.md
+Docs: docs/specs/major-dutch-cities-10.md, docs/architecture.md, docs/changelog.md, docs/commands.md
+TODO: TODO.md Active: Complete City Data And Config-Only Expansion
+Validation: npm test -- tests/dashboard-regeneration.test.ts tests/supported-cities.test.ts; npm test -- tests/dashboard-regeneration.test.ts tests/supported-cities.test.ts tests/ingestion-live-adapters.test.ts; npm run typecheck; npm run lint; npx prisma validate; npm test; npx next build; npm run postbuild. npm run build attempted but local prisma migrate deploy failed with Schema engine error against localhost:5432 before next build.
