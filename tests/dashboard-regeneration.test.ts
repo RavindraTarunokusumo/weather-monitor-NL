@@ -20,6 +20,19 @@ const city = {
   createdAt: new Date("2026-05-05T00:00:00.000Z"),
 };
 
+const supportedCitySlugs = [
+  "amsterdam",
+  "arnhem",
+  "breda",
+  "den-haag",
+  "dordrecht",
+  "groningen",
+  "maastricht",
+  "nijmegen",
+  "rotterdam",
+  "utrecht",
+];
+
 const weather = {
   id: "weather-1",
   cityId: city.id,
@@ -121,10 +134,17 @@ function makePrismaStub(overrides: {
   return {
     city: {
       findUnique: vi.fn().mockResolvedValue(city),
-      findMany: vi.fn().mockResolvedValue([
-        city,
-        { ...city, id: "city-utrecht", slug: "utrecht", name: "Utrecht" },
-      ]),
+      findMany: vi.fn().mockResolvedValue(
+        supportedCitySlugs.map((slug) => ({
+          ...city,
+          id: `city-${slug}`,
+          slug,
+          name: slug
+            .split("-")
+            .map((part) => part[0].toUpperCase() + part.slice(1))
+            .join(" "),
+        })),
+      ),
     },
     weatherSnapshot: {
       findFirst: vi.fn().mockResolvedValue(overrides.weather === undefined ? weather : overrides.weather),
@@ -452,7 +472,7 @@ describe("regenerateAllDashboardSnapshots", () => {
 
     const result = await regenerateAllDashboardSnapshots({ prisma, now });
 
-    expect(result.map((item) => item.city)).toEqual(["amsterdam", "utrecht"]);
-    expect(prisma.dashboardSnapshot.create).toHaveBeenCalledTimes(2);
+    expect(result.map((item) => item.city)).toEqual(supportedCitySlugs);
+    expect(prisma.dashboardSnapshot.create).toHaveBeenCalledTimes(10);
   });
 });

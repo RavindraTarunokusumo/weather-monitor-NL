@@ -360,14 +360,21 @@ function normalizeWarningLevel(value: string | null) {
   return "unknown";
 }
 
-function warningRegionForCity(citySlug: string) {
-  if (citySlug === "amsterdam") {
-    return "Noord-Holland";
-  }
-  if (citySlug === "rotterdam") {
-    return "Zuid-Holland";
-  }
-  return "Utrecht";
+export function warningRegionForCity(citySlug: string) {
+  const regions: Record<string, string> = {
+    amsterdam: "Noord-Holland",
+    arnhem: "Gelderland",
+    breda: "Noord-Brabant",
+    "den-haag": "Zuid-Holland",
+    dordrecht: "Zuid-Holland",
+    groningen: "Groningen",
+    maastricht: "Limburg",
+    nijmegen: "Gelderland",
+    rotterdam: "Zuid-Holland",
+    utrecht: "Utrecht",
+  };
+
+  return regions[citySlug] ?? "Unknown";
 }
 
 function readArray(record: Record<string, unknown>, key: string) {

@@ -21,16 +21,29 @@ const city = {
   createdAt: new Date("2026-05-05T00:00:00.000Z"),
 };
 
+const supportedCitySlugs = [
+  "amsterdam",
+  "arnhem",
+  "breda",
+  "den-haag",
+  "dordrecht",
+  "groningen",
+  "maastricht",
+  "nijmegen",
+  "rotterdam",
+  "utrecht",
+];
+
 function makePrismaStub() {
-  const cities = [
-    city,
-    {
-      ...city,
-      id: "city-utrecht",
-      slug: "utrecht",
-      name: "Utrecht",
-    },
-  ];
+  const cities = supportedCitySlugs.map((slug) => ({
+    ...city,
+    id: `city-${slug}`,
+    slug,
+    name: slug
+      .split("-")
+      .map((part) => part[0].toUpperCase() + part.slice(1))
+      .join(" "),
+  }));
 
   return {
     city: {
@@ -138,9 +151,9 @@ describe("ingestion job helpers", () => {
       mode: "mock",
     });
 
-    expect(result).toHaveLength(2);
-    expect(result.map((item) => item.city)).toEqual(["amsterdam", "utrecht"]);
-    expect(prisma.weatherSnapshot.create).toHaveBeenCalledTimes(2);
+    expect(result).toHaveLength(10);
+    expect(result.map((item) => item.city)).toEqual(supportedCitySlugs);
+    expect(prisma.weatherSnapshot.create).toHaveBeenCalledTimes(10);
   });
 
   it("runs all source types for all active cities", async () => {
@@ -153,15 +166,12 @@ describe("ingestion job helpers", () => {
 
     expect(result.map((item) => item.type)).toEqual(["weather", "air-quality", "water"]);
     expect(result.flatMap((item) => item.results.map((entry) => entry.city))).toEqual([
-      "amsterdam",
-      "utrecht",
-      "amsterdam",
-      "utrecht",
-      "amsterdam",
-      "utrecht",
+      ...supportedCitySlugs,
+      ...supportedCitySlugs,
+      ...supportedCitySlugs,
     ]);
-    expect(prisma.weatherSnapshot.create).toHaveBeenCalledTimes(2);
-    expect(prisma.airQualitySnapshot.create).toHaveBeenCalledTimes(2);
-    expect(prisma.waterSnapshot.create).toHaveBeenCalledTimes(2);
+    expect(prisma.weatherSnapshot.create).toHaveBeenCalledTimes(10);
+    expect(prisma.airQualitySnapshot.create).toHaveBeenCalledTimes(10);
+    expect(prisma.waterSnapshot.create).toHaveBeenCalledTimes(10);
   });
 });

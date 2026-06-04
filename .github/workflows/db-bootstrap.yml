@@ -121,13 +121,32 @@ jobs:
           const cities = await fetch('http://127.0.0.1:3000/api/cities').then((response) => response.json());
           assert.deepEqual(
             cities.cities.map((city) => city.slug).sort(),
-            ['amsterdam', 'rotterdam', 'utrecht'],
+            [
+              'amsterdam',
+              'arnhem',
+              'breda',
+              'den-haag',
+              'dordrecht',
+              'groningen',
+              'maastricht',
+              'nijmegen',
+              'rotterdam',
+              'utrecht',
+            ],
           );
 
           const dashboard = await fetch('http://127.0.0.1:3000/api/dashboard?city=amsterdam').then((response) => response.json());
           assert.equal(dashboard.city.slug, 'amsterdam');
           assert.equal(dashboard.cycle_comfort.score, 78);
           assert.equal(dashboard.air_quality.label, 'Good');
+
+          const denHaagDashboard = await fetch('http://127.0.0.1:3000/api/dashboard?city=den-haag').then((response) => response.json());
+          assert.equal(denHaagDashboard.city.slug, 'den-haag');
+          assert.equal(denHaagDashboard.city.name, 'Den Haag');
+          assert.deepEqual(
+            denHaagDashboard.source_freshness.map((source) => source.source).sort(),
+            ['mock_knmi', 'mock_luchtmeetnet', 'mock_rijkswaterstaat'],
+          );
 
           const homepage = await fetch('http://127.0.0.1:3000/').then((response) => response.text());
           assert.match(homepage, /Amsterdam/);

@@ -58,7 +58,7 @@ regeneration links the latest available weather, air-quality, and water data.
 - KNMI EDR API: near-real-time weather observations from the configured seeded-city stations.
 - Open-Meteo KNMI forecast API: JSON point forecasts used to populate stored hourly/weekly outlook fields without browser-side external calls.
 - KNMI Open Data API: official Dutch 48-hour warning files normalized into city-level warning labels.
-- Luchtmeetnet API: station pollutant measurements for Amsterdam, Utrecht, and Rotterdam.
+- Luchtmeetnet API: station pollutant measurements for the 10 configured supported cities.
 - Rijkswaterstaat ddapi20 WaterWebservices: WATHTE water-level observations from configured nearby locations.
 - No LLM, auth, billing, or VPS integrations are implemented in this foundation phase.
 
@@ -67,5 +67,5 @@ regeneration links the latest available weather, air-quality, and water data.
 - The product is an interpretation layer, not an official warning system.
 - Seeded data must be distinguishable from live source data.
 - AI may explain source-backed facts in later milestones but must not invent forecasts.
-- Amsterdam, Utrecht, and Rotterdam have deterministic seeded dashboard snapshots for the public UI.
+- The 10 supported cities have deterministic seeded dashboard snapshots for the public UI.
 - Forecast outlooks, warning labels, air trends, and water trend/weekly-level displays are derived during ingestion/regeneration and persisted in stored snapshots before the public API reads them.

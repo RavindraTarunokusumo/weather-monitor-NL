@@ -62,9 +62,9 @@ Foundation tables reserved for later auth, AI Q&A, and quota milestones. They ar
 
 ## Seed Rules
 
-- `npx prisma db seed` inserts Amsterdam, Utrecht, and Rotterdam.
-- The Amsterdam dashboard seed includes mock weather, air-quality, water, dashboard, and briefing data.
-- The seed removes the previous `mock-amsterdam-v1` dashboard and briefing before inserting a fresh mock snapshot.
+- `npx prisma db seed` inserts 10 supported Dutch cities: Amsterdam, Arnhem, Breda, Den Haag, Dordrecht, Groningen, Maastricht, Nijmegen, Rotterdam, and Utrecht.
+- Each seeded city includes mock weather, air-quality, water, dashboard, and briefing data.
+- The seed removes previous `mock-<city>-*` dashboard and briefing rows before inserting a fresh mock snapshot for each supported city.
 - Vercel builds skip the seed step. This keeps preview or production deployments from making seeded mock dashboard snapshots newer than live-regenerated snapshots in a shared database.
 
 ## Persistence Invariants
