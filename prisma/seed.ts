@@ -96,7 +96,7 @@ function makeHourlyOutlook(baseTemp: number, baseRain: number, baseWind: number)
     { h: "15", rain: baseRain + 0.2, wind: baseWind + 3, temp: baseTemp + 1 },
     { h: "18", rain: baseRain + 0.5, wind: baseWind + 5, temp: baseTemp },
     { h: "21", rain: baseRain + 0.7, wind: baseWind + 7, temp: baseTemp - 2 },
-    { h: "00", rain: baseRain + 0.4, wind: baseWind + 4, temp: baseTemp - 3 },
+    { h: "24", rain: baseRain + 0.4, wind: baseWind + 4, temp: baseTemp - 3 },
   ];
 }
 

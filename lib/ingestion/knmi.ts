@@ -360,7 +360,7 @@ function normalizeWarningLevel(value: string | null) {
   return "unknown";
 }
 
-function warningRegionForCity(citySlug: string) {
+export function warningRegionForCity(citySlug: string) {
   const regions: Record<string, string> = {
     amsterdam: "Noord-Holland",
     arnhem: "Gelderland",
@@ -374,7 +374,7 @@ function warningRegionForCity(citySlug: string) {
     utrecht: "Utrecht",
   };
 
-  return regions[citySlug] ?? "Utrecht";
+  return regions[citySlug] ?? "Unknown";
 }
 
 function readArray(record: Record<string, unknown>, key: string) {

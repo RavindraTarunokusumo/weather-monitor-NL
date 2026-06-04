@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { CityConfig } from "@/lib/ingestion/base";
 import { fetchJson } from "@/lib/ingestion/http";
 import { getSourceConfig, SEEDED_CITY_SOURCE_CONFIGS } from "@/lib/ingestion/source-config";
-import { KnmiAdapter } from "@/lib/ingestion/knmi";
+import { KnmiAdapter, warningRegionForCity } from "@/lib/ingestion/knmi";
 import { LuchtmeetnetAdapter } from "@/lib/ingestion/luchtmeetnet";
 import { RijkswaterstaatAdapter } from "@/lib/ingestion/rijkswaterstaat";
 
@@ -423,6 +423,10 @@ describe("live-capable adapters", () => {
         level: "yellow",
       },
     });
+  });
+
+  it("does not assign unsupported city warning lookups to an existing province", () => {
+    expect(warningRegionForCity("zwolle")).toBe("Unknown");
   });
 
   it("fetches and normalizes latest Luchtmeetnet pollutant values", async () => {

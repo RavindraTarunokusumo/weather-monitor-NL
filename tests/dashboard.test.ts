@@ -298,6 +298,15 @@ describe("buildDashboardResponse", () => {
 });
 
 describe("provided dashboard HTML chart contract", () => {
+  it("keeps seeded hourly outlook labels unique for React chart keys", () => {
+    const seed = readFileSync(path.join(process.cwd(), "prisma/seed.ts"), "utf8");
+    const match = seed.match(/function makeHourlyOutlook[\s\S]*?return \[([\s\S]*?)\];/);
+    const labels = Array.from(match?.[1].matchAll(/h: "([^"]+)"/g) ?? [], ([, label]) => label);
+
+    expect(labels).toEqual(["00", "03", "06", "09", "12", "15", "18", "21", "24"]);
+    expect(new Set(labels).size).toBe(labels.length);
+  });
+
   it("normalizes the 24-hour outlook chart to 24 bins with thinned axis labels", () => {
     const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
 
