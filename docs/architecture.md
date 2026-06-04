@@ -52,6 +52,8 @@ GET /api/dashboard?city=<slug>
 Live ingestion can run through protected Route Handlers under `app/api/jobs/*` or local CLI commands.
 The routes require `CRON_SECRET` authorization and persist normalized snapshots before dashboard
 regeneration links the latest available weather, air-quality, and water data.
+The all-in `/api/jobs/refresh-live` route also upserts the accepted 10 active city rows before ingestion,
+so production deployments that skip seed can still bootstrap the database-backed city catalog.
 
 ## External Integrations
 

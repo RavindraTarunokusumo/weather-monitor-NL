@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   prisma: {},
+  ensureSupportedCities: vi.fn(),
   isAuthorizedJobRequest: vi.fn(),
   regenerateAllDashboardSnapshots: vi.fn(),
   runAllSourcesIngestion: vi.fn(),
@@ -18,6 +19,10 @@ vi.mock("@/lib/ingestion/jobs", () => ({
   runAllSourcesIngestion: mocks.runAllSourcesIngestion,
 }));
 
+vi.mock("@/lib/supported-cities", () => ({
+  ensureSupportedCities: mocks.ensureSupportedCities,
+}));
+
 vi.mock("@/lib/dashboard-regeneration", () => ({
   regenerateAllDashboardSnapshots: mocks.regenerateAllDashboardSnapshots,
 }));
@@ -26,11 +31,12 @@ describe("production live refresh automation", () => {
   beforeEach(() => {
     vi.resetModules();
     mocks.isAuthorizedJobRequest.mockReset();
+    mocks.ensureSupportedCities.mockReset();
     mocks.regenerateAllDashboardSnapshots.mockReset();
     mocks.runAllSourcesIngestion.mockReset();
   });
 
-  it("protects the refresh route and runs live ingestion before dashboard regeneration", async () => {
+  it("protects the refresh route and bootstraps supported cities before live ingestion", async () => {
     const routePath = path.join(process.cwd(), "app/api/jobs/refresh-live/route.ts");
 
     expect(existsSync(routePath)).toBe(true);
@@ -45,6 +51,21 @@ describe("production live refresh automation", () => {
     expect(mocks.regenerateAllDashboardSnapshots).not.toHaveBeenCalled();
 
     mocks.isAuthorizedJobRequest.mockReturnValueOnce(true);
+    mocks.ensureSupportedCities.mockResolvedValueOnce({
+      count: 10,
+      slugs: [
+        "amsterdam",
+        "arnhem",
+        "breda",
+        "den-haag",
+        "dordrecht",
+        "groningen",
+        "maastricht",
+        "nijmegen",
+        "rotterdam",
+        "utrecht",
+      ],
+    });
     mocks.runAllSourcesIngestion.mockResolvedValueOnce([{ type: "weather", results: [] }]);
     mocks.regenerateAllDashboardSnapshots.mockResolvedValueOnce([{ city: "amsterdam", created: true }]);
 
@@ -56,6 +77,7 @@ describe("production live refresh automation", () => {
     const body = await authorized.json();
 
     expect(authorized.status).toBe(200);
+    expect(mocks.ensureSupportedCities).toHaveBeenCalledWith(mocks.prisma);
     expect(mocks.runAllSourcesIngestion).toHaveBeenCalledWith({
       prisma: mocks.prisma,
       mode: "live",
@@ -67,6 +89,7 @@ describe("production live refresh automation", () => {
     expect(body).toMatchObject({
       status: "success",
       mode: "live",
+      cityBootstrap: { count: 10 },
       ingestion: [{ type: "weather", results: [] }],
       regeneration: [{ city: "amsterdam", created: true }],
     });
@@ -76,6 +99,7 @@ describe("production live refresh automation", () => {
     const { GET } = await import("@/app/api/jobs/refresh-live/route");
 
     mocks.isAuthorizedJobRequest.mockReturnValueOnce(true);
+    mocks.ensureSupportedCities.mockResolvedValueOnce({ count: 10, slugs: [] });
     mocks.runAllSourcesIngestion.mockResolvedValueOnce([
       {
         type: "weather",

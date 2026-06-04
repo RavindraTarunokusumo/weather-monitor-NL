@@ -2,6 +2,13 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-06-04 - Production 10-City Refresh Bootstrap
+
+- What worked: checking production `/api/cities` directly confirmed the UI was correctly reflecting the database-backed catalog, not a frontend dropdown defect.
+- What failed: the 10-city rollout relied on seed data for new `City` rows, but production builds intentionally skip seed to avoid replacing live snapshots.
+- Useful commands: `Invoke-RestMethod -Uri 'https://weather-monitor-nl.vercel.app/api/cities'`, `curl -X POST 'https://weather-monitor-nl.vercel.app/api/jobs/refresh-live?force=true' -H 'Authorization: Bearer $CRON_SECRET'`.
+- Workflow improvement: production-safe catalog changes need an idempotent bootstrap path behind authorized jobs when build-time seeding is disabled.
+
 ## 2026-06-04 - PR 19 Review Follow-Up
 
 - What worked: using `gh api` to read the raw PR review comments exposed that six inline comments represented two duplicated review themes, so the fix could stay focused.

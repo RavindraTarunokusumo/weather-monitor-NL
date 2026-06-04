@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { regenerateAllDashboardSnapshots } from "@/lib/dashboard-regeneration";
 import { isAuthorizedJobRequest, runAllSourcesIngestion } from "@/lib/ingestion/jobs";
+import { ensureSupportedCities } from "@/lib/supported-cities";
 
 export async function GET(request: Request) {
   return refreshLiveDashboardData(request);
@@ -19,6 +20,7 @@ async function refreshLiveDashboardData(request: Request) {
   const force = searchParams.get("force") === "true";
 
   try {
+    const cityBootstrap = await ensureSupportedCities(prisma);
     const ingestion = await runAllSourcesIngestion({ prisma, mode: "live" });
     const regeneration = await regenerateAllDashboardSnapshots({ prisma, force });
     const status = hasFailedIngestion(ingestion) ? "failed" : "success";
@@ -27,6 +29,7 @@ async function refreshLiveDashboardData(request: Request) {
       {
         status,
         mode: "live",
+        cityBootstrap,
         ingestion,
         regeneration,
       },
