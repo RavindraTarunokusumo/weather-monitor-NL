@@ -2,6 +2,13 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-06-04 - PR 19 Review Follow-Up
+
+- What worked: using `gh api` to read the raw PR review comments exposed that six inline comments represented two duplicated review themes, so the fix could stay focused.
+- What worked: adding regression tests before changing the code confirmed the duplicated seeded hour label and the unmapped KNMI warning fallback were real review defects.
+- Useful commands: `gh pr view 19 --comments --json comments,reviews,reviewDecision`, `gh api repos/RavindraTarunokusumo/weather-monitor-NL/pulls/19/comments --paginate`, `npm test -- tests/dashboard.test.ts tests/ingestion-live-adapters.test.ts`.
+- Workflow improvement: GitHub review comment replies need the pull-number-specific endpoint, `pulls/<number>/comments/<comment_id>/replies`; the shorter `pulls/comments/<comment_id>/replies` path returns 404.
+
 ## 2026-05-28 - Major Dutch Cities 10-City Rollout
 
 - What worked: checking Luchtmeetnet and Rijkswaterstaat catalogs before implementation kept the 10-city list tied to verifiable source identifiers instead of city-name assumptions.
