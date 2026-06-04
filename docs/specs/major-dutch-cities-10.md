@@ -23,6 +23,7 @@ Expand the public dashboard from 3 to 10 total selectable Dutch cities while kee
 - Prioritize provincial capitals when their source coverage is reliable. Den Haag, Groningen, Arnhem, and Maastricht are included. Provincial capitals without documented reliable mappings in this pass remain out of scope.
 - Seed deterministic mock dashboard snapshots for all 10 cities so `/api/cities`, `/api/dashboard?city=<slug>`, and the dashboard city switcher work immediately in local, preview, and seeded environments.
 - Add explicit live source configuration for all 10 supported cities in `lib/ingestion/source-config.ts`.
+- Ensure the protected production live refresh can bootstrap the 10 supported active city rows before ingestion, so deployments that skip seed still expose the accepted city catalog after the documented refresh route runs.
 - Keep public dashboard requests reading stored `DashboardSnapshot` rows only. Do not add request-time calls to KNMI, Open-Meteo, Luchtmeetnet, or Rijkswaterstaat.
 - Preserve the existing hero-image fallback for cities without city-specific assets.
 - Update tests and docs that enumerate supported seeded cities or live source configuration coverage.
@@ -62,6 +63,7 @@ Reliability means each city has:
 - `/api/cities` returns exactly 10 active cities in name order after seeding.
 - `/api/dashboard?city=<slug>` returns a dashboard response for each supported city after seeding.
 - City switching in the dashboard can select any supported city without a 404 when seeded snapshots exist.
+- The protected `/api/jobs/refresh-live` route ensures all 10 supported active city rows exist before running all-source live ingestion and dashboard regeneration.
 - `SEEDED_CITY_SOURCE_CONFIGS` contains exactly the 10 supported city slugs.
 - `getSourceConfig()` succeeds for all 10 supported city slugs and still throws for unsupported cities.
 - Live ingestion in mock mode still works for all active cities through the existing all-city job flow.
@@ -77,6 +79,7 @@ Reliability means each city has:
 - Do not modify or delete unrelated untracked files in the repo root.
 - Use specific staging; never use `git add -A`.
 - Public API responses must continue to read stored dashboard snapshots only.
+- Production builds must continue to skip automatic seeding; city-row bootstrap belongs behind the authorized refresh job and must not replace existing snapshots by itself.
 - Tests must mock external providers and must not require live KNMI, Luchtmeetnet, Rijkswaterstaat, or Open-Meteo network access.
 
 ## Implementation Notes

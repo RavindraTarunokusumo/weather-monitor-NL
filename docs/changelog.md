@@ -2,6 +2,16 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-06-04 - Production 10-City Refresh Bootstrap
+
+Summary:
+
+- What changed: the authorized `/api/jobs/refresh-live` route now ensures the accepted 10 active city rows exist before running all-source live ingestion and dashboard regeneration.
+- Why: production builds intentionally skip Prisma seed, so a merged 10-city code rollout did not make the seven new cities appear in the database-backed city switcher.
+- User-visible impact: after the protected refresh route runs on the deployed hotfix, `/api/cities` and the dashboard switcher can expose Amsterdam, Arnhem, Breda, Den Haag, Dordrecht, Groningen, Maastricht, Nijmegen, Rotterdam, and Utrecht with live-generated snapshots.
+- Migration notes: no schema migration is required; run `POST /api/jobs/refresh-live?force=true` with `CRON_SECRET` after deployment to bootstrap rows and regenerate dashboards.
+- Related spec: `docs/specs/major-dutch-cities-10.md`.
+
 ## 2026-05-28 - Major Dutch Cities 10-City Rollout
 
 Summary:
