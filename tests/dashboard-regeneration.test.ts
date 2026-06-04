@@ -407,6 +407,52 @@ describe("regenerateDashboardSnapshot", () => {
     });
   });
 
+  it("uses configured city fallback outlook when live weather has no enriched forecast payload", async () => {
+    const currentWeatherOnly = {
+      ...weather,
+      id: "weather-current-observation",
+      observedAt: new Date("2026-05-06T09:59:00.000Z"),
+      temperatureC: 18,
+      weatherCode: null,
+      warningLevel: null,
+      rainProbability: null,
+      sourcePayload: null,
+    };
+    const prisma = makePrismaStub({ weather: currentWeatherOnly });
+
+    (prisma.weatherSnapshot.findMany as unknown as Mock).mockResolvedValue([
+      currentWeatherOnly,
+    ]);
+
+    await regenerateDashboardSnapshot({ prisma, citySlug: "amsterdam", now });
+
+    const data = vi.mocked(prisma.dashboardSnapshot.create).mock.calls[0][0].data;
+    expect(data.weatherSnapshotId).toBe("weather-current-observation");
+    expect(data.summaryPayload).toMatchObject({
+      current: {
+        temperature_c: 18,
+        rain_probability: expect.any(Number),
+        weather_code: expect.any(String),
+        warning_level: expect.any(String),
+      },
+      ui_summary: {
+        best_window: expect.any(String),
+        outdoor_window_detail: expect.not.stringContaining("unavailable"),
+      },
+      outlook: {
+        hourly: expect.arrayContaining([
+          expect.objectContaining({ h: "00", rain: expect.any(Number) }),
+          expect.objectContaining({ h: "24", rain: expect.any(Number) }),
+        ]),
+        weekly: expect.arrayContaining([
+          expect.objectContaining({ day: expect.any(String), rain: expect.any(Number) }),
+        ]),
+      },
+    });
+    expect((data.summaryPayload as { outlook: { hourly: unknown[]; weekly: unknown[] } }).outlook.hourly).toHaveLength(9);
+    expect((data.summaryPayload as { outlook: { hourly: unknown[]; weekly: unknown[] } }).outlook.weekly).toHaveLength(7);
+  });
+
   it("uses the latest enriched water payload when the newest live water row has observations only", async () => {
     const currentWaterOnly = {
       ...water,

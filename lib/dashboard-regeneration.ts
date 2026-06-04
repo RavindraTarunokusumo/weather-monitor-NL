@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import type { Prisma, PrismaClient } from "@prisma/client";
+import { getConfiguredCityFallback } from "./supported-cities";
 
 type DbCity = {
   id: string;
@@ -118,14 +119,21 @@ async function regenerateForCity(options: {
   ]);
   const weatherForSummary = mergeWeatherMetadata(weather, enrichedWeather);
   const waterForSummary = mergeWaterMetadata(water, enrichedWater);
+  const configuredFallback = getConfiguredCityFallback(city.slug);
+  const weatherForDashboard = applyConfiguredWeatherFallback(
+    weatherForSummary,
+    configuredFallback.weather,
+  );
   const sourceStatus = {
     weather: buildSourceStatus("weather", weather, now, 2),
     air_quality: buildSourceStatus("air quality", airQuality, now, 6),
     water: buildSourceStatus("water", water, now, 24),
   };
-  const comfort = computeCycleComfort(weatherForSummary, airQuality);
-  const forecast = extractForecast(weatherForSummary?.sourcePayload);
-  const weeklyLevels = extractWeeklyLevels(waterForSummary?.sourcePayload);
+  const comfort = computeCycleComfort(weatherForDashboard, airQuality);
+  const liveForecast = extractForecast(weatherForDashboard?.sourcePayload);
+  const forecast = hasForecast(liveForecast) ? liveForecast : configuredFallback.outlook;
+  const liveWeeklyLevels = extractWeeklyLevels(waterForSummary?.sourcePayload);
+  const weeklyLevels = liveWeeklyLevels.length > 0 ? liveWeeklyLevels : [];
   const stateForHash = {
     weatherSnapshotId: weather?.id ?? null,
     airQualitySnapshotId: airQuality?.id ?? null,
@@ -141,7 +149,7 @@ async function regenerateForCity(options: {
     orderBy: { generatedAt: "desc" },
   })) as PreviousDashboardSnapshot | null;
   const uiSummary = buildUiSummary({
-    weather: weatherForSummary,
+    weather: weatherForDashboard,
     airQuality,
     water: waterForSummary,
     forecast,
@@ -154,12 +162,12 @@ async function regenerateForCity(options: {
     current: {
       temperature_c: weather?.temperatureC ?? null,
       rain_mm: weather?.rainMm ?? null,
-      rain_probability: weatherForSummary?.rainProbability ?? null,
+      rain_probability: weatherForDashboard?.rainProbability ?? null,
       wind_speed_kmh: weather?.windSpeedKmh ?? null,
       wind_gust_kmh: weather?.windGustKmh ?? null,
       wind_direction: weather?.windDirection ?? null,
-      weather_code: weatherForSummary?.weatherCode ?? null,
-      warning_level: weatherForSummary?.warningLevel ?? null,
+      weather_code: weatherForDashboard?.weatherCode ?? null,
+      warning_level: weatherForDashboard?.warningLevel ?? null,
     },
     ui_summary: uiSummary,
     outlook: forecast,
@@ -344,6 +352,30 @@ function mergeWeatherMetadata(
     warningLevel: current.warningLevel ?? enriched.warningLevel,
     sourcePayload: current.sourcePayload ?? enriched.sourcePayload,
   };
+}
+
+function applyConfiguredWeatherFallback(
+  current: WeatherSnapshot | null,
+  fallback: {
+    rainProbability: number;
+    weatherCode: string;
+    warningLevel: string;
+  },
+): WeatherSnapshot | null {
+  if (!current) {
+    return null;
+  }
+
+  return {
+    ...current,
+    rainProbability: current.rainProbability ?? fallback.rainProbability,
+    weatherCode: current.weatherCode ?? fallback.weatherCode,
+    warningLevel: current.warningLevel ?? fallback.warningLevel,
+  };
+}
+
+function hasForecast(forecast: { hourly: Record<string, unknown>[]; weekly: Record<string, unknown>[] }) {
+  return forecast.hourly.length > 0 || forecast.weekly.length > 0;
 }
 
 function hasWaterMetadata(snapshot: WaterSnapshot | null) {
