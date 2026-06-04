@@ -2,6 +2,13 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-06-04 - Complete City Data Config
+
+- What worked: checking actual `/api/dashboard` fields separated the problem from city availability; the rows existed, but `outlook`, `rain_probability`, and `weather_code` were empty.
+- What failed: live source identifiers can be fresh while user-facing forecast panels are blank if regeneration publishes observation-only weather without configured fallback metadata.
+- Useful commands: `npm test -- tests/dashboard-regeneration.test.ts tests/supported-cities.test.ts`, `curl -X POST "https://weather-monitor-nl.vercel.app/api/jobs/regenerate-dashboard-snapshots?all=true&force=true" -H "Authorization: Bearer $CRON_SECRET"`.
+- Workflow improvement: city expansion should start and end in `lib/supported-cities.ts`; the catalog must include row metadata, source mappings, and fallback dashboard defaults.
+
 ## 2026-06-04 - Production 10-City Refresh Bootstrap
 
 - What worked: checking production `/api/cities` directly confirmed the UI was correctly reflecting the database-backed catalog, not a frontend dropdown defect.
