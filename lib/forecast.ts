@@ -149,8 +149,21 @@ function buildWarningFreshness(
 function buildForecastFreshness(
   weatherSnapshot: ForecastSnapshotForResponse["weatherSnapshot"],
   hourly: ForecastHour[],
+  daily: ForecastDay[],
 ): ForecastFreshnessEntry {
-  if (!weatherSnapshot || hourly.length === 0) {
+  if (hourly.length > 0 || daily.length > 0) {
+    return {
+      source: "open_meteo",
+      updated_at: toIsoString(weatherSnapshot?.ingestedAt ?? null),
+      observed_at: toIsoString(weatherSnapshot?.observedAt ?? null),
+      status: "fresh",
+      detail: weatherSnapshot
+        ? null
+        : "Persisted Open-Meteo forecast outlook is available from the dashboard summary payload.",
+    };
+  }
+
+  if (!weatherSnapshot) {
     return {
       source: "open_meteo",
       updated_at: null,
@@ -271,22 +284,24 @@ export function buildRiskTimeline(options: {
   hourly: ForecastHour[];
   sourceFreshness: ForecastFreshnessEntry[];
 }): ForecastRiskEvent[] {
+  const events: ForecastRiskEvent[] = [];
+  const hasHourly = options.hourly.length > 0;
+  const hasActiveWarning = ["yellow", "orange", "red"].includes(options.warningLevel);
+  const staleSource = options.sourceFreshness.find((entry) => entry.status !== "fresh");
+  const hasAnyFreshSource = options.sourceFreshness.some((entry) => entry.status === "fresh");
+
   if (options.hourly.length === 0) {
-    return [
-      {
-        starts_at: options.generatedAt,
-        ends_at: null,
-        severity: "watch",
-        category: "data",
-        title: "Forecast data unavailable",
-        detail: "No hourly forecast outlook is available for this city.",
-      },
-    ];
+    events.push({
+      starts_at: options.generatedAt,
+      ends_at: null,
+      severity: "watch",
+      category: "data",
+      title: "Forecast data unavailable",
+      detail: "No hourly forecast outlook is available for this city.",
+    });
   }
 
-  const events: ForecastRiskEvent[] = [];
-
-  if (["yellow", "orange", "red"].includes(options.warningLevel)) {
+  if (hasActiveWarning) {
     events.push({
       starts_at: options.generatedAt,
       ends_at: null,
@@ -324,8 +339,7 @@ export function buildRiskTimeline(options: {
     });
   }
 
-  const staleSource = options.sourceFreshness.find((entry) => entry.status !== "fresh");
-  if (staleSource) {
+  if (staleSource && (hasHourly || hasActiveWarning || hasAnyFreshSource)) {
     events.push({
       starts_at: options.generatedAt,
       ends_at: null,
@@ -385,7 +399,7 @@ export function buildForecastResponse(
       summaryPayload: snapshot.summaryPayload,
     }),
     buildWarningFreshness(snapshot.weatherSnapshot, warningLevel),
-    buildForecastFreshness(snapshot.weatherSnapshot, hourly),
+    buildForecastFreshness(snapshot.weatherSnapshot, hourly, daily),
   ];
 
   return {

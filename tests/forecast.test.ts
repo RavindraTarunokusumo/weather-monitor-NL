@@ -238,6 +238,9 @@ describe("buildForecastResponse", () => {
       ...snapshot,
       weatherSnapshot: null,
     });
+    const openMeteoFreshness = response.source_freshness.find(
+      (entry) => entry.source === "open_meteo",
+    );
 
     expect(response.hourly).toHaveLength(4);
     expect(response.daily).toHaveLength(2);
@@ -245,8 +248,46 @@ describe("buildForecastResponse", () => {
       apparent_temperature_max_c: 17,
       apparent_temperature_min_c: 9,
     });
+    expect(openMeteoFreshness).toMatchObject({
+      source: "open_meteo",
+      status: "fresh",
+    });
     expect(response.risk_timeline.map((event) => event.title)).not.toContain(
       "Forecast data unavailable",
+    );
+  });
+
+  it("keeps warning risks visible when hourly forecast data is unavailable", () => {
+    const response = buildForecastResponse(city, {
+      ...snapshot,
+      summaryPayload: {
+        ...(snapshot.summaryPayload as Record<string, unknown>),
+        outlook: {
+          hourly: [],
+          weekly: [],
+        },
+      },
+    });
+
+    expect(response.hourly).toEqual([]);
+    expect(response.risk_timeline).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          category: "data",
+          severity: "watch",
+          title: "Forecast data unavailable",
+        }),
+        expect.objectContaining({
+          category: "warning",
+          severity: "warning",
+          title: "KNMI warning active",
+        }),
+        expect.objectContaining({
+          category: "data",
+          severity: "watch",
+          title: "Source freshness needs attention",
+        }),
+      ]),
     );
   });
 });
