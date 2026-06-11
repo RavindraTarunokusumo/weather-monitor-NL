@@ -163,22 +163,12 @@ function buildForecastFreshness(
     };
   }
 
-  if (!weatherSnapshot) {
-    return {
-      source: "open_meteo",
-      updated_at: null,
-      observed_at: null,
-      status: "missing",
-      detail: "No Open-Meteo forecast outlook is available for this city.",
-    };
-  }
-
   return {
     source: "open_meteo",
-    updated_at: toIsoString(weatherSnapshot.ingestedAt),
-    observed_at: toIsoString(weatherSnapshot.observedAt),
-    status: "fresh",
-    detail: null,
+    updated_at: null,
+    observed_at: null,
+    status: "missing",
+    detail: "No Open-Meteo forecast outlook is available for this city.",
   };
 }
 

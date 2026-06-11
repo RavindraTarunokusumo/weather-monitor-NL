@@ -268,8 +268,15 @@ describe("buildForecastResponse", () => {
         },
       },
     });
+    const openMeteoFreshness = response.source_freshness.find(
+      (entry) => entry.source === "open_meteo",
+    );
 
     expect(response.hourly).toEqual([]);
+    expect(openMeteoFreshness).toMatchObject({
+      source: "open_meteo",
+      status: "missing",
+    });
     expect(response.risk_timeline).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
