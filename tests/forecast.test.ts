@@ -66,6 +66,8 @@ const snapshot = {
           day: "Thu",
           hi: 18,
           lo: 11,
+          apparent_temperature_max: 17,
+          apparent_temperature_min: 9,
           rain: 75,
           weather_code: "showers",
           wind: 32,
@@ -159,6 +161,8 @@ describe("buildForecastResponse", () => {
       label: "Thu",
       temperature_max_c: 18,
       temperature_min_c: 11,
+      apparent_temperature_max_c: 17,
+      apparent_temperature_min_c: 9,
       precipitation_probability_max: 75,
       wind_speed_max_kmh: 32,
     });
@@ -227,5 +231,22 @@ describe("buildForecastResponse", () => {
       source: "weather",
       status: "missing",
     });
+  });
+
+  it("normalizes persisted outlook rows even when the weather snapshot relation is missing", () => {
+    const response = buildForecastResponse(city, {
+      ...snapshot,
+      weatherSnapshot: null,
+    });
+
+    expect(response.hourly).toHaveLength(4);
+    expect(response.daily).toHaveLength(2);
+    expect(response.daily[0]).toMatchObject({
+      apparent_temperature_max_c: 17,
+      apparent_temperature_min_c: 9,
+    });
+    expect(response.risk_timeline.map((event) => event.title)).not.toContain(
+      "Forecast data unavailable",
+    );
   });
 });

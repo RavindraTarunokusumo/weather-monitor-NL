@@ -227,8 +227,10 @@ function buildForecastDay(row: JsonRecord): ForecastDay {
     weather_code: weatherCode,
     temperature_max_c: readNumber(row, "temperature_max_c") ?? readNumber(row, "hi"),
     temperature_min_c: readNumber(row, "temperature_min_c") ?? readNumber(row, "lo"),
-    apparent_temperature_max_c: readNumber(row, "apparent_temperature_max_c"),
-    apparent_temperature_min_c: readNumber(row, "apparent_temperature_min_c"),
+    apparent_temperature_max_c:
+      readNumber(row, "apparent_temperature_max_c") ?? readNumber(row, "apparent_temperature_max"),
+    apparent_temperature_min_c:
+      readNumber(row, "apparent_temperature_min_c") ?? readNumber(row, "apparent_temperature_min"),
     precipitation_sum_mm: readNumber(row, "precipitation_sum_mm"),
     precipitation_probability_max:
       readNumber(row, "precipitation_probability_max") ?? readNumber(row, "rain"),
@@ -356,12 +358,8 @@ export function buildForecastResponse(
   const uiSummary = asRecord(summaryPayload?.ui_summary);
   const currentSummary = asRecord(summaryPayload?.current);
   const outlook = asRecord(summaryPayload?.outlook);
-  const hourly = snapshot.weatherSnapshot
-    ? readRecordArray(outlook, "hourly").map(buildForecastHour)
-    : [];
-  const daily = snapshot.weatherSnapshot
-    ? readRecordArray(outlook, "weekly").map(buildForecastDay)
-    : [];
+  const hourly = readRecordArray(outlook, "hourly").map(buildForecastHour);
+  const daily = readRecordArray(outlook, "weekly").map(buildForecastDay);
   const weatherCode =
     snapshot.weatherSnapshot?.weatherCode ?? readString(currentSummary, "weather_code");
   const warningLevel =
