@@ -59,6 +59,21 @@ curl "http://localhost:3000/api/dashboard?city=utrecht"
 curl "http://localhost:3000/api/dashboard?city=rotterdam"
 ```
 
+Forecast API checks:
+
+```bash
+curl "http://localhost:3000/api/forecast?city=amsterdam"
+curl "http://localhost:3000/api/forecast?city=utrecht"
+curl "http://localhost:3000/api/forecast?city=rotterdam"
+```
+
+Manual Forecast page check:
+
+```bash
+npm run dev
+# open http://localhost:3000/forecast
+```
+
 ## Ingestion And Dashboard Refresh
 
 Mock ingestion remains the default and requires no external credentials:

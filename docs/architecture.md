@@ -7,9 +7,11 @@ Dutch Weather Intelligence is currently a single full-stack Next.js App Router a
 - Frontend (SSR shell): `app/page.tsx`
 - Reference dashboard UI: `app/dashboard/`
 - Live dashboard components from the earlier public shell: `app/components/`
+- Forecast page: `app/forecast/page.tsx`
 - API routes: `app/api/*/route.ts`
 - Database client: `lib/db.ts`
 - Dashboard response shaping: `lib/dashboard.ts`
+- Forecast API response shaping: `lib/forecast.ts`
 - Shared dashboard types: `lib/types/dashboard.ts`
 - Client-side fetch helpers: `lib/api/dashboard-client.ts`
 - Display formatting utilities: `lib/utils/format.ts`
@@ -23,7 +25,8 @@ Dutch Weather Intelligence is currently a single full-stack Next.js App Router a
 3. Route Handlers serve health, city catalog, and dashboard JSON from the database.
 4. The homepage fetches `/api/dashboard?city=<slug>` server-side and hands normalized data to the interactive dashboard shell.
 5. The dashboard shell fetches `/api/cities` and same-app `/api/dashboard?city=<slug>` for city switching.
-6. Source freshness travels with weather, air-quality, and water snapshot data.
+6. The Forecast page reads normalized forecast analytics from persisted dashboard snapshots through `/api/forecast`; it does not call external forecast or warning providers from the browser.
+7. Source freshness travels with weather, air-quality, and water snapshot data.
 
 ## Frontend Boundary
 
@@ -45,6 +48,7 @@ The `app/components/` live-dashboard shell remains available from the public das
 GET /api/health
 GET /api/cities
 GET /api/dashboard?city=<slug>
+GET /api/forecast?city=<slug>
 ```
 
 ## Planned Background Jobs

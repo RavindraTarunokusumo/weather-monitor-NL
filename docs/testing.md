@@ -73,6 +73,14 @@ Run the dashboard UI tests:
 npm test -- app/dashboard/__tests__/qa.test.ts app/dashboard/__tests__/DashboardShell.test.tsx
 ```
 
+Run Forecast page tests:
+
+```bash
+npm test -- tests/forecast.test.ts app/forecast/__tests__/ForecastShell.test.tsx
+```
+
+Forecast tests must verify the same-app API shape, missing-data states, city switching, source links, and deterministic risk timeline output.
+
 ## Validation Workflow
 
 Default sequence before commit:
