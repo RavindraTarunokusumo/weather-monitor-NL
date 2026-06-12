@@ -2,6 +2,14 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-06-12 - Forecast Page
+
+- What worked: isolating Forecast response shaping in `lib/forecast.ts` let the public `/forecast` page reuse persisted dashboard snapshots without adding new provider calls or persistence.
+- What failed: browser and build validation depended on local PostgreSQL, and Docker Desktop was not running, so DB-backed `/forecast` checks and `npm run build` stopped at the database boundary.
+- Useful commands: `npm test -- tests/forecast.test.ts app/forecast/__tests__/ForecastShell.test.tsx`, `npm test`, `npx prisma validate`, `npm run build`.
+- Workflow improvement: when a public page depends on Prisma reads, add a documented unavailable-state path for no-snapshot cities and run a local DB smoke test before PR when Docker is available.
+- Skill worth improving: the repo-local `test-plan-writer` and `security-review` skills still include trading-specific context, even though the output can be adapted to this weather app.
+
 ## 2026-06-04 - Complete City Data Config
 
 - What worked: checking actual `/api/dashboard` fields separated the problem from city availability; the rows existed, but `outlook`, `rain_probability`, and `weather_code` were empty.

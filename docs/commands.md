@@ -59,6 +59,22 @@ curl "http://localhost:3000/api/dashboard?city=utrecht"
 curl "http://localhost:3000/api/dashboard?city=rotterdam"
 ```
 
+Forecast API checks:
+
+```bash
+curl "http://localhost:3000/api/forecast?city=amsterdam"
+curl "http://localhost:3000/api/forecast?city=utrecht"
+curl "http://localhost:3000/api/forecast?city=rotterdam"
+```
+
+Manual Forecast page check:
+
+```bash
+# /forecast depends on local PostgreSQL plus prisma migrate/seed setup before the dev server starts.
+npm run dev
+# open http://localhost:3000/forecast
+```
+
 ## Ingestion And Dashboard Refresh
 
 ## Adding Supported Cities

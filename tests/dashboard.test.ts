@@ -298,6 +298,15 @@ describe("buildDashboardResponse", () => {
 });
 
 describe("provided dashboard HTML chart contract", () => {
+  it("links the static dashboard navigation to the Forecast page", () => {
+    const html = readFileSync(path.join(process.cwd(), "Dutch Weather Dashboard.html"), "utf8");
+    const forecastLink = html.match(/<a key=\{n\} href="\/forecast"[\s\S]*?>Forecast<\/a>/)?.[0] ?? "";
+
+    expect(html).toContain('href="/forecast"');
+    expect(forecastLink).toContain('target="_top"');
+    expect(forecastLink).toContain(">Forecast<");
+  });
+
   it("keeps seeded hourly outlook labels unique for React chart keys", () => {
     const seed = readFileSync(path.join(process.cwd(), "prisma/seed.ts"), "utf8");
     const match = seed.match(/function makeHourlyOutlook[\s\S]*?return \[([\s\S]*?)\];/);
