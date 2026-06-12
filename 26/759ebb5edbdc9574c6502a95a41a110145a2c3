@@ -1,0 +1,6 @@
+Task: Accept Forecast page spec
+Summary: Accepted the Forecast page implementation contract, saved the implementation plan, and opened the active TODO session.
+Spec: docs/specs/forecast-page.md
+Docs: docs/specs/forecast-page.md, docs/superpowers/plans/2026-06-11-forecast-page.md
+TODO: TODO.md Forecast Page session start
+Validation: npm run lint; npm run typecheck; npm test
