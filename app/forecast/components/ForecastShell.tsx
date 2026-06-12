@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { ForecastCity, ForecastResponse } from "@/lib/types/forecast";
 import { ForecastDaily } from "./ForecastDaily";
 import { ForecastHourly } from "./ForecastHourly";
@@ -18,6 +18,12 @@ export function ForecastShell({ initialForecast, initialCities }: ForecastShellP
   const [forecast, setForecast] = useState(initialForecast);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setForecast(initialForecast);
+    setError(null);
+    setLoading(false);
+  }, [initialForecast]);
 
   async function selectCity(event: React.ChangeEvent<HTMLSelectElement>) {
     const slug = event.target.value;
@@ -62,8 +68,16 @@ export function ForecastShell({ initialForecast, initialCities }: ForecastShellP
         </label>
       </header>
 
-      {error ? <div className="forecast-error">{error}</div> : null}
-      {loading ? <div className="forecast-loading">Loading forecast data...</div> : null}
+      {error ? (
+        <div className="forecast-error" role="alert">
+          {error}
+        </div>
+      ) : null}
+      {loading ? (
+        <div className="forecast-loading" role="status">
+          Loading forecast data...
+        </div>
+      ) : null}
 
       <ForecastSummary forecast={forecast} />
 

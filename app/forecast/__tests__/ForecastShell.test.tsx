@@ -179,7 +179,11 @@ describe("ForecastShell", () => {
 
   it("switches cities through the same-app Forecast API", async () => {
     const user = userEvent.setup();
-    const fetchMock = vi.fn(async () => Response.json(utrechtForecast));
+    let resolveForecast!: (response: Response) => void;
+    const forecastPromise = new Promise<Response>((resolve) => {
+      resolveForecast = resolve;
+    });
+    const fetchMock = vi.fn(() => forecastPromise);
     vi.stubGlobal("fetch", fetchMock);
 
     render(<ForecastShell initialForecast={amsterdamForecast} initialCities={cities} />);
@@ -187,8 +191,29 @@ describe("ForecastShell", () => {
     await user.selectOptions(screen.getByLabelText(/select forecast city/i), "utrecht");
 
     expect(fetchMock).toHaveBeenCalledWith("/api/forecast?city=utrecht");
+    expect(screen.getByRole("status")).toHaveTextContent("Loading forecast data...");
+
+    resolveForecast(Response.json(utrechtForecast));
+
     expect(
       await screen.findByRole("heading", { name: /forecast intelligence for utrecht/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Late drizzle")).toBeInTheDocument();
+  });
+
+  it("syncs displayed forecast when the initialForecast prop changes", () => {
+    const { rerender } = render(
+      <ForecastShell initialForecast={amsterdamForecast} initialCities={cities} />,
+    );
+
+    expect(
+      screen.getByRole("heading", { name: /forecast intelligence for amsterdam/i }),
+    ).toBeInTheDocument();
+
+    rerender(<ForecastShell initialForecast={utrechtForecast} initialCities={cities} />);
+
+    expect(
+      screen.getByRole("heading", { name: /forecast intelligence for utrecht/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("Late drizzle")).toBeInTheDocument();
   });
@@ -208,7 +233,9 @@ describe("ForecastShell", () => {
 
     await user.selectOptions(screen.getByLabelText(/select forecast city/i), "utrecht");
 
-    expect(await screen.findByText("Forecast data could not be loaded.")).toBeInTheDocument();
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Forecast data could not be loaded.",
+    );
     expect(screen.getByRole("heading", { name: /forecast intelligence for amsterdam/i })).toBeInTheDocument();
   });
 });
