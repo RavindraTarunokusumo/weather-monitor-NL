@@ -1,0 +1,6 @@
+Task: Forecast docs clarity
+Summary: Clarified Forecast route handler flow and local database setup needed for manual /forecast checks.
+Spec: docs/specs/forecast-page.md
+Docs: docs/architecture.md, docs/commands.md
+TODO: N/A
+Validation: npm run lint; npm run typecheck
