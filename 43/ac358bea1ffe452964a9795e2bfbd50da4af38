@@ -1,0 +1,6 @@
+Task: Document Forecast page changelog
+Summary: Added the user-visible Forecast analytics page and API behavior to the project changelog before PR submission.
+Spec: docs/specs/forecast-page.md
+Docs: docs/changelog.md
+TODO: Forecast Page session archived in docs/iterations/archive/2026-06-12-forecast-page.md
+Validation: git diff --check; npm run lint; npm run typecheck; npm test; npx prisma validate passed on clean branch before this docs-only commit
