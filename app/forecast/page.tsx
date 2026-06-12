@@ -1,7 +1,7 @@
-import { buildForecastResponse, buildRiskTimeline, forecastSourceLinks } from "@/lib/forecast";
+import { buildForecastResponse } from "@/lib/forecast";
 import { prisma } from "@/lib/db";
-import type { ForecastCity, ForecastFreshnessEntry, ForecastResponse } from "@/lib/types/forecast";
 import { ForecastShell } from "./components/ForecastShell";
+import { buildUnavailableForecast } from "./unavailable";
 
 export const dynamic = "force-dynamic";
 
@@ -13,56 +13,6 @@ type ForecastPageProps = {
 
 function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
-}
-
-function missingFreshness(
-  source: "weather" | "air_quality" | "water" | "knmi_warnings" | "open_meteo",
-): ForecastFreshnessEntry {
-  return {
-    source,
-    updated_at: null,
-    observed_at: null,
-    status: "missing",
-    detail: `No ${source.replaceAll("_", " ")} data is available for this city.`,
-  };
-}
-
-function buildUnavailableForecastResponse(city: ForecastCity): ForecastResponse {
-  const generatedAt = new Date().toISOString();
-  const sourceFreshness = [
-    missingFreshness("weather"),
-    missingFreshness("air_quality"),
-    missingFreshness("water"),
-    missingFreshness("knmi_warnings"),
-    missingFreshness("open_meteo"),
-  ];
-
-  return {
-    city: {
-      slug: city.slug,
-      name: city.name,
-      timezone: city.timezone,
-    },
-    generated_at: generatedAt,
-    summary: {
-      condition_label: null,
-      best_window: null,
-      worst_window: null,
-      main_risk: null,
-      next_change: null,
-      warning_level: "unknown",
-    },
-    hourly: [],
-    daily: [],
-    risk_timeline: buildRiskTimeline({
-      generatedAt,
-      warningLevel: "unknown",
-      hourly: [],
-      sourceFreshness,
-    }),
-    source_freshness: sourceFreshness,
-    links: forecastSourceLinks(),
-  };
 }
 
 export default async function ForecastPage({ searchParams }: ForecastPageProps) {
@@ -107,7 +57,7 @@ export default async function ForecastPage({ searchParams }: ForecastPageProps) 
 
   const initialForecast = snapshot
     ? buildForecastResponse(selectedCity, snapshot)
-    : buildUnavailableForecastResponse(selectedCity);
+    : buildUnavailableForecast(selectedCity);
 
   return (
     <ForecastShell
