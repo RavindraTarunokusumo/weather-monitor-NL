@@ -2,6 +2,16 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-06-12 - Forecast Analytics Page
+
+Summary:
+
+- What changed: added a public `/forecast` page and `/api/forecast` endpoint with city switching, derived hourly/daily forecast analytics, risk timeline signals, and source links backed by persisted dashboard snapshots.
+- Why: give users deeper forecast context beyond the dashboard overview without adding new live provider calls or persistence tables.
+- User-visible impact: dashboard navigation can open Forecast, and supported cities can show multi-day outlook, hourly conditions, risk indicators, and data freshness/source details.
+- Migration notes: no schema migration is required; local `/forecast` checks require PostgreSQL snapshots to be available.
+- Related spec: `docs/specs/forecast-page.md`.
+
 ## 2026-06-04 - Production 10-City Refresh Bootstrap
 
 Summary:
