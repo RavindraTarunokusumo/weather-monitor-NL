@@ -1,6 +1,6 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @next/next/no-html-link-for-pages, @next/next/no-img-element */
 
 import React from "react";
 import type { CityOption, DashboardResponse } from "../types";
@@ -28,15 +28,11 @@ export function TopNav({
           <span>Dutch Weather Intelligence</span>
         </div>
         <nav className="nav-links" aria-label="Primary">
-          {["Dashboard", "Forecast", "Maps", "Insights", "Alerts"].map((item) => (
-            <span
-              key={item}
-              aria-current={item === "Dashboard" ? "page" : undefined}
-              className={item === "Dashboard" ? "nav-link active" : "nav-link"}
-            >
-              {item}
-            </span>
-          ))}
+          <a href="/" aria-current="page" className="nav-link active">Dashboard</a>
+          <a href="/forecast" className="nav-link">Forecast</a>
+          <span className="nav-link">Maps</span>
+          <span className="nav-link">Insights</span>
+          <span className="nav-link">Alerts</span>
         </nav>
         <div className="nav-actions">
           <div className="city-picker">

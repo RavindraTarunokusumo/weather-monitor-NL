@@ -167,6 +167,7 @@ describe("DashboardShell", () => {
     render(<DashboardShell initialDashboard={amsterdamDashboard} />);
 
     expect(screen.getByRole("navigation", { name: /primary/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /forecast/i })).toHaveAttribute("href", "/forecast");
     expect(screen.getByRole("region", { name: /today briefing/i })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: /dashboard metrics/i })).toBeInTheDocument();
     await screen.findByRole("button", { name: /select city/i });
