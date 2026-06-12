@@ -15,7 +15,7 @@ Completed sessions must be moved to `docs/iterations/archive/` and include the r
 - [x] Create normalized Forecast API response and deterministic risk derivation. Commit: `2add3782e05c1b0878024836de15c4fd6d5b0f94`
 - [x] Build the `/forecast` page with city switching and analytics sections. Commit: `8b46db94e10da8416aa802150a90b1aaf8b16487`
 - [x] Add dashboard navigation links to the Forecast page. Commit: `e6921a8`
-- [ ] Update docs and run pre-PR validation.
+- [x] Update docs and run pre-PR validation. Commit: `272ee1b`
 
 ## Future Backlog
 
