@@ -1,0 +1,6 @@
+Task: Forecast initial unavailable snapshot fixes
+Summary: Rendered a ForecastShell-compatible unavailable response when initial snapshots are missing, synced shell state on prop changes, and announced loading/error states to assistive tech.
+Spec: docs/specs/forecast-page.md
+Docs: N/A
+TODO: TODO.md Forecast Page - code review fixes for forecast analytics page
+Validation: npm test -- app/forecast/__tests__/ForecastShell.test.tsx; npm test -- app/forecast/__tests__/ForecastShell.test.tsx app/dashboard/__tests__/DashboardShell.test.tsx; npm run lint; npm run typecheck; npm test -- tests/forecast.test.ts app/forecast/__tests__/ForecastShell.test.tsx app/dashboard/__tests__/DashboardShell.test.tsx
