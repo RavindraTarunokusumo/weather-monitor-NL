@@ -1,0 +1,11 @@
+Task: Forecast API response
+
+Summary: Added normalized Forecast API response shaping, source links, and deterministic risk timeline.
+
+Spec: docs/specs/forecast-page.md
+
+Docs: N/A
+
+TODO: TODO.md Forecast Page - Forecast API response
+
+Validation: npm run lint; npm run typecheck; npm test -- tests/forecast.test.ts tests/dashboard.test.ts
