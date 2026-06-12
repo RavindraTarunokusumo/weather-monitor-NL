@@ -24,6 +24,8 @@ Expand the public dashboard from 3 to 10 total selectable Dutch cities while kee
 - Seed deterministic mock dashboard snapshots for all 10 cities so `/api/cities`, `/api/dashboard?city=<slug>`, and the dashboard city switcher work immediately in local, preview, and seeded environments.
 - Add explicit live source configuration for all 10 supported cities in `lib/ingestion/source-config.ts`.
 - Ensure the protected production live refresh can bootstrap the 10 supported active city rows before ingestion, so deployments that skip seed still expose the accepted city catalog after the documented refresh route runs.
+- Ensure dashboard regeneration never publishes blank user-facing forecast data for a configured city: if live weather ingestion returns observation-only rows without forecast enrichment, regeneration must use deterministic configured fallback outlook, rain probability, condition, and warning metadata for that city.
+- Keep supported-city metadata, source mappings, and fallback dashboard defaults in data/config modules so adding another verified city is a configuration edit plus validation, not new route logic, Vercel setup, or manual production database work.
 - Keep public dashboard requests reading stored `DashboardSnapshot` rows only. Do not add request-time calls to KNMI, Open-Meteo, Luchtmeetnet, or Rijkswaterstaat.
 - Preserve the existing hero-image fallback for cities without city-specific assets.
 - Update tests and docs that enumerate supported seeded cities or live source configuration coverage.
@@ -64,6 +66,8 @@ Reliability means each city has:
 - `/api/dashboard?city=<slug>` returns a dashboard response for each supported city after seeding.
 - City switching in the dashboard can select any supported city without a 404 when seeded snapshots exist.
 - The protected `/api/jobs/refresh-live` route ensures all 10 supported active city rows exist before running all-source live ingestion and dashboard regeneration.
+- Every supported city dashboard has non-empty 24-hour and weekly outlook arrays after seed or live refresh, even when the latest live weather row is observation-only.
+- Every supported city dashboard has non-null user-facing rain probability and weather condition metadata after seed or live refresh.
 - `SEEDED_CITY_SOURCE_CONFIGS` contains exactly the 10 supported city slugs.
 - `getSourceConfig()` succeeds for all 10 supported city slugs and still throws for unsupported cities.
 - Live ingestion in mock mode still works for all active cities through the existing all-city job flow.
@@ -80,6 +84,7 @@ Reliability means each city has:
 - Use specific staging; never use `git add -A`.
 - Public API responses must continue to read stored dashboard snapshots only.
 - Production builds must continue to skip automatic seeding; city-row bootstrap belongs behind the authorized refresh job and must not replace existing snapshots by itself.
+- Configured fallback outlooks must be deterministic and must not make request-time external API calls.
 - Tests must mock external providers and must not require live KNMI, Luchtmeetnet, Rijkswaterstaat, or Open-Meteo network access.
 
 ## Implementation Notes

@@ -77,6 +77,16 @@ npm run dev
 
 ## Ingestion And Dashboard Refresh
 
+## Adding Supported Cities
+
+Add verified cities in `lib/supported-cities.ts`. One catalog entry must include:
+
+- city slug, display name, latitude, and longitude
+- KNMI, Luchtmeetnet, and Rijkswaterstaat source mappings
+- deterministic fallback dashboard defaults used when live forecast enrichment is unavailable
+
+After editing the catalog, run validation and deploy. The authorized `/api/jobs/refresh-live` route bootstraps the configured city rows in production before ingestion, so no separate Vercel setup, manual database seed, or route integration step is required for catalog-only additions.
+
 Mock ingestion remains the default and requires no external credentials:
 
 ```bash

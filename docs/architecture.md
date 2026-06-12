@@ -16,6 +16,7 @@ Dutch Weather Intelligence is currently a single full-stack Next.js App Router a
 - Client-side fetch helpers: `lib/api/dashboard-client.ts`
 - Display formatting utilities: `lib/utils/format.ts`
 - Persistence schema and seed: `prisma/`
+- Supported-city catalog: `lib/supported-cities.ts`
 - Local infrastructure: `infra/docker/docker-compose.yml`
 
 ## Runtime Flow
@@ -59,6 +60,11 @@ regeneration links the latest available weather, air-quality, and water data.
 The all-in `/api/jobs/refresh-live` route also upserts the accepted 10 active city rows before ingestion,
 so production deployments that skip seed can still bootstrap the database-backed city catalog.
 
+`lib/supported-cities.ts` is the canonical city expansion point. It owns supported city rows,
+provider source mappings, and deterministic fallback dashboard defaults. Ingestion source config
+is derived from this catalog, and dashboard regeneration uses the fallback defaults only when live
+forecast enrichment is missing.
+
 ## External Integrations
 
 - KNMI EDR API: near-real-time weather observations from the configured seeded-city stations.
@@ -74,4 +80,5 @@ so production deployments that skip seed can still bootstrap the database-backed
 - Seeded data must be distinguishable from live source data.
 - AI may explain source-backed facts in later milestones but must not invent forecasts.
 - The 10 supported cities have deterministic seeded dashboard snapshots for the public UI.
+- Configured supported cities must have deterministic fallback outlook/current metadata so live observation-only refreshes do not publish blank forecast panels.
 - Forecast outlooks, warning labels, air trends, and water trend/weekly-level displays are derived during ingestion/regeneration and persisted in stored snapshots before the public API reads them.

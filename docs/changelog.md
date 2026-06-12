@@ -11,6 +11,16 @@ Summary:
 - User-visible impact: dashboard navigation can open Forecast, and supported cities can show multi-day outlook, hourly conditions, risk indicators, and data freshness/source details.
 - Migration notes: no schema migration is required; local `/forecast` checks require PostgreSQL snapshots to be available.
 - Related spec: `docs/specs/forecast-page.md`.
+## 2026-06-04 - Complete Configured City Fallbacks
+
+Summary:
+
+- What changed: dashboard regeneration now fills configured fallback outlook, rain probability, weather condition, and warning metadata when live weather ingestion returns observation-only rows without forecast enrichment.
+- Why: production live refresh created fresh source-backed snapshots but blank 24-hour/weekly outlook data, making the UI look empty.
+- User-visible impact: every supported city keeps non-empty forecast panels after live refresh even when Open-Meteo/forecast enrichment is temporarily unavailable.
+- Operator impact: city rows, source mappings, and fallback dashboard defaults now live together in `lib/supported-cities.ts`; adding another verified city should be a catalog edit plus validation, not new route logic or Vercel setup.
+- Migration notes: no schema migration is required; deploy and run the protected refresh/regeneration path to republish complete snapshots.
+- Related spec: `docs/specs/major-dutch-cities-10.md`.
 
 ## 2026-06-04 - Production 10-City Refresh Bootstrap
 
