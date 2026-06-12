@@ -1417,47 +1417,6 @@ p {
   }
 }
 
-@media (max-width: 639px) {
-  .briefing-hero {
-    aspect-ratio: 1672 / 941;
-    height: auto;
-  }
-
-  .briefing-hero .hero-image {
-    object-fit: contain;
-  }
-
-  .current-weather-card {
-    top: 8px;
-    right: 8px;
-    width: 76px;
-    min-width: 0;
-    max-width: 76px;
-    padding: 6px 8px;
-    border-radius: 12px;
-  }
-
-  .current-weather-card .weather-card-top {
-    gap: 4px;
-    justify-content: center;
-    margin-bottom: 0;
-  }
-
-  .current-weather-card .weather-card-top img {
-    width: 18px;
-    height: 18px;
-  }
-
-  .current-weather-card .weather-card-top strong {
-    font-size: 18px;
-  }
-
-  .current-weather-card p {
-    display: none;
-  }
-
-}
-
 .forecast-page {
   min-height: 100vh;
   padding: 18px 24px 32px;
@@ -1954,4 +1913,46 @@ p {
     text-transform: uppercase;
     content: attr(data-label);
   }
+}
+
+
+@media (max-width: 639px) {
+  .briefing-hero {
+    aspect-ratio: 1672 / 941;
+    height: auto;
+  }
+
+  .briefing-hero .hero-image {
+    object-fit: contain;
+  }
+
+  .current-weather-card {
+    top: 8px;
+    right: 8px;
+    width: 76px;
+    min-width: 0;
+    max-width: 76px;
+    padding: 6px 8px;
+    border-radius: 12px;
+  }
+
+  .current-weather-card .weather-card-top {
+    gap: 4px;
+    justify-content: center;
+    margin-bottom: 0;
+  }
+
+  .current-weather-card .weather-card-top img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .current-weather-card .weather-card-top strong {
+    font-size: 18px;
+  }
+
+  .current-weather-card p {
+    display: none;
+  }
+
 }

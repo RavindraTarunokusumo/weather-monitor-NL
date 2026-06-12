@@ -218,11 +218,11 @@ describe("ForecastShell", () => {
     expect(screen.getByText("Late drizzle")).toBeInTheDocument();
   });
 
-  it("renders usable states for empty data and failed forecast loads", async () => {
+  it("renders usable states for empty data and unavailable city loads", async () => {
     const user = userEvent.setup();
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => Response.json({ error: "Unsupported city" }, { status: 404 })),
+      vi.fn(async () => Response.json({ error: "No forecast data available" }, { status: 404 })),
     );
 
     render(<ForecastShell initialForecast={emptyForecast} initialCities={cities} />);
@@ -234,8 +234,14 @@ describe("ForecastShell", () => {
     await user.selectOptions(screen.getByLabelText(/select forecast city/i), "utrecht");
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Forecast data could not be loaded.",
+      "Forecast data could not be loaded. Showing unavailable forecast for Utrecht.",
     );
-    expect(screen.getByRole("heading", { name: /forecast intelligence for amsterdam/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /forecast intelligence for utrecht/i }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /forecast intelligence for amsterdam/i })).not.toBeInTheDocument();
+    expect(screen.getByText("Forecast data unavailable")).toBeInTheDocument();
+    expect(screen.getByText("Hourly forecast data is unavailable.")).toBeInTheDocument();
+    expect(screen.getByText("Daily forecast data is unavailable.")).toBeInTheDocument();
   });
 });
