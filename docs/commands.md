@@ -70,6 +70,7 @@ curl "http://localhost:3000/api/forecast?city=rotterdam"
 Manual Forecast page check:
 
 ```bash
+# /forecast depends on local PostgreSQL plus prisma migrate/seed setup before the dev server starts.
 npm run dev
 # open http://localhost:3000/forecast
 ```

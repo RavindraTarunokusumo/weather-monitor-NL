@@ -22,7 +22,7 @@ Dutch Weather Intelligence is currently a single full-stack Next.js App Router a
 
 1. Local PostgreSQL stores supported cities, source snapshots, dashboard snapshots, and mock briefings.
 2. Prisma exposes a type-safe database client for server-side Next.js code.
-3. Route Handlers serve health, city catalog, and dashboard JSON from the database.
+3. Route Handlers serve health, city catalog, dashboard JSON, and forecast JSON from the database.
 4. The homepage fetches `/api/dashboard?city=<slug>` server-side and hands normalized data to the interactive dashboard shell.
 5. The dashboard shell fetches `/api/cities` and same-app `/api/dashboard?city=<slug>` for city switching.
 6. The Forecast page reads normalized forecast analytics from persisted dashboard snapshots through `/api/forecast`; it does not call external forecast or warning providers from the browser.
