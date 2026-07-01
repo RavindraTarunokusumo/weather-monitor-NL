@@ -1,0 +1,5 @@
+Task: Finish genericizing installed skill/agent configs
+Summary: Completed the trading-bot-to-generic wording pass across .agents/doc-updater.toml and .codex/skills/{security-review,simplify,test-plan-writer}, matching the already-committed test-plan-writer.toml; removed unused trace-inspect skill.
+Docs: TODO.md
+TODO: Harness Housekeeping (2026-07-01)
+Validation: npm run lint, npm run typecheck, npm test all passed
