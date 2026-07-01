@@ -1,0 +1,5 @@
+Task: Draft forecast-dashboard-design-alignment spec
+Summary: Drafted the Forecast/dashboard visual-alignment spec (Draft status), scoping it to CSS/visual token reuse only, no data or component-merge changes, per the redesign-existing-projects skill and the existing dashboard-ui-liquid-glass-panel-polish spec as design reference.
+Docs: docs/specs/forecast-dashboard-design-alignment.md, TODO.md
+TODO: Forecast Dashboard Design Alignment (2026-07-01)
+Validation: npm run lint, npm test passed (no code changes yet, docs-only commit)
