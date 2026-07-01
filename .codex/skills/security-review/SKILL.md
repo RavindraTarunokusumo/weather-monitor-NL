@@ -25,7 +25,7 @@ This is not a general code review. Focus only on security implications newly add
 
 1. Minimize false positives. Only flag issues where you are at least `8/10` confident there is a real vulnerability.
 2. Avoid noise. Skip theoretical issues, style concerns, and low-impact findings.
-3. Focus on impact. Prioritize vulnerabilities that could lead to unauthorized access, data exposure, code execution, privilege escalation, or compromise of trading operations.
+3. Focus on impact. Prioritize vulnerabilities that could lead to unauthorized access, data exposure, code execution, privilege escalation, or compromise of business-critical operations.
 4. Better to miss speculative issues than flood the report with noise.
 
 ## Review Areas
@@ -41,10 +41,10 @@ Examine the diff for concrete issues in areas such as:
 ## Repo-Local Priority Surfaces
 
 Within this repository, look first at:
-- Flask request handlers and Agent API endpoints
-- broker integrations, order-routing flows, and trading operations
-- authentication and authorization logic around trading actions
-- SQLite query construction and persistence boundaries
+- request handlers, RPC surfaces, CLI entrypoints, and privileged automation endpoints
+- external service integrations, state-changing workflows, and business-critical operations
+- authentication and authorization logic around privileged actions
+- query construction, ORM usage, and persistence boundaries
 - sensitive logging paths involving API keys, secrets, credentials, account data, or PII
 - template or frontend rendering paths only when unsafe APIs are actually used
 

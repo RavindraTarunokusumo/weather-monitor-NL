@@ -12,8 +12,8 @@ Review the current diff, look for the highest-value simplifications, and make on
 Parse `$ARGUMENTS` as optional focus text.
 
 Examples:
-- `focus on duplication in broker dispatch`
-- `simplify the backtest API changes`
+- `focus on duplication in request routing`
+- `simplify the background job changes`
 - `only clean up readability issues`
 
 If the focus text narrows the scope, honor it. If it does not, default to recently changed files in the current branch or worktree.
