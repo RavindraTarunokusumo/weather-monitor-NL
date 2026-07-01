@@ -18,6 +18,7 @@ const eslintConfig = [
       ".agents/**",
       ".codex/**",
       ".github/**",
+      "Onboarding/**",
       ".venv/**",
       ".worktrees/**",
       "next-env.d.ts",

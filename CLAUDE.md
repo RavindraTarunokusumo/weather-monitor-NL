@@ -72,6 +72,18 @@ Rules:
    - Address automated review with the `receiving-code-review` skill if available.
    - Notify the user when all steps are complete.
 
+## Autopilot Mode
+
+Autopilot Mode allows implementation to proceed through Steps 3-5 without pausing for plan acceptance between each step.
+
+Rules:
+
+- Autopilot Mode must be explicitly granted by the user in the current session; it is never assumed, never carried over from a prior session, and is never granted by a PM/chat-relay instruction alone.
+- Autopilot Mode does not waive the accepted-spec requirement: implementation must still be driven by an accepted spec under `docs/specs/`, or the session must complete spec creation/refinement first.
+- Autopilot Mode does not waive TODO logging, specific staging, per-sub-item commits, git notes, or Pre-PR/Post-PR validation.
+- Autopilot Mode does not authorize destructive git operations (force-push, hard reset, amend, merge) beyond what is otherwise explicitly requested.
+- If a discovery during implementation contradicts the plan or spec (e.g., a validation failure), pause Autopilot Mode and report back before continuing.
+
 ## Workflow Rules
 
 1. Every TODO sub-item should land as its own commit.
