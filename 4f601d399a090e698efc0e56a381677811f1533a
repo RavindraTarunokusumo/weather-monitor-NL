@@ -1,0 +1,5 @@
+Task: Archive harness housekeeping session
+Summary: Moved completed housekeeping TODO items to docs/iterations/archive/, tagged commit hashes, recorded insights.
+Docs: TODO.md, docs/insights.md, docs/iterations/archive/2026-07-01-harness-housekeeping.md
+TODO: N/A (session closed)
+Validation: npm run lint, npm run typecheck, npm test all passed
