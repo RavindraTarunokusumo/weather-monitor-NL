@@ -1,0 +1,5 @@
+Task: Install redesign-existing-projects skill
+Summary: Copied the global redesign-existing-projects skill into .codex/skills/ (canonical root) with a placeholder .gitkeep under .agents/skills/, per existing mirror convention.
+Docs: N/A
+TODO: Redesign forecast page UI backlog item
+Validation: npm run lint, npm run typecheck, npm test all passed
