@@ -1,0 +1,5 @@
+Task: Track onboarding material and add Autopilot Mode policy
+Summary: Tracked Onboarding/ reference material (excluding Harness Bootstrap.md per PM instruction), ignored it in ESLint, and mirrored a new Autopilot Mode section into AGENTS.md/CLAUDE.md restricted to user-only in-session grants (a prior draft allowing PM-handoff grants was blocked by the auto-mode self-modification classifier and rewritten before commit).
+Docs: TODO.md, AGENTS.md, CLAUDE.md
+TODO: Harness Housekeeping (2026-07-01)
+Validation: npm run lint, npm run typecheck, npm test all passed
