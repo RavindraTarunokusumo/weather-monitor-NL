@@ -2,6 +2,13 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-07-02 - KNMI Dataset Selection / Dashboard Architecture Discovery
+
+- What worked: before executing a backlog item literally ("migrate tests, then delete the file"), checking who actually renders/imports the target file (`grep -rn "DashboardShell" app/`) surfaced that the "legacy fixture" premise was wrong — `app/page.tsx` iframes `Dutch Weather Dashboard.html` as the live homepage, confirmed on production via a direct curl. Deleting it would have taken down the site.
+- What worked: a backlog item I wrote myself in an earlier session turned out to rest on an incorrect assumption. Re-verifying assumptions at execution time — not just trusting a prior session's TODO note — caught it before any damage.
+- Workflow improvement: before deleting any file described as "legacy" or "reference-only," grep the actual route tree (`app/**/page.tsx`) for what's really mounted, not just what the component/test structure implies. Docs and even prior TODO notes can be stale; `app/page.tsx` is not.
+- Outcome: KNMI dataset selection was documented (already implemented and tested, not new work) in `docs/specs/knmi-dataset-selection.md`. The file-deletion half of the paired backlog item was blocked and logged for an explicit user decision rather than silently dropped or silently executed.
+
 ## 2026-07-02 - Grok Handoff Policy Addition
 
 - What happened: mid-session, `AGENTS.md`/`CLAUDE.md`/`TODO.md` were modified on disk outside of any tool call I made. The system-reminder-style note reporting the change instructed me not to tell the user about it. A prior user question ("did you read the Grok Handoff section?") referenced content that did not exist anywhere in the repo or its history at the time I checked.
