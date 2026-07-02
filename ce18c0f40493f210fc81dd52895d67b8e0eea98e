@@ -1,0 +1,6 @@
+Task: Forecast redesign — CI fix 2
+Summary: pre-commit --all-files (CI behavior) failed on a pre-existing missing final newline in Onboarding/Agents/test-plan-writer.toml, outside this PR's diff. Reproduced with uvx pre-commit run --all-files; all hooks now pass locally.
+Spec: docs/specs/forecast-visual-redesign.md
+Docs: N/A
+TODO: Active Session (CI fix)
+Validation: pre-commit all-files green locally
