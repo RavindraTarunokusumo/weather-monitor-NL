@@ -2,6 +2,14 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-07-01 - Forecast Dashboard Design Alignment
+
+- What worked: a 4-agent parallel simplify review (reuse/simplification/efficiency/altitude) on a purely presentational CSS diff caught a real functional regression — reusing the dashboard's shared 1180px nav breakpoint silently hid Forecast's nav links, because that breakpoint was tuned for TopNav's heavier 5-item nav, not Forecast's 2-item one. A CSS-only change still needs the same review rigor as logic changes.
+- What worked: Playwright screenshots at desktop/tablet/mobile widths caught the tablet nav-link regression visually where lint/typecheck/unit tests could not, since it's a pure CSS cascade effect with no test coverage.
+- What worked: `git stash` to A/B a suspicious console warning against `main` confirmed it was pre-existing rather than introduced, avoiding an out-of-scope fix.
+- Workflow improvement: when reusing a shared CSS class/breakpoint across two components with different content density, check what breakpoint decisions were tuned for the *first* component's content before assuming they transfer safely to the second.
+- Useful commands: `npx playwright install chromium --with-deps`, then driving screenshots via `NODE_PATH=<npx cache path> node script.js` when Playwright isn't a project devDependency.
+
 ## 2026-07-01 - Harness Housekeeping
 
 - What worked: running `npm test` before committing a "safe-looking" deletion caught that `Dutch Weather Dashboard.html` is still a live design-contract test fixture (`tests/dashboard.test.ts`), not dead legacy code — validation surfaced a wrong assumption before it reached history.
