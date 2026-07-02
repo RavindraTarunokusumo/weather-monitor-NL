@@ -4,10 +4,10 @@ Dutch Weather Intelligence is currently a single full-stack Next.js App Router a
 
 ## Entry Points
 
-- Frontend (SSR shell): `app/page.tsx`
-- Reference dashboard UI: `app/dashboard/`
-- Live dashboard components from the earlier public shell: `app/components/`
-- Forecast page: `app/forecast/page.tsx`
+- Homepage (`/`): `app/page.tsx` — reads `Dutch Weather Dashboard.html` from disk server-side and renders it inside an `<iframe srcDoc={html}>`. That HTML file is a self-contained React app (in-browser JSX/Babel) that fetches `/api/cities` and `/api/dashboard?city=<slug>` client-side from within the iframe. It is the actual live homepage implementation, not a design reference or legacy fixture — this is also true on production.
+- `app/dashboard/`: a fully built, unit-tested Next.js/React port of the dashboard UI (`DashboardShell` and its component tree) that mirrors `Dutch Weather Dashboard.html`'s design. **It is not mounted by any route** — there is no `app/dashboard/page.tsx` — so it is not part of the live request path. Kept for its tests and as a possible future migration target off the iframe.
+- Live dashboard components from the earlier public shell: `app/components/` — also not mounted by any route.
+- Forecast page: `app/forecast/page.tsx` — a real Next.js App Router page, server-rendered, not iframed.
 - API routes: `app/api/*/route.ts`
 - Database client: `lib/db.ts`
 - Dashboard response shaping: `lib/dashboard.ts`
@@ -24,16 +24,15 @@ Dutch Weather Intelligence is currently a single full-stack Next.js App Router a
 1. Local PostgreSQL stores supported cities, source snapshots, dashboard snapshots, and mock briefings.
 2. Prisma exposes a type-safe database client for server-side Next.js code.
 3. Route Handlers serve health, city catalog, dashboard JSON, and forecast JSON from the database.
-4. The homepage fetches `/api/dashboard?city=<slug>` server-side and hands normalized data to the interactive dashboard shell.
-5. The dashboard shell fetches `/api/cities` and same-app `/api/dashboard?city=<slug>` for city switching.
-6. The Forecast page reads normalized forecast analytics from persisted dashboard snapshots through `/api/forecast`; it does not call external forecast or warning providers from the browser.
-7. Source freshness travels with weather, air-quality, and water snapshot data.
+4. The homepage (`app/page.tsx`) serves `Dutch Weather Dashboard.html` inside an iframe; that HTML fetches `/api/cities` and `/api/dashboard?city=<slug>` client-side from within the iframe for initial load and city switching.
+5. The Forecast page reads normalized forecast analytics from persisted dashboard snapshots through `/api/forecast`; it does not call external forecast or warning providers from the browser.
+6. Source freshness travels with weather, air-quality, and water snapshot data.
 
 ## Frontend Boundary
 
-`app/page.tsx` is the server entry point. It performs the initial same-app dashboard fetch and renders `DashboardShell`.
+`app/page.tsx` is the server entry point for `/`. It reads `Dutch Weather Dashboard.html` from disk and returns it inside an `<iframe srcDoc={...}>`; it does not fetch dashboard data itself and does not render any component from `app/dashboard/` or `app/components/`.
 
-`app/dashboard/` contains the public dashboard UI:
+`app/dashboard/` contains an unmounted Next.js/React port of the public dashboard UI, built to match `Dutch Weather Dashboard.html`'s design and covered by its own tests, but not reachable through any route:
 
 - `types.ts`: normalized dashboard and city response types.
 - `format.ts`: display formatting and fallback labels.
@@ -41,7 +40,7 @@ Dutch Weather Intelligence is currently a single full-stack Next.js App Router a
 - `components/`: top navigation, briefing hero, metric strip, outlook panel, Q&A panel, detail panels, and source freshness footer.
 - `__tests__/`: jsdom interaction tests for city switching, chart tabs, Q&A, and reload failures.
 
-The `app/components/` live-dashboard shell remains available from the public dashboard UI shell work, but the active homepage uses the reference dashboard UI so the image-backed hero, symbol panels, local Q&A, outlook views, and reference-aligned layout stay intact.
+The `app/components/` live-dashboard shell from the earlier public shell work is likewise unmounted. If the homepage is ever migrated off the iframe onto one of these React ports, that migration needs its own spec under `docs/specs/` — see the BLOCKED item in `TODO.md`.
 
 ## Current API Surface
 
