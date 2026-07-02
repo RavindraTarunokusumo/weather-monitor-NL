@@ -1362,7 +1362,8 @@ p {
   }
 
   .city-picker,
-  .city-picker-button {
+  .city-picker-button,
+  .forecast-city-select {
     flex: 1;
     width: 100%;
   }
@@ -1423,58 +1424,40 @@ p {
   background: var(--bg);
 }
 
-.forecast-nav,
 .forecast-hero,
 .forecast-layout,
 .forecast-error,
 .forecast-loading {
-  width: min(1440px, 100%);
+  width: min(1722px, 100%);
   margin-right: auto;
   margin-left: auto;
 }
 
-.forecast-nav {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 20px;
-  align-items: center;
-  min-height: 56px;
-  color: var(--text);
-}
-
-.forecast-brand,
-.forecast-nav a {
-  color: #06111f;
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.forecast-nav nav {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-}
-
-.forecast-nav a[aria-current="page"] {
-  color: var(--accent);
-}
-
 .forecast-city-select {
-  display: grid;
-  gap: 5px;
-  min-width: 190px;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
+  display: flex;
+  min-width: 132px;
+}
+
+/* The shared .nav-links breakpoint (1180px) is tuned for TopNav's 5-item
+   dashboard nav; the Forecast page only has 2 nav items, which still fit,
+   so keep them visible on the Forecast page at that width. */
+@media (max-width: 1180px) {
+  .forecast-page .top-nav-inner {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .forecast-page .nav-links {
+    display: flex;
+  }
 }
 
 .forecast-city-select select {
   width: 100%;
-  min-height: 38px;
-  padding: 0 10px;
+  height: 34px;
+  padding: 0 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--surface);
+  background: var(--surface-muted);
   color: var(--text);
   font: inherit;
   font-weight: 700;
@@ -1485,14 +1468,16 @@ p {
 .forecast-error,
 .forecast-loading {
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
   box-shadow: var(--shadow);
 }
 
 .forecast-hero {
   padding: 28px;
-  margin-top: 12px;
+  margin-top: 20px;
+  border-radius: 14px;
+  box-shadow: var(--shadow-md);
 }
 
 .forecast-hero-topline {
@@ -1578,8 +1563,9 @@ p {
   min-width: 0;
   padding: 14px;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface-muted);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 .forecast-summary-grid h2,
@@ -1677,9 +1663,14 @@ p {
 .forecast-source-card {
   min-width: 0;
   padding: 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface-muted);
+  transition: background 0.2s ease;
+}
+
+.forecast-day-card:hover,
+.forecast-source-card:hover {
+  background: var(--border);
 }
 
 .forecast-day-card {
@@ -1743,7 +1734,7 @@ p {
 .forecast-risk-event {
   padding: 12px;
   border-left: 4px solid var(--accent);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface-muted);
 }
 
@@ -1831,6 +1822,12 @@ p {
   color: var(--accent);
   font-weight: 800;
   text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.forecast-links a:hover {
+  border-color: var(--accent);
+  background: var(--surface-muted);
 }
 
 .forecast-error,
@@ -1865,15 +1862,6 @@ p {
 @media (max-width: 760px) {
   .forecast-page {
     padding: 12px 14px 28px;
-  }
-
-  .forecast-nav {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .forecast-nav nav {
-    justify-content: flex-start;
   }
 
   .forecast-city-select {

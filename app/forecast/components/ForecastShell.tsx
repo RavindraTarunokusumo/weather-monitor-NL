@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
+
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import type { ForecastCity, ForecastResponse } from "@/lib/types/forecast";
@@ -56,26 +58,33 @@ export function ForecastShell({ initialForecast, initialCities }: ForecastShellP
 
   return (
     <main className="forecast-page">
-      <header className="forecast-nav">
-        <Link className="forecast-brand" href="/">
-          Dutch Weather Intelligence
-        </Link>
-        <nav aria-label="Primary">
-          <Link href="/">Dashboard</Link>
-          <Link href="/forecast" aria-current="page">
-            Forecast
-          </Link>
-        </nav>
-        <label className="forecast-city-select">
-          <span>Select forecast city</span>
-          <select value={forecast.city.slug} onChange={selectCity} disabled={loading}>
-            {initialCities.map((city) => (
-              <option key={city.slug} value={city.slug}>
-                {city.name}
-              </option>
-            ))}
-          </select>
-        </label>
+      <header className="top-nav">
+        <div className="top-nav-inner">
+          <div className="brand-lockup">
+            <img src="/dashboard-assets/logo-mark.png" alt="" className="brand-mark" />
+            <span>Dutch Weather Intelligence</span>
+          </div>
+          <nav className="nav-links" aria-label="Primary">
+            <Link href="/" className="nav-link">
+              Dashboard
+            </Link>
+            <Link href="/forecast" aria-current="page" className="nav-link active">
+              Forecast
+            </Link>
+          </nav>
+          <div className="nav-actions">
+            <label className="forecast-city-select">
+              <span className="sr-only">Select forecast city</span>
+              <select value={forecast.city.slug} onChange={selectCity} disabled={loading}>
+                {initialCities.map((city) => (
+                  <option key={city.slug} value={city.slug}>
+                    {city.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        </div>
       </header>
 
       {error ? (

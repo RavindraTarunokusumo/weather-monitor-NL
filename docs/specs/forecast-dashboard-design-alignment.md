@@ -1,9 +1,9 @@
 # Forecast Page Dashboard Design Alignment Spec
 
-Status: Draft
+Status: Accepted
 Spec path: `docs/specs/forecast-dashboard-design-alignment.md`
-Accepted by: TBD
-Accepted date: TBD
+Accepted by: RavindraTarunokusumo
+Accepted date: 2026-07-01
 
 ## Goal
 
