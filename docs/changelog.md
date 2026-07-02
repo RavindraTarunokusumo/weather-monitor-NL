@@ -2,6 +2,16 @@
 
 Record notable behavior, architecture, API, persistence, or workflow changes.
 
+## 2026-07-02 - Forecast Page Visual Redesign
+
+Summary:
+
+- What changed: rebuilt the `/forecast` page UI to a mockup-driven design — photo hero card with narrative summary and stat chips, hourly signal timeline with metric tabs and inline SVG chart, six-axis risk radar with detail toggle, 7-day outlook card row, and a sources-freshness footer bar. Fully responsive at desktop/tablet/mobile with no data-flow changes.
+- Why: user-supplied design mockup for a richer, more scannable forecast experience.
+- User-visible impact: same forecast data presented as charts and cards instead of tables; derived interpretation signals (comfort label, radar scores) are labeled as such and computed deterministically in `app/forecast/format.ts`.
+- Migration notes: none; `/api/forecast`, `lib/forecast.ts`, and persistence are untouched.
+- Related spec: `docs/specs/forecast-visual-redesign.md`.
+
 ## 2026-06-12 - Forecast Analytics Page
 
 Summary:
