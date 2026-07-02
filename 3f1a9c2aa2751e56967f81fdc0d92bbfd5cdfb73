@@ -1,0 +1,6 @@
+Task: Forecast redesign — CI fix
+Summary: CI Quality checks failed on the pre-commit end-of-file-fixer hook; seven Grok-authored files lacked final newlines. Appended newlines only.
+Spec: docs/specs/forecast-visual-redesign.md
+Docs: N/A
+TODO: Active Session (CI fix)
+Validation: eslint, tsc --noEmit, vitest (160 passed), EOF check across branch diff clean
