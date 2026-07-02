@@ -1,0 +1,5 @@
+Task: Close dashboard.test.ts migration item as invalid
+Summary: User chose option (a) - close the BLOCKED backlog item. Dutch Weather Dashboard.html and its guarding tests stay untouched; app/dashboard/ remains an unmounted React port pending any future migration decision.
+Docs: TODO.md, docs/iterations/archive/2026-07-02-knmi-dataset-selection.md
+TODO: N/A (closed)
+Validation: npm run lint passed (docs-only)
