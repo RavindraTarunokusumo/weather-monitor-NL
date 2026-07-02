@@ -1,0 +1,5 @@
+Task: Align forecast page visual design with dashboard
+Summary: Restyled Forecast page nav/hero/panels to reuse the dashboard's shared CSS classes (.top-nav family) and design tokens (var(--radius)/var(--shadow)) instead of duplicated bespoke styles. 4-agent simplify review caught and fixed a real regression (nav links hidden at 761-1180px) and a redundant CSS override. Verified via Playwright screenshots at desktop/tablet/mobile and a live city-switch check.
+Docs: TODO.md, docs/specs/forecast-dashboard-design-alignment.md
+TODO: Forecast Dashboard Design Alignment (2026-07-01)
+Validation: npm run lint, npm run typecheck, npm test (130 tests), npm run build all passed; manual Playwright verification at 375px/950px/1440px
