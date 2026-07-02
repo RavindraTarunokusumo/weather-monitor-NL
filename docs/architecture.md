@@ -67,9 +67,9 @@ forecast enrichment is missing.
 
 ## External Integrations
 
-- KNMI EDR API: near-real-time weather observations from the configured seeded-city stations.
-- Open-Meteo KNMI forecast API: JSON point forecasts used to populate stored hourly/weekly outlook fields without browser-side external calls.
-- KNMI Open Data API: official Dutch 48-hour warning files normalized into city-level warning labels.
+- KNMI EDR API: near-real-time weather observations from the `10-minute-in-situ-meteorological-observations` collection, queried per configured seeded-city station ID.
+- Open-Meteo KNMI forecast API: `knmi_seamless` model (Open-Meteo's blended KNMI HARMONIE-based forecast) with automatic fallback to Open-Meteo's default model, used to populate stored hourly/weekly outlook fields without browser-side external calls.
+- KNMI Open Data API: the `waarschuwingen_nederland_48h` (v1.0) dataset, official Dutch 48-hour warning files normalized into city-level warning labels. See `docs/specs/knmi-dataset-selection.md` for the full dataset selection rationale.
 - Luchtmeetnet API: station pollutant measurements for the 10 configured supported cities.
 - Rijkswaterstaat ddapi20 WaterWebservices: WATHTE water-level observations from configured nearby locations.
 - No LLM, auth, billing, or VPS integrations are implemented in this foundation phase.

@@ -763,7 +763,7 @@ Evaluate:
 
 ## 14. Open Questions
 
-1. Which exact KNMI datasets should be used first for current observations and forecasts?
+1. ~~Which exact KNMI datasets should be used first for current observations and forecasts?~~ Resolved — see `docs/specs/knmi-dataset-selection.md`.
 2. What is the best station-matching method for each city?
 3. Should the MVP be city-level or postal-code-level?
 4. Should cycle comfort be calibrated manually or learned from user feedback later?
