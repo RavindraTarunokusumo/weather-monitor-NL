@@ -1,0 +1,6 @@
+Task: Dashboard Forecast iframe navigation
+Summary: Added top-level navigation behavior to the static dashboard Forecast link rendered inside the srcDoc iframe, and strengthened the HTML contract test.
+Spec: docs/specs/forecast-page.md
+Docs: N/A
+TODO: N/A
+Validation: npm test -- tests/dashboard.test.ts app/dashboard/__tests__/DashboardShell.test.tsx; npm run lint; npm run typecheck

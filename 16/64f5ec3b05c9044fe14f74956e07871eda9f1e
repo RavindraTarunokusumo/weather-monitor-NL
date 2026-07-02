@@ -1,0 +1,11 @@
+Task: Mark Ask model boundary server-only
+
+Summary: Added Next.js server-only guard to lib/ask/model.ts so the model boundary cannot be imported from client modules.
+
+Spec: docs/specs/ask-the-dashboard-langgraph-qna.md
+
+Docs: N/A
+
+TODO: Ask the Dashboard LangGraph Q&A / Deterministic answer and model boundary review fix.
+
+Validation: npm run typecheck; npm test -- tests/ask-deterministic.test.ts; npm run lint

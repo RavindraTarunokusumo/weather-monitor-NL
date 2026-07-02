@@ -1,0 +1,6 @@
+Task: UI overhaul workflow status
+Summary: Added commit references to completed UI overhaul TODO items and left PR/archive follow-up open.
+Spec: docs/specs/ui-overhaul-design-handoff.md
+Docs: TODO.md
+TODO: TODO.md Active Session / UI Overhaul Design Handoff
+Validation: metadata-only commit after completed validation in 79bf90b

@@ -1,0 +1,6 @@
+Task: archive mobile temperature metric work
+Summary: Archive the completed mobile temperature metric TODO and record session lessons.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: docs/iterations/archive/2026-05-20-mobile-temperature-metric-sizing.md, docs/insights.md
+TODO: TODO.md Backlog / Mobile-only compact temperature metric archived
+Validation: git diff --check

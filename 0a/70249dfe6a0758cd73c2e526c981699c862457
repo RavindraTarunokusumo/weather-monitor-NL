@@ -1,0 +1,6 @@
+Task: Archive database schema seed dashboard session
+Summary: Move completed database TODO items into the iteration archive, record the implementation commit hash, and add session lessons.
+Spec: docs/specs/database-schema-seed-dashboard.md
+Docs: TODO.md, docs/iterations/archive/2026-05-03-database-schema-seed-dashboard.md, docs/insights.md
+TODO: Archived database-schema-seed-dashboard session
+Validation: uv run --group dev pre-commit run

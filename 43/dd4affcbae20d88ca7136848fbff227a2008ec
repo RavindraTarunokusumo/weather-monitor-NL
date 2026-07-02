@@ -1,0 +1,6 @@
+Task: Accept API wiring and live data pipeline spec
+Summary: Marked the live data pipeline spec accepted after user approval.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: docs/specs/api-wiring-live-data-pipeline.md
+TODO: N/A - spec acceptance only
+Validation: pre-commit run --files docs/specs/api-wiring-live-data-pipeline.md; git diff --check -- docs/specs/api-wiring-live-data-pipeline.md

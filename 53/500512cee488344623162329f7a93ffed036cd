@@ -1,0 +1,6 @@
+Task: Dashboard context assembly
+Summary: Add compact Ask grounding context types and intent-specific context assembly.
+Spec: docs/specs/ask-the-dashboard-langgraph-qna.md
+Docs: N/A
+TODO: TODO.md Ask the Dashboard LangGraph Q&A / Dashboard context assembly
+Validation: npm test -- tests/ask-context.test.ts; npm run typecheck; npm run lint

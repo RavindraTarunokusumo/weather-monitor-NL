@@ -1,0 +1,6 @@
+Task: Log 10-city rollout TODOs
+Summary: Added active TODO items derived from the accepted 10-city rollout spec.
+Spec: docs/specs/major-dutch-cities-10.md
+Docs: TODO.md
+TODO: Active: 2026-05-28 - Major Dutch Cities 10-City Rollout
+Validation: npm run lint

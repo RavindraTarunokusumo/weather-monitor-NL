@@ -1,0 +1,6 @@
+Task: add Prisma foundation schema
+Summary: Added local PostgreSQL Compose, Prisma schema, migration, repeatable seed, and the shared Prisma client helper.
+Spec: docs/specs/project-scaffold-vercel-postgres-foundation.md
+Docs: .env.example, infra/docker/docker-compose.yml
+TODO: Active Session / database foundation
+Validation: npx prisma validate, npm run build; Docker Compose startup not available because docker is not on PATH in this environment

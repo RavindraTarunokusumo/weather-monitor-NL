@@ -1,0 +1,6 @@
+Task: Record production verification guardrail status
+Summary: Marks the future-session production data verification guardrail TODO with its implementation commit.
+Spec: docs/specs/production-live-refresh-guardrails.md
+Docs: N/A
+TODO: TODO.md > Session: 2026-05-12 Production Live Refresh Guardrails
+Validation: git diff --check

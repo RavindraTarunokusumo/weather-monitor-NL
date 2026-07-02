@@ -1,0 +1,11 @@
+Task: Add seeded database bootstrap smoke workflow
+
+Summary: Add a PostgreSQL-backed workflow that runs the build, seeds the database, and smoke tests /api/health, /api/cities, /api/dashboard, and the homepage.
+
+Spec: docs/specs/project-scaffold-vercel-postgres-foundation.md
+
+Docs: .github/workflows/db-bootstrap.yml
+
+TODO: TODO.md > Active Session
+
+Validation: pre-commit run --all-files

@@ -1,0 +1,6 @@
+Task: Fix dashboard UI PR checks
+Summary: Remove trailing whitespace from the provided dashboard HTML and make the seeded CI smoke workflow explicitly opt into build-time seeding.
+Spec: docs/specs/dashboard-ui-liquid-glass-panel-polish.md
+Docs: N/A
+TODO: PR #13 CI follow-up
+Validation: npm run lint; npm run typecheck; npm test; npm run build; git diff --check

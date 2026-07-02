@@ -1,0 +1,6 @@
+Task: Merge latest main into briefing overlay branch
+Summary: Brought origin/main into the briefing overlay feature branch before PR submission; merge completed cleanly with no conflict edits.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: N/A
+TODO: N/A
+Validation: follow-up full Step 6 validation run after merge

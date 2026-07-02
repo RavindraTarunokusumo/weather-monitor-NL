@@ -1,0 +1,6 @@
+Task: scaffold root Next.js app
+Summary: Added the root Next.js App Router scaffold, config, linting, and test tooling for the single-app foundation.
+Spec: docs/specs/project-scaffold-vercel-postgres-foundation.md
+Docs: N/A
+TODO: Active Session / scaffold root app
+Validation: npm run lint, npm run typecheck, npm test, npm run build

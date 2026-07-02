@@ -1,0 +1,6 @@
+Task: Show briefing pill in public dashboard shell
+Summary: Added the responsive briefing pill to Dutch Weather Dashboard.html, which is the actual public root UI served in the iframe, and covered it with an HTML contract test.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: N/A
+TODO: TODO.md Active Session: Briefing Panel Glass Overlay
+Validation: npm run lint; npm run typecheck; npm test; DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dutch_weather npm run build; browser console check

@@ -1,0 +1,6 @@
+Task: Document production data verification guardrails
+Summary: Adds future-session instructions to verify live source IDs through /api/dashboard and use the all-in refresh route instead of repeating manual production data repair steps.
+Spec: docs/specs/production-live-refresh-guardrails.md
+Docs: AGENTS.md, docs/commands.md, docs/specs/production-live-refresh-guardrails.md
+TODO: TODO.md > Session: 2026-05-12 Production Live Refresh Guardrails
+Validation: git diff --check

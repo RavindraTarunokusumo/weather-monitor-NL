@@ -1,0 +1,6 @@
+Task: align specs with current foundation
+Summary: Updated the spec set to reflect the current single-app Next.js + Prisma/Postgres architecture, superseded the obsolete monorepo/FastAPI scaffold specs, and rewrote future specs to use same-app Route Handlers.
+Spec: docs/specs/project-scaffold-vercel-postgres-foundation.md
+Docs: docs/specs/README.md, docs/specs/project-scaffold-local-dev.md, docs/specs/database-schema-seed-dashboard.md, docs/specs/public-dashboard-ui-shell.md, docs/specs/source-adapter-ingestion-skeleton.md, docs/specs/anonymous-usage-ai-qna-foundation.md, docs/specs/full-account-auth-integration.md
+TODO: N/A
+Validation: git diff --check

@@ -1,0 +1,6 @@
+Task: Start API wiring and live data pipeline spec
+Summary: Added a draft spec for job-driven live ingestion and dashboard API wiring for Amsterdam, Utrecht, and Rotterdam.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: docs/specs/api-wiring-live-data-pipeline.md
+TODO: N/A - spec creation only
+Validation: pre-commit run --files docs/specs/api-wiring-live-data-pipeline.md; git diff --check -- docs/specs/api-wiring-live-data-pipeline.md; npm run typecheck passed; npm run lint failed on existing generated .worktrees/.next files

@@ -1,0 +1,11 @@
+Task: Forecast API response quality fixes
+
+Summary: Kept warning and source freshness risk events visible when hourly forecast data is unavailable, and marked Open-Meteo fresh when persisted outlook rows exist without a weather relation.
+
+Spec: docs/specs/forecast-page.md
+
+Docs: N/A
+
+TODO: TODO.md Forecast Page - Forecast API response
+
+Validation: npm test -- tests/forecast.test.ts; npm run typecheck; npm run lint; npm test -- tests/forecast.test.ts tests/dashboard.test.ts

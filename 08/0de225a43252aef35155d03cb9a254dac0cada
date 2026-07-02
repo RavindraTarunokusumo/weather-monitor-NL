@@ -1,0 +1,6 @@
+Task: dashboard API and seed data
+Summary: Added normalized UI response fields and deterministic dashboard snapshots for Amsterdam, Utrecht, and Rotterdam.
+Spec: docs/specs/reference-dashboard-webpage-ui.md
+Docs: N/A
+TODO: TODO.md Reference Dashboard Webpage UI / Extend seeded dashboard data and API response shaping for the reference UI
+Validation: npm run typecheck; npm test; npx eslint app lib prisma tests scripts --no-error-on-unmatched-pattern

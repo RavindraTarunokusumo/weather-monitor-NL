@@ -1,0 +1,11 @@
+Task: Log Ask the Dashboard implementation tasks
+
+Summary: Added the active TODO session entry required before implementation work begins.
+
+Spec: docs/specs/ask-the-dashboard-langgraph-qna.md
+
+Docs: TODO.md
+
+TODO: Ask the Dashboard LangGraph Q&A
+
+Validation: rg accepted spec status; git diff review

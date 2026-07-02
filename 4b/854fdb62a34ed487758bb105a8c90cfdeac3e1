@@ -1,0 +1,6 @@
+Task: dashboard reference assets
+Summary: Copied supplied dashboard imagery and metric icons into the public static asset tree for Next.js rendering.
+Spec: docs/specs/reference-dashboard-webpage-ui.md
+Docs: N/A
+TODO: TODO.md Reference Dashboard Webpage UI / Copy supplied dashboard visual assets into the public asset tree
+Validation: npm run typecheck; npm test; npx eslint app lib prisma tests scripts --no-error-on-unmatched-pattern

@@ -1,0 +1,11 @@
+Task: Draft Ask the Dashboard LangGraph Q&A spec
+
+Summary: Added draft spec for server-grounded Ask the Dashboard Q&A with deterministic city routing, cross-city scope, LangGraph workflow, and structured dashboard context instead of full prompt paste or vector RAG for V1.
+
+Spec: docs/specs/ask-the-dashboard-langgraph-qna.md
+
+Docs: docs/specs/ask-the-dashboard-langgraph-qna.md
+
+TODO: N/A - spec draft only
+
+Validation: npm run lint; npm test

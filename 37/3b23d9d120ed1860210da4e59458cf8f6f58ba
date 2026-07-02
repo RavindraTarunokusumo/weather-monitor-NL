@@ -1,0 +1,6 @@
+Task: Add all-source ingestion command
+Summary: Added all-source/all-city ingestion helper and npm script so one command can refresh weather, air quality, and water snapshots for all seeded cities.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: TODO.md active session item 2
+TODO: Add shared ingestion orchestration, live/mock CLI flags, all-city execution, and protected job routes.
+Validation: npm test -- tests/ingestion-jobs.test.ts tests/ingestion.test.ts tests/ingestion-live-adapters.test.ts; npm run typecheck; npx eslint touched all-source files (package.json ignored warning only); pre-commit run --files touched all-source files

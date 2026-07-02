@@ -1,0 +1,6 @@
+Task: Archive production blank dashboard hotfix
+Summary: Archived the completed production blank-screen hotfix session, updated changelog and insights with the root cause and browser verification requirement, and cleared the active TODO entry.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: TODO.md, docs/changelog.md, docs/insights.md, docs/iterations/archive/2026-05-18-production-blank-dashboard-hotfix.md
+TODO: docs/iterations/archive/2026-05-18-production-blank-dashboard-hotfix.md
+Validation: git diff --check; production headless browser check passed before archive

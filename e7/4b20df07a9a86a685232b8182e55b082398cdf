@@ -1,0 +1,11 @@
+Task: Fix Vercel production database bootstrap
+
+Summary: Run Prisma migrations and seed data during Vercel builds, and use the direct database URL for CLI-only migration work.
+
+Spec: docs/specs/project-scaffold-vercel-postgres-foundation.md
+
+Docs: package.json, prisma.config.ts, prisma/seed.ts
+
+TODO: TODO.md > Active Session
+
+Validation: npm run build, npm test

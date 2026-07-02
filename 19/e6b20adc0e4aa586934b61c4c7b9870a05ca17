@@ -1,0 +1,11 @@
+Task: Mobile-only briefing panel layout
+
+Summary: Hide the top-left briefing control at the mobile breakpoint, place Today's Briefing below the hero image, and keep hero images non-cropping while preserving tablet and desktop briefing variants.
+
+Spec: docs/specs/briefing-panel-glass-overlay.md
+
+Docs: docs/specs/briefing-panel-glass-overlay.md, docs/insights.md
+
+TODO: TODO.md Mobile-only briefing panel layout
+
+Validation: npm run lint; npm run typecheck; npm test; npx prisma validate; npm run build; browser screenshots at 1440x1100, 900x1100, 390x1200

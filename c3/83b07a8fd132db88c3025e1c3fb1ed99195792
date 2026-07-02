@@ -1,0 +1,6 @@
+Task: Address PR 7 dashboard type-contract review
+Summary: Make ui_summary and outlook required in the shared DashboardResponse type, add explicit hourly/weekly outlook item types, and update the legacy dashboard fixture.
+Spec: docs/specs/forecast-summary-trend-data-wiring.md
+Docs: N/A
+TODO: PR 7 review thread in lib/types/dashboard.ts
+Validation: npm test -- tests/live-dashboard.test.tsx tests/dashboard.test.ts tests/ingestion-live-adapters.test.ts; npm run typecheck

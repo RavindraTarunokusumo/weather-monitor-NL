@@ -1,0 +1,6 @@
+Task: Preserve enriched live dashboard metadata
+Summary: Use the latest enriched weather and water metadata when newer live observation rows lack forecast payloads, and hide unavailable pollutant rows in the dashboard UI.
+Spec: docs/specs/forecast-summary-trend-data-wiring.md
+Docs: docs/insights.md
+TODO: TODO.md Active Session / forecast-summary-trend-data-wiring
+Validation: pre-commit run --all-files; npm test; npm run typecheck; npm run lint; npx prisma validate; npm run build; npm run ingest:all -- --live; npm run dashboard:regenerate -- --all; API smoke for amsterdam, rotterdam, utrecht

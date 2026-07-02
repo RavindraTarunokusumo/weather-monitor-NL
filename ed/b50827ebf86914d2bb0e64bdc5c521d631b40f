@@ -1,0 +1,11 @@
+Task: Replace quality workflow with Node checks
+
+Summary: Swap the stale Python-oriented CI job for a Next.js/Prisma quality gate with pre-commit, lint, typecheck, tests, and Prisma validation.
+
+Spec: docs/specs/project-scaffold-vercel-postgres-foundation.md
+
+Docs: .github/workflows/ci.yml
+
+TODO: TODO.md > Active Session
+
+Validation: pre-commit run --all-files

@@ -1,0 +1,6 @@
+Task: Forecast page docs
+Summary: Documented Forecast page entry points, Forecast API checks, and Forecast test commands.
+Spec: docs/specs/forecast-page.md
+Docs: docs/architecture.md, docs/commands.md, docs/testing.md
+TODO: TODO.md Forecast Page - docs and validation
+Validation: npm run lint; npm run typecheck; npm test -- tests/forecast.test.ts app/forecast/__tests__/ForecastShell.test.tsx

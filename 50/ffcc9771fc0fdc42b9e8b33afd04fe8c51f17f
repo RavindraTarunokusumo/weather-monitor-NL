@@ -1,0 +1,6 @@
+Task: Record dashboard metadata fix
+Summary: Replace pending TODO commit markers with the implementation commit hash.
+Spec: docs/specs/forecast-summary-trend-data-wiring.md
+Docs: TODO.md
+TODO: TODO.md Active Session / forecast-summary-trend-data-wiring
+Validation: git diff --check

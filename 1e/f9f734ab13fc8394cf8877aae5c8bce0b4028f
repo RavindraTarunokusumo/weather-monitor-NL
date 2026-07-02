@@ -1,0 +1,6 @@
+Task: Archive Forecast page session
+Summary: Archived the completed Forecast page TODO session and recorded reusable implementation lessons.
+Spec: docs/specs/forecast-page.md
+Docs: docs/iterations/archive/2026-06-12-forecast-page.md, docs/insights.md
+TODO: TODO.md Forecast Page session removed after archive
+Validation: npm run lint; npm run typecheck; npm test; git diff --check; npx prisma validate passed earlier; npm run build and DB-backed browser checks blocked by unavailable local PostgreSQL/Docker Desktop

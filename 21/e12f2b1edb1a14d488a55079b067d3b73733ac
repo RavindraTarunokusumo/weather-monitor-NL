@@ -1,0 +1,6 @@
+Task: Record city hero images
+Summary: Marked the city-specific hero image work complete in TODO.md with the implementation commit hash.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: TODO.md
+TODO: TODO.md Active Session / Use city-specific Rotterdam and Utrecht hero images from public assets
+Validation: N/A metadata-only follow-up after validated implementation commit

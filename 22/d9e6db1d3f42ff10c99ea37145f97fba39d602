@@ -1,0 +1,6 @@
+Task: Briefing panel glass overlay accessibility refinement
+Summary: Kept the city heading outside responsive-only panels and removed closed-panel close button from keyboard tab order.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: N/A
+TODO: TODO.md Active Session: Briefing Panel Glass Overlay
+Validation: npm run lint; npm run typecheck; npm test -- app/dashboard/__tests__/BriefingHero.test.tsx app/dashboard/__tests__/DashboardShell.test.tsx

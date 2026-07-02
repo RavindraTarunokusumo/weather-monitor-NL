@@ -1,0 +1,11 @@
+Task: Router and shared ask types
+
+Summary: Added deterministic Ask question routing, shared Ask types, and router coverage.
+
+Spec: docs/specs/ask-the-dashboard-langgraph-qna.md
+
+Docs: N/A
+
+TODO: TODO.md Ask the Dashboard LangGraph Q&A / Router and shared ask types
+
+Validation: npm test -- tests/ask-router.test.ts; npm run typecheck

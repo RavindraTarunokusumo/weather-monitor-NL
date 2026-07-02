@@ -1,0 +1,6 @@
+Task: Forecast analytics page
+Summary: Added public /forecast route with city switching, hourly/daily analytics, risk timeline, source freshness, and source links.
+Spec: docs/specs/forecast-page.md
+Docs: N/A
+TODO: TODO.md Forecast Page - forecast analytics page
+Validation: npm run lint; npm run typecheck; npm test -- tests/forecast.test.ts app/forecast/__tests__/ForecastShell.test.tsx app/dashboard/__tests__/DashboardShell.test.tsx

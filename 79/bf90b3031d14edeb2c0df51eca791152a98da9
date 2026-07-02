@@ -1,0 +1,6 @@
+Task: UI overhaul design handoff
+Summary: Refit the Dutch Weather Intelligence dashboard to the accepted design handoff while preserving existing API data flow and grounded Q&A behavior.
+Spec: docs/specs/ui-overhaul-design-handoff.md
+Docs: docs/superpowers/plans/2026-05-12-ui-overhaul-design-handoff.md, docs/iterations/active/ui-overhaul-screenshot-comparison.md, docs/insights.md
+TODO: TODO.md Active Session / UI Overhaul Design Handoff
+Validation: npm run lint; npm run typecheck; npm test; npx prisma validate; npx prisma migrate deploy; npx prisma db seed; SKIP_DB_SEED=true npm run build; production screenshot comparison at 1760px; tablet/mobile overflow checks

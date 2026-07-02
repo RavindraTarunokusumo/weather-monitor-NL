@@ -1,0 +1,11 @@
+Task: Record CI pipeline baseline
+
+Summary: Update the foundation spec, changelog, insights, and archived session records to describe the GitHub Actions quality gate and bootstrap smoke workflow.
+
+Spec: docs/specs/project-scaffold-vercel-postgres-foundation.md
+
+Docs: TODO.md, docs/changelog.md, docs/insights.md, docs/iterations/archive/2026-05-03-github-actions-ci-pipelines.md, docs/iterations/archive/2026-05-03-production-bootstrap-debugging.md
+
+TODO: TODO.md > Active Session
+
+Validation: pre-commit run --all-files

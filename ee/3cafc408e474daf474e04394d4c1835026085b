@@ -1,0 +1,6 @@
+Task: Forecast page docs TODO completion
+Summary: Marked the Forecast Page docs and validation TODO item complete with the docs commit hash.
+Spec: docs/specs/forecast-page.md
+Docs: TODO.md
+TODO: TODO.md Forecast Page - docs and validation
+Validation: npm run lint; npm run typecheck; npm test -- tests/forecast.test.ts app/forecast/__tests__/ForecastShell.test.tsx

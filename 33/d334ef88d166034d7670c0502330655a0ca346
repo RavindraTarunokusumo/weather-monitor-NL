@@ -1,0 +1,6 @@
+Task: Accept 24-hour graph update spec
+Summary: Accepted the supplied 24H outlook chart spec, recorded implementation decisions, added an implementation plan, and logged the active TODO session.
+Spec: docs/specs/24-hour-graph-update.md
+Docs: docs/specs/24-hour-graph-update.md, docs/superpowers/plans/2026-05-15-24-hour-graph-update.md
+TODO: TODO.md Active Session / 2026-05-15 - 24-hour graph update / planning artifact sub-item
+Validation: npm run lint (passes with existing next/no-img-element warnings), npx prisma generate, npm run typecheck, npm test

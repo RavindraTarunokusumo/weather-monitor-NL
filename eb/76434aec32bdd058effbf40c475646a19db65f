@@ -1,0 +1,11 @@
+Task: Revert Ask implementation scaffolding
+
+Summary: Reverted the partially implemented rule-based Ask routing/context/answer scaffolding and dependency additions after the feature direction changed to a two-stage LLM workflow.
+
+Spec: docs/specs/ask-the-dashboard-langgraph-qna.md
+
+Docs: TODO.md
+
+TODO: Ask implementation session removed by revert
+
+Validation: git revert --no-commit review

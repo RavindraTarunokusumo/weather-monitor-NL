@@ -1,0 +1,6 @@
+Task: Add reliable 10-city dashboard coverage
+Summary: Added seven supported Dutch cities with deterministic seed snapshots, explicit live source mappings, KNMI warning region coverage, and updated coverage tests.
+Spec: docs/specs/major-dutch-cities-10.md
+Docs: N/A
+TODO: Add tests for 10 supported city source-config and dashboard coverage; Add seven new reliable city seeds and source mappings
+Validation: npm run lint; npm run typecheck; npm test -- tests/ingestion-live-adapters.test.ts tests/ingestion-jobs.test.ts tests/dashboard-regeneration.test.ts app/dashboard/__tests__/DashboardShell.test.tsx

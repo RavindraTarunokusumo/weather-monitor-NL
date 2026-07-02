@@ -1,0 +1,6 @@
+Task: CI workflow baseline
+Summary: Added a GitHub Actions workflow that validates the root scaffold with uv lock checks, pre-commit hooks, and a dependency import smoke test.
+Spec: docs/specs/project-scaffold-local-dev.md
+Docs: docs/specs/project-scaffold-local-dev.md, docs/insights.md
+TODO: docs/iterations/archive/2026-05-02-ci-workflow-baseline.md
+Validation: uv lock --check; uv run --group dev pre-commit run --all-files

@@ -1,0 +1,6 @@
+Task: archive mobile Temperature restore work
+Summary: Archive the completed Temperature metric restore TODO and record session lessons.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: docs/iterations/archive/2026-05-20-restore-mobile-temperature-metric-sizing.md, docs/insights.md
+TODO: TODO.md Backlog / Restore mobile Temperature metric original sizing archived
+Validation: git diff --check

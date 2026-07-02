@@ -1,0 +1,6 @@
+Task: Add local scaffold artifacts
+Summary: Land the completed web scaffold, local Docker scaffold, environment template, and archived scaffold session so the database feature has its prerequisite files in history.
+Spec: docs/specs/project-scaffold-local-dev.md
+Docs: docs/iterations/archive/2026-05-03-project-scaffold-local-dev.md, docs/superpowers/plans/2026-05-02-project-scaffold-local-dev.md
+TODO: Archived project-scaffold-local-dev session
+Validation: uv run --group dev pre-commit run

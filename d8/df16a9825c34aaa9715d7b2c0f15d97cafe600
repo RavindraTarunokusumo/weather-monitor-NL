@@ -1,0 +1,11 @@
+Task: Archive mobile briefing panel TODO
+
+Summary: Moved the completed mobile briefing layout TODO session to the iterations archive and recorded implementation commit 19e6b20.
+
+Spec: docs/specs/briefing-panel-glass-overlay.md
+
+Docs: docs/iterations/archive/2026-05-20-mobile-briefing-panel-layout.md, TODO.md
+
+TODO: archived completed Mobile-only briefing panel layout
+
+Validation: git diff --check

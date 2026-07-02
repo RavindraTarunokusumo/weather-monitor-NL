@@ -1,0 +1,6 @@
+Task: Add implementation specs
+Summary: Added the non-empty per-feature specs that will drive future implementation work.
+Spec: docs/specs/anonymous-usage-ai-qna-foundation.md, docs/specs/database-schema-seed-dashboard.md, docs/specs/full-account-auth-integration.md, docs/specs/project-scaffold-local-dev.md, docs/specs/public-dashboard-ui-shell.md, docs/specs/source-adapter-ingestion-skeleton.md
+Docs: docs/specs/*.md
+TODO: N/A
+Validation: git diff --cached --check; spec header review

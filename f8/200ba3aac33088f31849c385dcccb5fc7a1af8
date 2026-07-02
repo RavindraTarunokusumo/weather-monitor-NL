@@ -1,0 +1,6 @@
+Task: Mark Dashboard context assembly complete
+Summary: Record Task 2 implementation commit hash in TODO.md.
+Spec: docs/specs/ask-the-dashboard-langgraph-qna.md
+Docs: N/A
+TODO: TODO.md Ask the Dashboard LangGraph Q&A / Dashboard context assembly
+Validation: N/A bookkeeping-only commit

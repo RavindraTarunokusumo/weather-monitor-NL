@@ -1,0 +1,6 @@
+Task: mobile temperature metric sizing
+Summary: Compact the top-left Temperature metric card at mobile widths only while preserving tablet and desktop metric sizing.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: docs/specs/briefing-panel-glass-overlay.md
+TODO: TODO.md Backlog / Mobile-only compact temperature metric
+Validation: npm run lint; npm run typecheck; npm test; npm run build; mobile/tablet/desktop screenshot checks

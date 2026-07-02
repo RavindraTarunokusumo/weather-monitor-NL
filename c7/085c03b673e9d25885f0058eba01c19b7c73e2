@@ -1,0 +1,6 @@
+Task: Dashboard Forecast navigation TODO
+Summary: Marked the dashboard navigation TODO item complete with the implementation commit hash.
+Spec: docs/specs/forecast-page.md
+Docs: N/A
+TODO: TODO.md Forecast Page - dashboard navigation links
+Validation: npm run lint; npm run typecheck; npm test -- tests/dashboard.test.ts app/dashboard/__tests__/DashboardShell.test.tsx

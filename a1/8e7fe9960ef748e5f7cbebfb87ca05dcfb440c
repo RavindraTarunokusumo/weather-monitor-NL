@@ -1,0 +1,6 @@
+Task: Add smartphone briefing circle
+Summary: Added a 599px smartphone breakpoint that collapses the briefing pill to a 46px AI-only circle and replaced the public briefing star SVGs with the existing AI sparkle icon asset.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: docs/specs/briefing-panel-glass-overlay.md
+TODO: TODO.md Active Session / Add the smartphone circular briefing pill and replace the star glyph with the AI sparkle icon
+Validation: npm test -- tests/dashboard.test.ts; npm test -- app/dashboard/__tests__/BriefingHero.test.tsx; npm run lint; npm test; npm run typecheck; DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dutch_weather npm run build; in-app browser 599px check for empty visible pill text and /dashboard-assets/icon-spark.png

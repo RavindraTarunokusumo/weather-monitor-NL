@@ -1,0 +1,6 @@
+Task: Briefing panel glass overlay TODO hash update
+Summary: Added the accessibility refinement commit hash to the completed briefing hero TODO item.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: N/A
+TODO: TODO.md Active Session: Briefing Panel Glass Overlay
+Validation: git diff --check TODO.md

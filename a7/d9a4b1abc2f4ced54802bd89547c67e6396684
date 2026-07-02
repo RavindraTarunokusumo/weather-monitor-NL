@@ -1,0 +1,6 @@
+Task: Dashboard UI liquid glass panel polish
+Summary: Render the provided dashboard HTML as the root UI, wire same-origin dashboard APIs, dynamically scale the 24-hour chart, adjust the desktop briefing panel, and make postbuild seeding opt-in.
+Spec: docs/specs/dashboard-ui-liquid-glass-panel-polish.md
+Docs: docs/changelog.md, docs/commands.md, docs/insights.md
+TODO: TODO.md Active Session / Dashboard UI liquid glass panel polish
+Validation: npm run lint; npm run typecheck; npm test; npm run build; git diff --check

@@ -1,0 +1,11 @@
+Task: Preserve explicit Ask city subsets
+
+Summary: Explicit multi-city comparison wording now remains constrained to the mentioned supported cities, while one-city broad ranking questions still route across all active cities.
+
+Spec: docs/specs/ask-the-dashboard-langgraph-qna.md
+
+Docs: N/A
+
+TODO: TODO.md Ask the Dashboard LangGraph Q&A / Router and shared ask types
+
+Validation: npm test -- tests/ask-router.test.ts; npm run typecheck

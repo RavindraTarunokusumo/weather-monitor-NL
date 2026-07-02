@@ -1,0 +1,6 @@
+Task: Record PR 19 review follow-up lessons
+Summary: Added post-PR reflection for duplicated review themes, regression-test workflow, and GitHub inline reply endpoint.
+Spec: docs/specs/major-dutch-cities-10.md
+Docs: docs/insights.md
+TODO: Post-PR reflection
+Validation: git diff --check

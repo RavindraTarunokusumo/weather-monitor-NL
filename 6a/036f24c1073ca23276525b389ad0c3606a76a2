@@ -1,0 +1,6 @@
+Task: Add Docker Compose validation helper
+Summary: Add an explicit Docker prerequisite check that runs Compose config when Docker is available and reports a clear install/startup action when it is not.
+Spec: docs/specs/database-schema-seed-dashboard.md
+Docs: README.md, docs/commands.md
+TODO: Follow-up to database-schema-seed-dashboard validation gap
+Validation: bash -n infra/scripts/validate-docker.sh; bash infra/scripts/validate-docker.sh reports Docker CLI missing; git diff --check; uv run --group dev pre-commit run

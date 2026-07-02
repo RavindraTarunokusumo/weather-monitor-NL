@@ -1,0 +1,6 @@
+Task: Validate production data-source guardrails and document the deployment requirement
+Summary: Documented production env requirements and recorded the production guardrail lesson for future deploys.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: docs/commands.md, docs/insights.md
+TODO: TODO.md production-live-data-guard Task 3
+Validation: npm run lint; npm run typecheck; npx vitest run --pool=forks --maxWorkers=1; DATABASE_URL=local npx prisma validate; VERCEL_ENV=production npm run build; browser check http://localhost:3001

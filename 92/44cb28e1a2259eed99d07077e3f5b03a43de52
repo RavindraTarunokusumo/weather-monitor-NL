@@ -1,0 +1,6 @@
+Task: Archive live pipeline TODO session
+Summary: Moved the completed api-wiring-live-data-pipeline TODO session to docs/iterations/archive after draft PR creation.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: TODO.md, docs/iterations/archive/2026-05-06-api-wiring-live-data-pipeline.md
+TODO: Post-PR archive cleanup
+Validation: pre-commit run --files TODO.md docs/iterations/archive/2026-05-06-api-wiring-live-data-pipeline.md; git diff --check -- TODO.md docs/iterations/archive/2026-05-06-api-wiring-live-data-pipeline.md

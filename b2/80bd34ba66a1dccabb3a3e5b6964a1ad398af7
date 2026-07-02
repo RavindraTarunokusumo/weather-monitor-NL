@@ -1,0 +1,6 @@
+Task: Record smartphone briefing circle
+Summary: Marked the smartphone briefing circle work complete in TODO.md with the implementation commit hash.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: TODO.md
+TODO: TODO.md Active Session / Add the smartphone circular briefing pill and replace the star glyph with the AI sparkle icon
+Validation: N/A metadata-only follow-up after validated implementation commit

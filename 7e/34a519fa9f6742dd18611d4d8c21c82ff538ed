@@ -1,0 +1,6 @@
+Task: Archive production 10-city refresh bootstrap session
+Summary: Moved completed TODO session into docs/iterations/archive and recorded production bootstrap lessons.
+Spec: docs/specs/major-dutch-cities-10.md
+Docs: TODO.md, docs/iterations/archive/2026-06-04-production-10-city-refresh-bootstrap.md, docs/insights.md
+TODO: Archived Production 10-City Refresh Bootstrap
+Validation: git diff --check

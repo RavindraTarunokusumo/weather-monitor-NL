@@ -1,0 +1,6 @@
+Task: Move expanded briefing header up
+Summary: Removed the hidden collapsed pill from layout flow when the briefing panel is open so the expanded TODAY'S BRIEFING header starts at the top of the glass panel.
+Spec: docs/specs/briefing-panel-glass-overlay.md
+Docs: N/A
+TODO: TODO.md Active Session: Briefing Panel Glass Overlay
+Validation: npm run lint; npm run typecheck; npm test; DATABASE_URL=postgresql://postgres:postgres@localhost:5432/dutch_weather npm run build

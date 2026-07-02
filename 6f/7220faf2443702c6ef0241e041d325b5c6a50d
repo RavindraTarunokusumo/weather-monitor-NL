@@ -1,0 +1,11 @@
+Task: Resolve PR 6 conflicts and verify live dashboard API
+
+Summary: Merged main into codex/ui-webpage-spec, kept the reference-design dashboard UI active, preserved live pipeline wiring, and fixed dashboard regeneration so live provider snapshots win over seeded mock snapshots and unchanged live snapshots are promoted.
+
+Spec: docs/specs/reference-dashboard-webpage-ui.md; docs/specs/api-wiring-live-data-pipeline.md
+
+Docs: docs/architecture.md, docs/changelog.md, docs/commands.md, docs/database.md, docs/index.md, docs/insights.md, docs/testing.md
+
+TODO: TODO.md reference dashboard/webpage and API live data pipeline entries
+
+Validation: npm run lint; npm run typecheck; npm test; npx prisma validate; npm run build; npm run ingest:all -- --live; npm run dashboard:regenerate -- --all; API checks for Amsterdam/Rotterdam/Utrecht all fresh for knmi/luchtmeetnet/rijkswaterstaat; in-app browser confirms reference UI and live source names

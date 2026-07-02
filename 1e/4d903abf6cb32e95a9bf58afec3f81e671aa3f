@@ -1,0 +1,11 @@
+Task: Document Vercel bootstrap behavior
+
+Summary: Record the build-time migration and seed behavior in the accepted foundation spec and task log.
+
+Spec: docs/specs/project-scaffold-vercel-postgres-foundation.md
+
+Docs: docs/specs/project-scaffold-vercel-postgres-foundation.md, TODO.md
+
+TODO: TODO.md > Active Session
+
+Validation: npm run build, npm test

@@ -1,0 +1,6 @@
+Task: Link dashboard UI liquid glass panel polish PR archive
+Summary: Record PR #13 in the archived iteration note for the completed dashboard UI polish session.
+Spec: docs/specs/dashboard-ui-liquid-glass-panel-polish.md
+Docs: docs/iterations/archive/2026-05-16-dashboard-ui-liquid-glass-panel-polish.md
+TODO: docs/iterations/archive/2026-05-16-dashboard-ui-liquid-glass-panel-polish.md PR reference
+Validation: git diff --check

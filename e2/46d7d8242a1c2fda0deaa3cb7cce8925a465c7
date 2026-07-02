@@ -1,0 +1,11 @@
+Task: Refine Ask likelihood routing
+
+Summary: Most-likely rain phrasing now stays selected-city scoped, while broad least-likely rain ranking routes across all active cities.
+
+Spec: docs/specs/ask-the-dashboard-langgraph-qna.md
+
+Docs: N/A
+
+TODO: TODO.md Ask the Dashboard LangGraph Q&A / Router and shared ask types
+
+Validation: npm test -- tests/ask-router.test.ts; npm run typecheck

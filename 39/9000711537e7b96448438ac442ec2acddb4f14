@@ -1,0 +1,6 @@
+Task: Bootstrap 10 supported cities during protected live refresh
+Summary: Added a supported-city upsert helper and wired /api/jobs/refresh-live to ensure the accepted 10 active cities exist before live ingestion and dashboard regeneration.
+Spec: docs/specs/major-dutch-cities-10.md
+Docs: docs/specs/major-dutch-cities-10.md, docs/architecture.md, docs/changelog.md
+TODO: TODO.md Active: Production 10-City Refresh Bootstrap
+Validation: npm test -- tests/production-refresh.test.ts tests/supported-cities.test.ts; npm run lint; npm run typecheck; npx prisma validate; npm test; npx next build; npm run postbuild. npm run build attempted but local prisma migrate deploy failed with Schema engine error against localhost:5432 before next build.

@@ -1,0 +1,6 @@
+Task: Document 10-city support
+Summary: Updated architecture, database, commands, and changelog docs for the 10-city dashboard support contract.
+Spec: docs/specs/major-dutch-cities-10.md
+Docs: docs/architecture.md, docs/database.md, docs/commands.md, docs/changelog.md
+TODO: Update affected docs for the 10-city support contract
+Validation: npm run lint

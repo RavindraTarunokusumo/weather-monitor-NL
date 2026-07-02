@@ -1,0 +1,6 @@
+Task: Record dashboard API UI wiring completion
+Summary: Updated TODO.md with the completed Task 4 commit hash.
+Spec: docs/specs/api-wiring-live-data-pipeline.md
+Docs: TODO.md
+TODO: Extend public dashboard API/UI for all seeded cities, source freshness, stale, and missing states.
+Validation: Task 4 validation recorded on commit e57703c

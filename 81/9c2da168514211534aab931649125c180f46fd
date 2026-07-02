@@ -1,0 +1,6 @@
+Task: Merge updated UI PR base into data wiring branch
+Summary: Bring PR 6 review fixes from codex/ui-webpage-spec into PR 7 before final validation and push.
+Spec: docs/specs/forecast-summary-trend-data-wiring.md
+Docs: N/A
+TODO: PR 7 stacked branch synchronization
+Validation: npm test; npm run lint; npx prisma validate; npm run build; npm run ingest:all -- --live; npm run dashboard:regenerate -- --all; dashboard API smoke for amsterdam/rotterdam/utrecht

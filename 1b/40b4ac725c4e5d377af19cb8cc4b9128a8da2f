@@ -1,0 +1,6 @@
+Task: Archive complete city data and config-only expansion session
+Summary: Cleared completed TODO, archived the session, and recorded production fallback lessons.
+Spec: docs/specs/major-dutch-cities-10.md
+Docs: TODO.md, docs/iterations/archive/2026-06-04-complete-city-data-config.md, docs/insights.md
+TODO: Archived Complete City Data And Config-Only Expansion
+Validation: git diff --check

@@ -1,0 +1,11 @@
+Task: Revise Ask spec for two-stage LLM workflow
+
+Summary: Replaced the rule-based router spec with a two-stage LLM design: Stage 1 screens relevance/security and returns a validated data plan; Stage 2 answers only from server-approved normalized dashboard context. Marked the previous implementation plan as superseded.
+
+Spec: docs/specs/ask-the-dashboard-langgraph-qna.md
+
+Docs: docs/specs/ask-the-dashboard-langgraph-qna.md, docs/superpowers/plans/2026-05-19-ask-the-dashboard-langgraph-qna.md
+
+TODO: N/A - implementation reverted and plan superseded
+
+Validation: npm run lint; npm run typecheck; npm test

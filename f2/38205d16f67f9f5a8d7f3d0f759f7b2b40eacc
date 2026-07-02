@@ -1,0 +1,6 @@
+Task: Add seeded dashboard database foundation
+Summary: Add SQLAlchemy/Alembic foundation tables, repeatable city/dashboard seed data, public dashboard API routes, tests, shared Amsterdam fixture, and docs for local migration and seeding.
+Spec: docs/specs/database-schema-seed-dashboard.md
+Docs: README.md, docs/architecture.md, docs/changelog.md, docs/commands.md, docs/database.md, docs/superpowers/plans/2026-05-03-database-schema-seed-dashboard.md
+TODO: database-schema-seed-dashboard active session items 1-4
+Validation: uv run --group dev pre-commit run; uv run pytest; uv run ruff check .; uv run ruff format --check .; npm run lint; npm test; bash -n infra/scripts/dev.sh; bash -n infra/scripts/migrate.sh; bash -n infra/scripts/seed.sh; docker compose config blocked because docker is not installed
