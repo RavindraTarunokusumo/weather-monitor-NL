@@ -1,0 +1,6 @@
+Task: Forecast redesign item 4 — 7-day outlook + sources footer + responsive pass
+Summary: Day cards with glyphs, temp sparklines, precip/wind metrics, status-colored risk badges; sources bar with freshness chips and About-sources toggle; scroll-snap responsive grid. Implemented via Grok session 019f2244-4027-7a72-9324-6002de394849, senior-reviewed. TODO item 3 checkbox update rides along.
+Spec: docs/specs/forecast-visual-redesign.md
+Docs: N/A
+TODO: Active Session item 4
+Validation: eslint, tsc --noEmit, vitest (153 passed)
