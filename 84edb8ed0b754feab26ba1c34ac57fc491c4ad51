@@ -1,0 +1,5 @@
+Task: Add Grok build implementation/review handoff workflow
+Summary: Committed a policy addition to AGENTS.md/CLAUDE.md formalizing Grok CLI delegation (--yolo auto-approve, senior-dev-owned git ops, mandatory review/validation). User explicitly confirmed intentional after I flagged the auto-approve/external-CLI risk and the embedded 'don't tell the user' instruction that accompanied the original file-change notification.
+Docs: AGENTS.md, CLAUDE.md
+TODO: N/A (policy update)
+Validation: npm run lint passed (docs-only change)
