@@ -1,0 +1,5 @@
+Task: Archive KNMI dataset selection session
+Summary: Moved completed session to docs/iterations/archive/, tagged commit hashes, recorded the pre-deletion verification lesson in insights.md.
+Docs: TODO.md, docs/insights.md, docs/iterations/archive/2026-07-02-knmi-dataset-selection.md
+TODO: BLOCKED item remains open, awaiting user decision
+Validation: npm run lint, npm test (130 tests) passed
