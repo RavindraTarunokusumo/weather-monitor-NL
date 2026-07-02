@@ -1,0 +1,6 @@
+Task: Forecast redesign — senior visual verification fixes
+Summary: min-width:0 on forecast-layout children stops the max-content 7-day grid stretching the page (302px tablet / 876px mobile overflow); index-suffixed React keys tolerate seeded duplicate starts_at; radar viewBox widened so left axis labels are not clipped. Verified via headless-browser screenshots at 1440/834/390 — 0 overflow, 0 console errors.
+Spec: docs/specs/forecast-visual-redesign.md
+Docs: N/A
+TODO: Active Session item 4
+Validation: eslint, tsc --noEmit, vitest (153 passed), rendered checks at 3 widths
