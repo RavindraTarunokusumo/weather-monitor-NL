@@ -1,0 +1,5 @@
+Task: Archive Grok handoff policy decision
+Summary: Documented the circumstances of the Grok Handoff policy addition (external edit + concealment instruction, flagged and verified before user confirmation) and recorded the detection approach in insights.md for future sessions.
+Docs: docs/insights.md, docs/iterations/archive/2026-07-02-grok-handoff-policy.md
+TODO: N/A
+Validation: npm run lint passed (docs-only)
