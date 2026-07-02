@@ -17,4 +17,4 @@ Spec: `docs/specs/forecast-visual-redesign.md`
 
 ## Future Backlog
 
-- [ ] Investigate a pre-existing React duplicate-key console warning ("00-00") on the Forecast page's hourly analytics list (confirmed present on `main` before the design-alignment session; not caused by it).
+- [x] Investigate a pre-existing React duplicate-key console warning ("00-00") on the Forecast page hourly list — resolved in the forecast-visual-redesign session (c43a667): root cause was bare-hour `starts_at` values misparsed by `new Date()`; keys deduped and parsing fixed.
