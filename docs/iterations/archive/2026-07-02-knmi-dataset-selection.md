@@ -18,4 +18,4 @@ Spec: `docs/specs/knmi-dataset-selection.md` (Accepted, documents an already-imp
 
 ## Follow-Up
 
-- The BLOCKED item (migrate `dashboard.test.ts`'s HTML-contract tests, delete `Dutch Weather Dashboard.html`) remains open in `TODO.md`, awaiting a user decision on whether/how to migrate the live homepage off the iframe.
+- The BLOCKED item (migrate `dashboard.test.ts`'s HTML-contract tests, delete `Dutch Weather Dashboard.html`) was closed as invalid per explicit user decision (option (a)): `Dutch Weather Dashboard.html` stays, the HTML-contract tests keep guarding it as the live homepage, and `app/dashboard/`'s unmounted React port remains as-is unless a future migration spec is requested. No further action taken.
