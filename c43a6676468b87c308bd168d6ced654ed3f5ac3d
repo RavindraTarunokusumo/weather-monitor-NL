@@ -1,0 +1,6 @@
+Task: Forecast redesign — Grok review findings (session 019f2258-d8ee-7ca3-9be1-9c55a3446f32)
+Summary: lib/forecast.ts emits bare-hour starts_at ('09'), which new Date() misparsed as year 2009 — formatHourClock/hourNumberFromEntry now require ISO dates and fall back to bare-hour parsing, fixing chart ticks, bands, now marker, and risk event times. comfortLabel returns Unavailable when wind or precip data is wholly missing per spec. riskBadgeVariant maps production 'Rain risk'/'Wind watch' labels to moderate. Regression tests added (160 passing). Findings verified against lib/forecast.ts before applying; test-gap findings addressed via the new unit tests.
+Spec: docs/specs/forecast-visual-redesign.md
+Docs: N/A
+TODO: Active Session (PR review fixes)
+Validation: eslint, tsc --noEmit, vitest (160 passed), re-rendered at 3 widths — labels correct, 0 overflow, 0 console errors
