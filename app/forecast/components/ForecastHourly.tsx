@@ -228,7 +228,7 @@ function HourlyChart({
           const x = xForIndex(index, hours.length, plotWidth);
           const value = values[index];
           return (
-            <g key={`tick-${hour.starts_at}`}>
+            <g key={`tick-${index}-${hour.starts_at}`}>
               <text
                 x={x}
                 y={14}
@@ -272,7 +272,7 @@ function HourlyChart({
         {points.map((point, index) =>
           point.value !== null ? (
             <circle
-              key={`dot-${hours[index].starts_at}`}
+              key={`dot-${index}-${hours[index].starts_at}`}
               cx={point.x}
               cy={point.y}
               r="4"
@@ -304,7 +304,7 @@ function HourlyChart({
           <div className="forecast-hourly-subrow-track">
             {tickIndices.map((index) => (
               <span
-                key={`feels-${hours[index].starts_at}`}
+                key={`feels-${index}-${hours[index].starts_at}`}
                 className="forecast-hourly-subrow-value"
                 style={{
                   left: `${(xForIndex(index, hours.length, plotWidth) / CANVAS_WIDTH) * 100}%`,
@@ -321,7 +321,7 @@ function HourlyChart({
           <div className="forecast-hourly-subrow-track">
             {tickIndices.map((index) => (
               <span
-                key={`rain-${hours[index].starts_at}`}
+                key={`rain-${index}-${hours[index].starts_at}`}
                 className="forecast-hourly-subrow-value"
                 style={{
                   left: `${(xForIndex(index, hours.length, plotWidth) / CANVAS_WIDTH) * 100}%`,
@@ -340,7 +340,7 @@ function HourlyChart({
                   : "4%";
               return (
                 <span
-                  key={`bar-${hour.starts_at}`}
+                  key={`bar-${index}-${hour.starts_at}`}
                   className="forecast-hourly-rain-bar"
                   style={{
                     left: `${(xForIndex(index, hours.length, plotWidth) / CANVAS_WIDTH) * 100}%`,
@@ -357,7 +357,7 @@ function HourlyChart({
           <div className="forecast-hourly-subrow-track">
             {tickIndices.map((index) => (
               <span
-                key={`wind-${hours[index].starts_at}`}
+                key={`wind-${index}-${hours[index].starts_at}`}
                 className="forecast-hourly-subrow-value"
                 style={{
                   left: `${(xForIndex(index, hours.length, plotWidth) / CANVAS_WIDTH) * 100}%`,

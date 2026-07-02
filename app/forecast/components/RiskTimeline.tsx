@@ -225,7 +225,7 @@ function RadarChart({ scores }: { scores: RadarScores }) {
   return (
     <svg
       className="forecast-risk-radar-chart"
-      viewBox="0 0 240 240"
+      viewBox="-28 0 296 240"
       role="img"
       aria-label={radarAriaLabel(scores)}
     >

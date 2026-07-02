@@ -1802,9 +1802,13 @@ p {
 }
 
 .forecast-layout {
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
   margin-top: 14px;
+}
+
+.forecast-layout > * {
+  min-width: 0;
 }
 
 .forecast-analytics-row {

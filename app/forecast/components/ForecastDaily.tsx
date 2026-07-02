@@ -140,12 +140,12 @@ export function ForecastDaily({ daily }: ForecastDailyProps) {
       ) : (
         <div className="forecast-day-scroll">
           <div className="forecast-day-grid">
-            {outlookDays.map((day) => {
+            {outlookDays.map((day, index) => {
               const riskVariant = riskBadgeVariant(day.risk_label);
               const glyph = weatherConditionGlyph(day.weather_code, day.condition_label);
 
               return (
-                <article key={`${day.date}-${day.label}`} className="forecast-day-card">
+                <article key={`${index}-${day.date}`} className="forecast-day-card">
                   <header className="forecast-day-card-head">
                     <div>
                       <h3 className="forecast-day-label">{displayValue(day.label)}</h3>
