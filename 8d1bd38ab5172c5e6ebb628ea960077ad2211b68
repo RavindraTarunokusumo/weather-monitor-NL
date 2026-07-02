@@ -1,0 +1,5 @@
+Task: Archive forecast dashboard design alignment session
+Summary: Moved completed session to docs/iterations/archive/, tagged commit hashes, recorded insights, logged pre-existing duplicate-key warning as backlog follow-up.
+Docs: TODO.md, docs/insights.md, docs/iterations/archive/2026-07-01-forecast-dashboard-design-alignment.md
+TODO: N/A (session closed)
+Validation: npm run lint, npm test passed
