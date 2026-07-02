@@ -152,7 +152,7 @@ afterEach(() => {
 });
 
 describe("ForecastShell", () => {
-  it("renders deeper forecast analytics and source links", () => {
+  it("renders deeper forecast analytics and source freshness footer", () => {
     render(<ForecastShell initialForecast={amsterdamForecast} initialCities={cities} />);
 
     expect(
@@ -164,8 +164,8 @@ describe("ForecastShell", () => {
 
     expect(screen.getByRole("region", { name: /hourly signal timeline/i })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: /risk radar/i })).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: /7-day forecast/i })).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: /sources and methodology/i })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: /7-day outlook/i })).toBeInTheDocument();
+    expect(screen.getByRole("contentinfo", { name: /sources freshness/i })).toBeInTheDocument();
 
     const hourly = screen.getByRole("region", { name: /hourly signal timeline/i });
     expect(within(hourly).getByRole("button", { name: "Temperature", pressed: true })).toBeInTheDocument();
@@ -178,9 +178,42 @@ describe("ForecastShell", () => {
     expect(subrowLabels[1]).toHaveTextContent("Rain chance");
     expect(subrowLabels[2]).toHaveTextContent("Wind (km/h)");
 
+    const outlook = screen.getByRole("region", { name: /7-day outlook/i });
+    expect(within(outlook).getByRole("heading", { name: /7-day outlook/i })).toBeInTheDocument();
+    expect(within(outlook).getByText("Thu")).toBeInTheDocument();
+    expect(within(outlook).getByText("18° / 11°")).toBeInTheDocument();
+    expect(within(outlook).getByRole("img", { name: /temperature from 11 to 18 degrees/i })).toBeInTheDocument();
+    expect(within(outlook).getByText("Rain risk")).toBeInTheDocument();
+
+    const sources = screen.getByRole("contentinfo", { name: /sources freshness/i });
+    expect(within(sources).getByText(/sources fresh/i)).toBeInTheDocument();
+    expect(within(sources).getByText("KNMI")).toBeInTheDocument();
+    expect(within(sources).getByText("Open-Meteo")).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /open-meteo knmi forecast documentation/i }),
+      within(sources).queryByRole("link", { name: /open-meteo knmi forecast documentation/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("reveals source links when About sources is toggled", async () => {
+    const user = userEvent.setup();
+    render(<ForecastShell initialForecast={amsterdamForecast} initialCities={cities} />);
+
+    const sources = screen.getByRole("contentinfo", { name: /sources freshness/i });
+    const toggle = within(sources).getByRole("button", { name: "About sources" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+    await user.click(toggle);
+
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(
+      within(sources).getByRole("link", { name: /open-meteo knmi forecast documentation/i }),
     ).toHaveAttribute("href", "https://open-meteo.com/en/docs/knmi-api");
+    expect(
+      within(sources).getByRole("link", { name: /knmi data platform warnings dataset/i }),
+    ).toHaveAttribute(
+      "href",
+      "https://dataplatform.knmi.nl/dataset/access/waarschuwingen-nederland-48h-1-0",
+    );
   });
 
   it("switches cities through the same-app Forecast API", async () => {
