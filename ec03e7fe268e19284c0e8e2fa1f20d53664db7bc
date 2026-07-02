@@ -1,0 +1,6 @@
+Task: Forecast redesign item 3 — risk radar panel
+Summary: Six-axis SVG radar with detail-view toggle, risk rows with 10-segment intensity bars, radarScores derivation + tests; analytics row grid (62/38, stacks <1024px). Implemented via Grok session 019f223f-a31b-7533-9b1b-0e39a0c31e95, senior-reviewed. TODO item 2 checkbox update rides along.
+Spec: docs/specs/forecast-visual-redesign.md
+Docs: N/A
+TODO: Active Session item 3
+Validation: eslint, tsc --noEmit, vitest (152 passed)
