@@ -9,7 +9,7 @@ Completed sessions must be moved to `docs/iterations/archive/` and include the r
 Spec: `docs/specs/forecast-visual-redesign.md`
 
 - [x] 1. Hero card + generated line + page scaffolding/CSS foundation (Grok handoff) — 30ce3c5
-- [ ] 2. Hourly signal timeline panel with metric tabs + inline SVG chart (Grok handoff)
+- [x] 2. Hourly signal timeline panel with metric tabs + inline SVG chart (Grok handoff) — 8aff44a
 - [ ] 3. Risk radar panel with radar SVG + risk rows + detail toggle (Grok handoff)
 - [ ] 4. 7-day outlook cards + sources footer + responsive pass + test updates (Grok handoff)
 

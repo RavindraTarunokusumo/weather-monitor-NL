@@ -1,4 +1,79 @@
-import type { ForecastHour, ForecastSummary } from "@/lib/types/forecast";
+import type { ForecastHour, ForecastRiskEvent, ForecastSummary } from "@/lib/types/forecast";
+
+export type RadarScores = {
+  rain: number;
+  wind: number;
+  gusts: number;
+  comfort: number;
+  visibility: number;
+  thunder: number;
+};
+
+const RADAR_DEFAULT_SCORE = 10;
+
+function severityToRadarScore(severity: ForecastRiskEvent["severity"]): number {
+  switch (severity) {
+    case "info":
+      return 25;
+    case "watch":
+      return 50;
+    case "warning":
+      return 75;
+    case "severe":
+      return 100;
+    default:
+      return RADAR_DEFAULT_SCORE;
+  }
+}
+
+export type ComfortLabel = "Good" | "Fair" | "Poor" | "Unavailable";
+
+function comfortLabelToRadarScore(label: ComfortLabel): number {
+  switch (label) {
+    case "Good":
+      return 20;
+    case "Fair":
+      return 50;
+    case "Poor":
+      return 80;
+    case "Unavailable":
+    default:
+      return RADAR_DEFAULT_SCORE;
+  }
+}
+
+function maxNumericValue(
+  hourly: ForecastHour[],
+  n: number,
+  read: (hour: ForecastHour) => number | null,
+): number | null {
+  const slice = hourly.slice(0, n);
+  if (slice.length === 0) {
+    return null;
+  }
+
+  let max: number | null = null;
+  for (const hour of slice) {
+    const value = read(hour);
+    if (typeof value === "number" && Number.isFinite(value)) {
+      max = max === null ? value : Math.max(max, value);
+    }
+  }
+
+  return max;
+}
+
+function radarScoreFromTimeline(
+  events: ForecastRiskEvent[],
+  category: ForecastRiskEvent["category"] | "visibility" | "thunder",
+): number {
+  const matches = events.filter((event) => event.category === category);
+  if (matches.length === 0) {
+    return RADAR_DEFAULT_SCORE;
+  }
+
+  return Math.max(...matches.map((event) => severityToRadarScore(event.severity)));
+}
 
 export function displayValue(
   value: string | number | null | undefined,
@@ -89,7 +164,7 @@ export function maxRainChance(hourly: ForecastHour[], n = 24): number | null {
   return max;
 }
 
-export function comfortLabel(hourly: ForecastHour[]): "Good" | "Fair" | "Poor" | "Unavailable" {
+export function comfortLabel(hourly: ForecastHour[]): ComfortLabel {
   const slice = hourly.slice(0, 12);
   if (slice.length === 0) {
     return "Unavailable";
@@ -138,6 +213,25 @@ export function comfortLabel(hourly: ForecastHour[]): "Good" | "Fair" | "Poor" |
     return "Fair";
   }
   return "Poor";
+}
+
+export function radarScores(
+  hourly: ForecastHour[],
+  riskTimeline: ForecastRiskEvent[],
+  comfort: ComfortLabel,
+): RadarScores {
+  const rainMax = maxNumericValue(hourly, 24, (hour) => hour.precipitation_probability);
+  const windMax = maxNumericValue(hourly, 24, (hour) => hour.wind_speed_kmh);
+  const gustMax = maxNumericValue(hourly, 24, (hour) => hour.wind_gust_kmh);
+
+  return {
+    rain: rainMax === null ? RADAR_DEFAULT_SCORE : rainMax,
+    wind: windMax === null ? RADAR_DEFAULT_SCORE : Math.min(100, windMax * 2),
+    gusts: gustMax === null ? RADAR_DEFAULT_SCORE : Math.min(100, gustMax * 1.5),
+    comfort: comfortLabelToRadarScore(comfort),
+    visibility: radarScoreFromTimeline(riskTimeline, "visibility"),
+    thunder: radarScoreFromTimeline(riskTimeline, "thunder"),
+  };
 }
 
 export function narrativeSentences(summary: ForecastSummary): string[] {

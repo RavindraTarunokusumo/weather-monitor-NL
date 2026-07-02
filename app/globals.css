@@ -1804,9 +1804,16 @@ p {
 }
 
 .forecast-layout {
-  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.75fr);
+  grid-template-columns: 1fr;
   align-items: start;
   margin-top: 14px;
+}
+
+.forecast-analytics-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.62fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
 }
 
 .forecast-panel {
@@ -2128,57 +2135,224 @@ p {
   overflow-wrap: anywhere;
 }
 
-.forecast-risk-list {
+.forecast-risk-panel {
+  min-width: 0;
+}
+
+.forecast-risk-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.forecast-risk-title {
+  margin-bottom: 0;
+  color: #06111f;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.forecast-risk-detail-toggle {
+  min-height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.forecast-risk-detail-toggle:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.forecast-risk-detail-toggle:active {
+  background: var(--surface);
+}
+
+.forecast-risk-detail-toggle.is-active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.forecast-risk-detail-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.forecast-risk-derived-note {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.forecast-risk-body {
   display: grid;
-  gap: 10px;
-  padding-left: 0;
+  gap: 16px;
+}
+
+.forecast-risk-visual {
+  display: grid;
+  place-items: center;
+  min-height: 240px;
+}
+
+.forecast-risk-radar-chart {
+  display: block;
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+}
+
+.forecast-risk-radar-ring {
+  fill: none;
+  stroke: #d8dee8;
+  stroke-width: 1;
+}
+
+.forecast-risk-radar-axis {
+  stroke: #d8dee8;
+  stroke-width: 1;
+}
+
+.forecast-risk-radar-label {
+  fill: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.forecast-risk-radar-polygon {
+  fill: rgb(15 118 110 / 15%);
+  stroke: var(--accent);
+  stroke-width: 1.75;
+  stroke-linejoin: round;
+}
+
+.forecast-risk-score-list {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  max-width: 220px;
+  padding: 0;
   margin: 0;
   list-style: none;
 }
 
-.forecast-risk-event {
-  padding: 12px;
-  border-left: 4px solid var(--accent);
-  border-radius: var(--radius);
+.forecast-risk-score-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.forecast-risk-score-value {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.forecast-risk-rows {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.forecast-risk-row {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
   background: var(--surface-muted);
 }
 
-.forecast-risk-event span {
-  display: inline-flex;
-  margin-bottom: 5px;
+.forecast-risk-row-main {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.forecast-risk-row-icon {
+  flex: 0 0 auto;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.forecast-risk-row-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.forecast-risk-row-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.forecast-risk-row-title strong {
+  color: #06111f;
+  font-size: 13px;
+}
+
+.forecast-risk-row-severity {
   color: var(--muted);
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-.forecast-risk-event strong {
-  display: block;
-  color: #06111f;
-}
-
-.forecast-risk-event p {
-  margin: 5px 0;
-  color: var(--muted);
-  line-height: 1.45;
-}
-
-.forecast-risk-event small {
+.forecast-risk-row-time {
   color: var(--muted);
   font-family: var(--mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
 }
 
-.forecast-risk-watch {
-  border-left-color: var(--warning);
+.forecast-risk-intensity {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 3px;
 }
 
-.forecast-risk-warning {
-  border-left-color: var(--accent-orange);
+.forecast-risk-intensity-segment {
+  height: 6px;
+  border-radius: 2px;
+  background: #e2e8f0;
 }
 
-.forecast-risk-severe {
-  border-left-color: #b91c1c;
+.forecast-risk-intensity-blue .forecast-risk-intensity-segment.is-filled {
+  background: var(--sky);
+}
+
+.forecast-risk-intensity-orange .forecast-risk-intensity-segment.is-filled {
+  background: var(--accent-orange);
+}
+
+.forecast-risk-intensity-green .forecast-risk-intensity-segment.is-filled {
+  background: var(--good);
 }
 
 .forecast-source-grid {
@@ -2275,8 +2449,13 @@ p {
   }
 }
 
+@media (max-width: 1023px) {
+  .forecast-analytics-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 1100px) {
-  .forecast-layout,
   .forecast-summary-grid,
   .forecast-source-grid {
     grid-template-columns: 1fr;

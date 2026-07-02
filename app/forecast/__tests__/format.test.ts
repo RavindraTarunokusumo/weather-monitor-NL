@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
-import type { ForecastHour, ForecastSummary } from "@/lib/types/forecast";
+import type { ForecastHour, ForecastRiskEvent, ForecastSummary } from "@/lib/types/forecast";
 import {
   comfortLabel,
   maxRainChance,
   narrativeSentences,
   parseHourRange,
+  radarScores,
 } from "../format";
 
 function hour(overrides: Partial<ForecastHour> = {}): ForecastHour {
@@ -110,6 +111,109 @@ describe("parseHourRange", () => {
     expect(parseHourRange("25:00-13:00")).toBeNull();
     expect(parseHourRange("10:60-13:00")).toBeNull();
     expect(parseHourRange("best window")).toBeNull();
+  });
+});
+
+function riskEvent(overrides: Partial<ForecastRiskEvent> = {}): ForecastRiskEvent {
+  return {
+    starts_at: "2026-06-11T08:00:00.000Z",
+    ends_at: null,
+    severity: "warning",
+    category: "rain",
+    title: "Heavy shower risk",
+    detail: "Precipitation probability reaches 75%.",
+    ...overrides,
+  };
+}
+
+describe("radarScores", () => {
+  it("returns default scores for empty hourly and timeline inputs", () => {
+    expect(radarScores([], [], "Unavailable")).toEqual({
+      rain: 10,
+      wind: 10,
+      gusts: 10,
+      comfort: 10,
+      visibility: 10,
+      thunder: 10,
+    });
+  });
+
+  it("derives rain, wind, and gust scores from hourly data", () => {
+    expect(
+      radarScores(
+        [
+          hour({ precipitation_probability: 75, wind_speed_kmh: 38, wind_gust_kmh: 52 }),
+          hour({ precipitation_probability: 20, wind_speed_kmh: 18, wind_gust_kmh: 28 }),
+        ],
+        [],
+        "Fair",
+      ),
+    ).toEqual({
+      rain: 75,
+      wind: 76,
+      gusts: 78,
+      comfort: 50,
+      visibility: 10,
+      thunder: 10,
+    });
+  });
+
+  it("caps wind and gust scores at 100", () => {
+    expect(
+      radarScores(
+        [hour({ wind_speed_kmh: 80, wind_gust_kmh: 90 })],
+        [],
+        "Poor",
+      ),
+    ).toEqual({
+      rain: 10,
+      wind: 100,
+      gusts: 100,
+      comfort: 80,
+      visibility: 10,
+      thunder: 10,
+    });
+  });
+
+  it("maps comfort labels to risk scores", () => {
+    const hourly = [hour()];
+    expect(radarScores(hourly, [], "Good").comfort).toBe(20);
+    expect(radarScores(hourly, [], "Fair").comfort).toBe(50);
+    expect(radarScores(hourly, [], "Poor").comfort).toBe(80);
+    expect(radarScores(hourly, [], "Unavailable").comfort).toBe(10);
+  });
+
+  it("maps matching timeline severities onto visibility and thunder axes", () => {
+    expect(
+      radarScores(
+        [hour()],
+        [
+          riskEvent({ category: "visibility" as ForecastRiskEvent["category"], severity: "watch" }),
+          riskEvent({ category: "thunder" as ForecastRiskEvent["category"], severity: "severe" }),
+        ],
+        "Good",
+      ),
+    ).toEqual({
+      rain: 10,
+      wind: 36,
+      gusts: 42,
+      comfort: 20,
+      visibility: 50,
+      thunder: 100,
+    });
+  });
+
+  it("uses the highest severity when multiple timeline events share a category", () => {
+    expect(
+      radarScores(
+        [hour()],
+        [
+          riskEvent({ category: "visibility" as ForecastRiskEvent["category"], severity: "info" }),
+          riskEvent({ category: "visibility" as ForecastRiskEvent["category"], severity: "warning" }),
+        ],
+        "Good",
+      ).visibility,
+    ).toBe(75);
   });
 });
 

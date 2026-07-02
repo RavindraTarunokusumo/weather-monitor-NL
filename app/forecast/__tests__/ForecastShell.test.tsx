@@ -163,7 +163,7 @@ describe("ForecastShell", () => {
     expect(screen.getByText("Evening gusts and showers")).toBeInTheDocument();
 
     expect(screen.getByRole("region", { name: /hourly signal timeline/i })).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: /risk timeline/i })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: /risk radar/i })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: /7-day forecast/i })).toBeInTheDocument();
     expect(screen.getByRole("region", { name: /sources and methodology/i })).toBeInTheDocument();
 
@@ -239,6 +239,24 @@ describe("ForecastShell", () => {
     expect(within(hourly).getByRole("img", { name: /wind from/i })).toBeInTheDocument();
   });
 
+  it("switches risk radar detail view between chart and score list", async () => {
+    const user = userEvent.setup();
+    render(<ForecastShell initialForecast={amsterdamForecast} initialCities={cities} />);
+
+    const riskRadar = screen.getByRole("region", { name: /risk radar/i });
+    expect(
+      within(riskRadar).getByRole("img", { name: /risk radar derived signals/i }),
+    ).toBeInTheDocument();
+
+    await user.click(within(riskRadar).getByRole("button", { name: "Detail view" }));
+
+    expect(within(riskRadar).getByRole("button", { name: "Detail view", pressed: true })).toBeInTheDocument();
+    expect(within(riskRadar).getByText("Thunder")).toBeInTheDocument();
+    expect(
+      within(riskRadar).queryByRole("img", { name: /risk radar derived signals/i }),
+    ).not.toBeInTheDocument();
+  });
+
   it("renders usable states for empty data and unavailable city loads", async () => {
     const user = userEvent.setup();
     vi.stubGlobal(
@@ -250,7 +268,10 @@ describe("ForecastShell", () => {
 
     expect(screen.getByText("Hourly forecast data is unavailable.")).toBeInTheDocument();
     expect(screen.getByText("Daily forecast data is unavailable.")).toBeInTheDocument();
-    expect(screen.getByText("Risk timeline data is unavailable.")).toBeInTheDocument();
+    const riskRadar = screen.getByRole("region", { name: /risk radar/i });
+    const riskRows = within(riskRadar).getByRole("list", { name: /risk signal rows/i });
+    expect(within(riskRows).getByText("Comfort")).toBeInTheDocument();
+    expect(within(riskRows).getByText("Visibility")).toBeInTheDocument();
 
     await user.selectOptions(screen.getByLabelText(/select forecast city/i), "utrecht");
 

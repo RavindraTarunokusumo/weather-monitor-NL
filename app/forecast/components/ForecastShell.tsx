@@ -110,12 +110,18 @@ export function ForecastShell({ initialForecast, initialCities }: ForecastShellP
       <ForecastHero forecast={forecast} />
 
       <div className="forecast-layout">
-        <ForecastHourly
-          hourly={forecast.hourly}
-          summary={forecast.summary}
-          timezone={forecast.city.timezone}
-        />
-        <RiskTimeline events={forecast.risk_timeline} timezone={forecast.city.timezone} />
+        <div className="forecast-analytics-row">
+          <ForecastHourly
+            hourly={forecast.hourly}
+            summary={forecast.summary}
+            timezone={forecast.city.timezone}
+          />
+          <RiskTimeline
+            hourly={forecast.hourly}
+            risk_timeline={forecast.risk_timeline}
+            timezone={forecast.city.timezone}
+          />
+        </div>
         <ForecastDaily daily={forecast.daily} />
         <ForecastSources forecast={forecast} />
       </div>
