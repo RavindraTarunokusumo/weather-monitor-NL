@@ -1,0 +1,6 @@
+Task: Forecast redesign — simplify-skill pass (4 parallel review agents)
+Summary: One compactTemperature formatter replaces 4 variants; severityToScore exported and shared; maxRainChance delegates to maxNumericValue; spec-mandated sparklinePoints helper shared by hero/daily sparklines; Intl.DateTimeFormat cached per timezone; defeated useMemos removed; metricAriaLabel derived from METRICS; ~120 lines dead CSS (warning pills, summary grid, section heading, old hourly table) deleted. Skipped: extra chart memoization (trivial after formatter cache), wind unit compact helper (no shared consumer).
+Spec: docs/specs/forecast-visual-redesign.md
+Docs: N/A
+TODO: Active Session (pre-PR)
+Validation: eslint, tsc --noEmit, vitest (153 passed), re-rendered at 3 widths — 0 overflow, 0 console errors
