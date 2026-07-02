@@ -4,12 +4,12 @@ import React from "react";
 import type { ForecastResponse } from "@/lib/types/forecast";
 import {
   comfortLabel,
-  displayTemperature,
+  compactTemperature,
   displayValue,
   heroImageSrc,
-  heroTemperature,
   maxRainChance,
   narrativeSentences,
+  sparklinePoints,
 } from "../format";
 
 type ForecastHeroProps = {
@@ -116,19 +116,16 @@ function RainSparkline({ hourly }: { hourly: ForecastResponse["hourly"] }) {
     );
   }
 
-  const maxValue = Math.max(...validValues, 1);
-  const points = values.map((value, index) => {
-    const x = padding + (index / Math.max(values.length - 1, 1)) * (width - padding * 2);
-    const y =
-      value === null
-        ? height - padding
-        : height - padding - (value / maxValue) * (height - padding * 2);
-    return `${x},${y}`;
+  const peak = Math.max(...validValues);
+  const points = sparklinePoints(values, {
+    width,
+    height,
+    padding,
+    min: 0,
+    max: Math.max(peak, 1),
   });
 
-  const label = `Rain chance trend over the next ${slice.length} hours, peaking at ${Math.round(
-    Math.max(...validValues),
-  )} percent`;
+  const label = `Rain chance trend over the next ${slice.length} hours, peaking at ${Math.round(peak)} percent`;
 
   return (
     <div className="forecast-hero-sparkline">
@@ -140,7 +137,7 @@ function RainSparkline({ hourly }: { hourly: ForecastResponse["hourly"] }) {
         aria-label={label}
       >
         <polyline
-          points={points.join(" ")}
+          points={points}
           fill="none"
           stroke="currentColor"
           strokeWidth="1.6"
@@ -214,13 +211,13 @@ export function ForecastHero({ forecast }: ForecastHeroProps) {
 
           <div className="forecast-hero-right">
             <div className="forecast-hero-temp-block">
-              <p className="forecast-hero-temp-current">{heroTemperature(currentHour?.temperature_c ?? null)}</p>
+              <p className="forecast-hero-temp-current">{compactTemperature(currentHour?.temperature_c ?? null)}</p>
               <p className="forecast-hero-temp-feels">
-                Feels like {heroTemperature(currentHour?.apparent_temperature_c ?? null)}
+                Feels like {compactTemperature(currentHour?.apparent_temperature_c ?? null)}
               </p>
               <p className="forecast-hero-temp-range">
-                <span>↑ {displayTemperature(currentDay?.temperature_max_c ?? null).replace("°C", "°")}</span>
-                <span>↓ {displayTemperature(currentDay?.temperature_min_c ?? null).replace("°C", "°")}</span>
+                <span>↑ {compactTemperature(currentDay?.temperature_max_c ?? null)}</span>
+                <span>↓ {compactTemperature(currentDay?.temperature_min_c ?? null)}</span>
               </p>
             </div>
             <div className="forecast-hero-rain-block">

@@ -1,19 +1,17 @@
 import React from "react";
 import type { ForecastDay } from "@/lib/types/forecast";
 import {
+  compactTemperature,
   displayPercent,
   displayValue,
   displayWind,
+  sparklinePoints,
   weatherConditionGlyph,
 } from "../format";
 
 type ForecastDailyProps = {
   daily: ForecastDay[];
 };
-
-function compactTemperature(value: number | null | undefined) {
-  return typeof value === "number" && Number.isFinite(value) ? `${Math.round(value)}°` : "Unavailable";
-}
 
 function displayDailyDate(date: string) {
   const parsed = new Date(`${date}T12:00:00`);
@@ -95,12 +93,13 @@ function DailyTemperatureSparkline({
   const values = [hasMax ? maxC : minC!, hasMin ? minC : maxC!];
   const minValue = Math.min(...values);
   const maxValue = Math.max(...values);
-  const range = Math.max(maxValue - minValue, 1);
 
-  const points = values.map((value, index) => {
-    const x = padding + (index / Math.max(values.length - 1, 1)) * (width - padding * 2);
-    const y = height - padding - ((value - minValue) / range) * (height - padding * 2);
-    return `${x},${y}`;
+  const points = sparklinePoints(values, {
+    width,
+    height,
+    padding,
+    min: minValue,
+    max: Math.max(maxValue, minValue + 1),
   });
 
   const label = hasMax && hasMin
@@ -117,7 +116,7 @@ function DailyTemperatureSparkline({
       className="forecast-day-sparkline"
     >
       <polyline
-        points={points.join(" ")}
+        points={points}
         fill="none"
         stroke="currentColor"
         strokeWidth="1.6"

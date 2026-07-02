@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import type { ForecastHour, ForecastSummary } from "@/lib/types/forecast";
 import {
+  compactTemperature,
   displayPercent,
-  displayTemperature,
   displayWind,
   formatHourClock,
   hourNumberFromEntry,
@@ -78,18 +78,7 @@ function formatMetricValue(value: number | null, metric: HourlyMetric): string {
 }
 
 function metricAriaLabel(metric: HourlyMetric): string {
-  switch (metric) {
-    case "temperature":
-      return "Temperature";
-    case "feels_like":
-      return "Feels like";
-    case "precipitation":
-      return "Precipitation";
-    case "wind":
-      return "Wind";
-    default:
-      return "Hourly metric";
-  }
+  return METRICS.find((entry) => entry.id === metric)?.label ?? "Hourly metric";
 }
 
 function xForIndex(index: number, count: number, plotWidth: number): number {
@@ -137,15 +126,12 @@ function HourlyChart({
   summary: ForecastSummary;
 }) {
   const plotWidth = CANVAS_WIDTH - PLOT_LEFT - PLOT_RIGHT;
-  const tickIndices = useMemo(
-    () => hours.map((_, index) => index).filter((index) => index % 3 === 0),
-    [hours],
-  );
+  const tickIndices = hours.map((_, index) => index).filter((index) => index % 3 === 0);
 
   const values = hours.map((hour) => metricValue(hour, metric));
   const numericValues = values.filter((value): value is number => value !== null);
 
-  const yScale = useMemo(() => {
+  const yScale = (() => {
     if (numericValues.length === 0) {
       return { min: 0, max: 1 };
     }
@@ -158,7 +144,7 @@ function HourlyChart({
     const max = Math.max(...numericValues);
     const padding = Math.max((max - min) * 0.15, 1);
     return { min: min - padding, max: max + padding };
-  }, [metric, numericValues]);
+  })();
 
   const points = values.map((value, index) => {
     const x = xForIndex(index, hours.length, plotWidth);
@@ -310,7 +296,7 @@ function HourlyChart({
                   left: `${(xForIndex(index, hours.length, plotWidth) / CANVAS_WIDTH) * 100}%`,
                 }}
               >
-                {displayTemperature(hours[index].apparent_temperature_c).replace("°C", "°")}
+                {compactTemperature(hours[index].apparent_temperature_c)}
               </span>
             ))}
           </div>

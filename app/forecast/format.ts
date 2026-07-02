@@ -11,7 +11,7 @@ export type RadarScores = {
 
 const RADAR_DEFAULT_SCORE = 10;
 
-function severityToRadarScore(severity: ForecastRiskEvent["severity"]): number {
+export function severityToScore(severity: ForecastRiskEvent["severity"]): number {
   switch (severity) {
     case "info":
       return 25;
@@ -72,7 +72,7 @@ function radarScoreFromTimeline(
     return RADAR_DEFAULT_SCORE;
   }
 
-  return Math.max(...matches.map((event) => severityToRadarScore(event.severity)));
+  return Math.max(...matches.map((event) => severityToScore(event.severity)));
 }
 
 export function displayValue(
@@ -149,19 +149,7 @@ export function heroImageSrc(slug: string) {
 }
 
 export function maxRainChance(hourly: ForecastHour[], n = 24): number | null {
-  const slice = hourly.slice(0, n);
-  if (slice.length === 0) {
-    return null;
-  }
-
-  let max: number | null = null;
-  for (const hour of slice) {
-    if (typeof hour.precipitation_probability === "number" && Number.isFinite(hour.precipitation_probability)) {
-      max = max === null ? hour.precipitation_probability : Math.max(max, hour.precipitation_probability);
-    }
-  }
-
-  return max;
+  return maxNumericValue(hourly, n, (hour) => hour.precipitation_probability);
 }
 
 export function comfortLabel(hourly: ForecastHour[]): ComfortLabel {
@@ -250,10 +238,29 @@ export function narrativeSentences(summary: ForecastSummary): string[] {
   return sentences;
 }
 
-export function heroTemperature(value: number | null | undefined) {
+export function compactTemperature(value: number | null | undefined) {
   return typeof value === "number" && Number.isFinite(value)
     ? `${Math.round(value)}°`
     : "Unavailable";
+}
+
+export function sparklinePoints(
+  values: (number | null)[],
+  opts: { width: number; height: number; padding: number; min: number; max: number },
+): string {
+  const { width, height, padding, min, max } = opts;
+  const range = max - min || 1;
+
+  return values
+    .map((value, index) => {
+      const x = padding + (index / Math.max(values.length - 1, 1)) * (width - padding * 2);
+      const y =
+        value === null
+          ? height - padding
+          : height - padding - ((value - min) / range) * (height - padding * 2);
+      return `${x},${y}`;
+    })
+    .join(" ");
 }
 
 export function parseHourRange(
@@ -293,27 +300,41 @@ export function parseHourRange(
   return { startHour, endHour };
 }
 
+const hourClockFormatters = new Map<string, Intl.DateTimeFormat>();
+const hourNumberFormatters = new Map<string, Intl.DateTimeFormat>();
+
+function cachedFormatter(
+  cache: Map<string, Intl.DateTimeFormat>,
+  timezone: string,
+  options: Intl.DateTimeFormatOptions,
+): Intl.DateTimeFormat {
+  let formatter = cache.get(timezone);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat("en-GB", { ...options, timeZone: timezone });
+    cache.set(timezone, formatter);
+  }
+  return formatter;
+}
+
 export function formatHourClock(value: string, timezone: string): string {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
     return "Unavailable";
   }
 
-  return new Intl.DateTimeFormat("en-GB", {
+  return cachedFormatter(hourClockFormatters, timezone, {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-    timeZone: timezone,
   }).format(date);
 }
 
 export function hourNumberFromEntry(hour: ForecastHour, timezone: string): number | null {
   const date = new Date(hour.starts_at);
   if (!Number.isNaN(date.getTime())) {
-    const parts = new Intl.DateTimeFormat("en-GB", {
+    const parts = cachedFormatter(hourNumberFormatters, timezone, {
       hour: "numeric",
       hour12: false,
-      timeZone: timezone,
     }).formatToParts(date);
     const hourPart = parts.find((part) => part.type === "hour");
     if (hourPart) {

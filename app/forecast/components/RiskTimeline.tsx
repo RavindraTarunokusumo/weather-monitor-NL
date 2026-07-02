@@ -6,6 +6,7 @@ import {
   comfortLabel,
   formatHourClock,
   radarScores,
+  severityToScore,
   type RadarScores,
 } from "../format";
 
@@ -72,21 +73,6 @@ function barToneForCategory(category: ForecastRiskEvent["category"]): RiskRow["b
       return "green";
     default:
       return "blue";
-  }
-}
-
-function severityToScore(severity: ForecastRiskEvent["severity"]): number {
-  switch (severity) {
-    case "info":
-      return 25;
-    case "watch":
-      return 50;
-    case "warning":
-      return 75;
-    case "severe":
-      return 100;
-    default:
-      return 10;
   }
 }
 
