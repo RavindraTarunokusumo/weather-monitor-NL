@@ -1,0 +1,5 @@
+Task: Pin exact KNMI dataset selection
+Summary: Documented the already-implemented, already-tested KNMI dataset choices (EDR observations collection, Open-Meteo knmi_seamless forecast model, Open Data warnings dataset) resolving the founding Open Question. Discovered app/page.tsx iframes Dutch Weather Dashboard.html as the actual live homepage (confirmed on production); the paired 'delete the file' backlog item is blocked pending user decision.
+Docs: docs/specs/knmi-dataset-selection.md, docs/architecture.md, Onboarding/PLAN.md, TODO.md
+TODO: KNMI Dataset Selection Documentation (2026-07-02); BLOCKED item logged for dashboard.test.ts migration
+Validation: npm run lint, npm test (130 tests) passed
