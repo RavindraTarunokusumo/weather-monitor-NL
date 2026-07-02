@@ -1,0 +1,6 @@
+Task: Forecast redesign — pre-PR docs
+Summary: Changelog entry for the redesign; TODO items tagged with final commit hashes.
+Spec: docs/specs/forecast-visual-redesign.md
+Docs: docs/changelog.md
+TODO: Active Session
+Validation: docs-only
