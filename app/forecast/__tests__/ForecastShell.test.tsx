@@ -152,7 +152,7 @@ afterEach(() => {
 });
 
 describe("ForecastShell", () => {
-  it("renders deeper forecast analytics and source links", () => {
+  it("renders deeper forecast analytics and source freshness footer", () => {
     render(<ForecastShell initialForecast={amsterdamForecast} initialCities={cities} />);
 
     expect(
@@ -162,19 +162,58 @@ describe("ForecastShell", () => {
     expect(screen.getByText("10:00-13:00")).toBeInTheDocument();
     expect(screen.getByText("Evening gusts and showers")).toBeInTheDocument();
 
-    expect(screen.getByRole("region", { name: /hourly forecast analytics/i })).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: /risk timeline/i })).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: /7-day forecast/i })).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: /sources and methodology/i })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: /hourly signal timeline/i })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: /risk radar/i })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: /7-day outlook/i })).toBeInTheDocument();
+    expect(screen.getByRole("contentinfo", { name: /sources freshness/i })).toBeInTheDocument();
 
-    const hourly = screen.getByRole("region", { name: /hourly forecast analytics/i });
-    expect(within(hourly).getByText("Feels")).toBeInTheDocument();
-    expect(within(hourly).getByText("3.4 mm")).toBeInTheDocument();
-    expect(within(hourly).getByText("52 km/h")).toBeInTheDocument();
+    const hourly = screen.getByRole("region", { name: /hourly signal timeline/i });
+    expect(within(hourly).getByRole("button", { name: "Temperature", pressed: true })).toBeInTheDocument();
+    expect(within(hourly).getByText("Best window")).toBeInTheDocument();
+    expect(within(hourly).getByText("Showers likely")).toBeInTheDocument();
+    expect(within(hourly).getByRole("img", { name: /temperature from/i })).toBeInTheDocument();
+    const subrowLabels = hourly.querySelectorAll(".forecast-hourly-subrow-label");
+    expect(subrowLabels).toHaveLength(3);
+    expect(subrowLabels[0]).toHaveTextContent("Feels like");
+    expect(subrowLabels[1]).toHaveTextContent("Rain chance");
+    expect(subrowLabels[2]).toHaveTextContent("Wind (km/h)");
 
+    const outlook = screen.getByRole("region", { name: /7-day outlook/i });
+    expect(within(outlook).getByRole("heading", { name: /7-day outlook/i })).toBeInTheDocument();
+    expect(within(outlook).getByText("Thu")).toBeInTheDocument();
+    expect(within(outlook).getByText("18° / 11°")).toBeInTheDocument();
+    expect(within(outlook).getByRole("img", { name: /temperature from 11 to 18 degrees/i })).toBeInTheDocument();
+    expect(within(outlook).getByText("Rain risk")).toBeInTheDocument();
+
+    const sources = screen.getByRole("contentinfo", { name: /sources freshness/i });
+    expect(within(sources).getByText(/sources fresh/i)).toBeInTheDocument();
+    expect(within(sources).getByText("KNMI")).toBeInTheDocument();
+    expect(within(sources).getByText("Open-Meteo")).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /open-meteo knmi forecast documentation/i }),
+      within(sources).queryByRole("link", { name: /open-meteo knmi forecast documentation/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("reveals source links when About sources is toggled", async () => {
+    const user = userEvent.setup();
+    render(<ForecastShell initialForecast={amsterdamForecast} initialCities={cities} />);
+
+    const sources = screen.getByRole("contentinfo", { name: /sources freshness/i });
+    const toggle = within(sources).getByRole("button", { name: "About sources" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+    await user.click(toggle);
+
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(
+      within(sources).getByRole("link", { name: /open-meteo knmi forecast documentation/i }),
     ).toHaveAttribute("href", "https://open-meteo.com/en/docs/knmi-api");
+    expect(
+      within(sources).getByRole("link", { name: /knmi data platform warnings dataset/i }),
+    ).toHaveAttribute(
+      "href",
+      "https://dataplatform.knmi.nl/dataset/access/waarschuwingen-nederland-48h-1-0",
+    );
   });
 
   it("switches cities through the same-app Forecast API", async () => {
@@ -218,6 +257,39 @@ describe("ForecastShell", () => {
     expect(screen.getByText("Late drizzle")).toBeInTheDocument();
   });
 
+  it("switches hourly chart metrics when a tab is clicked", async () => {
+    const user = userEvent.setup();
+    render(<ForecastShell initialForecast={amsterdamForecast} initialCities={cities} />);
+
+    const hourly = screen.getByRole("region", { name: /hourly signal timeline/i });
+    const chart = within(hourly).getByRole("img", { name: /temperature from/i });
+    expect(chart).toHaveAttribute("aria-label", expect.stringMatching(/^Temperature from/i));
+
+    await user.click(within(hourly).getByRole("button", { name: "Wind" }));
+
+    expect(within(hourly).getByRole("button", { name: "Wind", pressed: true })).toBeInTheDocument();
+    expect(within(hourly).getByRole("button", { name: "Temperature", pressed: false })).toBeInTheDocument();
+    expect(within(hourly).getByRole("img", { name: /wind from/i })).toBeInTheDocument();
+  });
+
+  it("switches risk radar detail view between chart and score list", async () => {
+    const user = userEvent.setup();
+    render(<ForecastShell initialForecast={amsterdamForecast} initialCities={cities} />);
+
+    const riskRadar = screen.getByRole("region", { name: /risk radar/i });
+    expect(
+      within(riskRadar).getByRole("img", { name: /risk radar derived signals/i }),
+    ).toBeInTheDocument();
+
+    await user.click(within(riskRadar).getByRole("button", { name: "Detail view" }));
+
+    expect(within(riskRadar).getByRole("button", { name: "Detail view", pressed: true })).toBeInTheDocument();
+    expect(within(riskRadar).getByText("Thunder")).toBeInTheDocument();
+    expect(
+      within(riskRadar).queryByRole("img", { name: /risk radar derived signals/i }),
+    ).not.toBeInTheDocument();
+  });
+
   it("renders usable states for empty data and unavailable city loads", async () => {
     const user = userEvent.setup();
     vi.stubGlobal(
@@ -229,7 +301,10 @@ describe("ForecastShell", () => {
 
     expect(screen.getByText("Hourly forecast data is unavailable.")).toBeInTheDocument();
     expect(screen.getByText("Daily forecast data is unavailable.")).toBeInTheDocument();
-    expect(screen.getByText("Risk timeline data is unavailable.")).toBeInTheDocument();
+    const riskRadar = screen.getByRole("region", { name: /risk radar/i });
+    const riskRows = within(riskRadar).getByRole("list", { name: /risk signal rows/i });
+    expect(within(riskRows).getByText("Comfort")).toBeInTheDocument();
+    expect(within(riskRows).getByText("Visibility")).toBeInTheDocument();
 
     await user.selectOptions(screen.getByLabelText(/select forecast city/i), "utrecht");
 

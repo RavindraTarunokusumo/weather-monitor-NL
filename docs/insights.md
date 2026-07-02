@@ -2,6 +2,15 @@
 
 Record reusable lessons from completed sessions.
 
+## 2026-07-02 - Forecast Page Visual Redesign
+
+- What worked: mockup → spec → four sequential Grok implementation handoffs, each senior-reviewed, validated, and committed separately; headless-browser rendering (playwright-core in scratchpad + cached ms-playwright chromium) at 1440/834/390 caught layout bugs no unit test would.
+- What failed: CSS grid min-content leak — a `width: max-content` child inside a scroll wrapper still stretched the page because the intermediate grid item lacked `min-width: 0`; diagnose with in-browser remove-and-remeasure walking, not by reading CSS.
+- Data gotcha: `lib/forecast.ts` falls back to bare-hour labels ("09") for hourly `starts_at`; `new Date("09")` silently parses as year 2009. Any date handling of forecast rows must gate on an ISO-shape check first. This was also the root cause of the long-standing "00-00" duplicate-key warning.
+- Useful commands: playwright `page.evaluate` overflow probe (`scrollWidth - clientWidth`); DOM culprit bisection by removing children until overflow clears.
+- Workflow improvement: Grok self-reports "all tests pass" while carrying production-data bugs that fixtures mask — the Grok PR-review pass with `--effort xhigh` caught what implementation sessions and unit tests missed; keep both review layers.
+- Skill notes: dataviz skill's mark specs (2px lines, recessive grids, selective labels) and redesign-existing-projects audit made useful, concrete review criteria for Grok handoff prompts.
+
 ## 2026-07-02 - KNMI Dataset Selection / Dashboard Architecture Discovery
 
 - What worked: before executing a backlog item literally ("migrate tests, then delete the file"), checking who actually renders/imports the target file (`grep -rn "DashboardShell" app/`) surfaced that the "legacy fixture" premise was wrong — `app/page.tsx` iframes `Dutch Weather Dashboard.html` as the live homepage, confirmed on production via a direct curl. Deleting it would have taken down the site.

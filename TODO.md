@@ -4,8 +4,17 @@ This file contains active or future work only.
 
 Completed sessions must be moved to `docs/iterations/archive/` and include the related spec path.
 
+## Active Session — Forecast Page Visual Redesign (2026-07-02)
+
+Spec: `docs/specs/forecast-visual-redesign.md`
+
+- [x] 1. Hero card + generated line + page scaffolding/CSS foundation (Grok handoff) — 30ce3c5
+- [x] 2. Hourly signal timeline panel with metric tabs + inline SVG chart (Grok handoff) — 8aff44a
+- [x] 3. Risk radar panel with radar SVG + risk rows + detail toggle (Grok handoff) — ec03e7f
+- [x] 4. 7-day outlook cards + sources footer + responsive pass + test updates (Grok handoff) — e0a4053, a33677d, 8a78f4b
+
 ## Backlog
 
 ## Future Backlog
 
-- [ ] Investigate a pre-existing React duplicate-key console warning ("00-00") on the Forecast page's hourly analytics list (confirmed present on `main` before the design-alignment session; not caused by it).
+- [x] Investigate a pre-existing React duplicate-key console warning ("00-00") on the Forecast page hourly list — resolved in the forecast-visual-redesign session (c43a667): root cause was bare-hour `starts_at` values misparsed by `new Date()`; keys deduped and parsing fixed.
