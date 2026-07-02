@@ -1,0 +1,5 @@
+Task: Correct architecture.md homepage description
+Summary: Fixed Entry Points, Runtime Flow, and Frontend Boundary sections to accurately describe app/page.tsx's iframe-based homepage instead of the incorrect DashboardShell-rendering claim.
+Docs: docs/architecture.md
+TODO: BLOCKED item (dashboard.test.ts migration / Dutch Weather Dashboard.html deletion)
+Validation: npm run lint, npm test (130 tests) passed
