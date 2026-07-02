@@ -1,0 +1,6 @@
+Task: Forecast redesign item 1 — hero card + scaffolding
+Summary: Photo hero with narrative, stat chips, temp/rain blocks, comfort pill; generated line; derivation helpers; hero CSS. Implemented via Grok session 019f2236-5839-7743-9e4c-01a914a82552, senior-reviewed.
+Spec: docs/specs/forecast-visual-redesign.md
+Docs: N/A
+TODO: Active Session item 1
+Validation: eslint, tsc --noEmit, vitest (140 passed)
