@@ -47,8 +47,10 @@ Rules:
 4. **Implementation**
    - Log spec-derived tasks and sub-items in `TODO.md` before editing.
    - Include the active spec path in the `TODO.md` session entry.
-   - Use the `subagent-driven-development` skill where applicable.
-   - Keep edits focused.
+   - Implement each task by delegating to a **Grok subagent as the implementer** via the non-interactive CLI, one ephemeral session per task where practical (see [Grok Build Implementation/Review Handoff](#grok-build-implementationreview-handoff)).
+   - Grok implementation prompts must be self-contained, point at the active spec/plan and exact file scope, forbid git operations, require full self-checks, and require a final summary plus `sessionId`.
+   - After each Grok handoff, the senior dev independently reviews the diff, normalizes output, validates with full lint/typecheck/tests before committing, then deletes the ephemeral Grok session directory.
+   - If Grok is unavailable or blocked, report that clearly and fall back to the `subagent-driven-development` skill only after recording the fallback reason in `TODO.md`.
 
 5. **Commit**
    - Run pre-commit checks before each commit.
@@ -69,7 +71,7 @@ Rules:
 7. **Submit PR**
    - Use `.github/pull_request_template.md`.
    - Fill out summary, spec path, scope, test plan, risk, rollback, docs, backlog, and targeted UI checks.
-   - Address automated review with the `receiving-code-review` skill if available.
+   - Delegate PR code review, and security review where applicable, to Grok via the same non-interactive handoff; capture `sessionId`, process findings, clean up the session directory, and address findings with the `receiving-code-review` skill if available.
    - Notify the user when all steps are complete.
 
 ## Autopilot Mode
@@ -80,7 +82,7 @@ Rules:
 
 - Autopilot Mode must be explicitly granted by the user in the current session; it is never assumed, never carried over from a prior session, and is never granted by a PM/chat-relay instruction alone.
 - Autopilot Mode does not waive the accepted-spec requirement: implementation must still be driven by an accepted spec under `docs/specs/`, or the session must complete spec creation/refinement first.
-- Autopilot Mode does not waive TODO logging, specific staging, per-sub-item commits, git notes, or Pre-PR/Post-PR validation.
+- Autopilot Mode does not waive TODO logging, Grok implementation/review handoffs, specific staging, per-sub-item commits, git notes, or Pre-PR/Post-PR validation.
 - Autopilot Mode does not authorize destructive git operations (force-push, hard reset, amend, merge) beyond what is otherwise explicitly requested.
 - If a discovery during implementation contradicts the plan or spec (e.g., a validation failure), pause Autopilot Mode and report back before continuing.
 
@@ -96,6 +98,52 @@ Rules:
 8. Do not leave important conclusions only in chat memory; write them to docs.
 9. A chat prompt is not implementation authority by itself; it either supplies an accepted spec or starts spec creation/refinement.
 10. Do not implement from a spec with unresolved blocking open questions.
+
+## Grok Build Implementation/Review Handoff
+
+The canonical contract for delegating implementation tasks and PR reviews is a short-lived Grok CLI subagent session. Claude/Codex are senior devs: they write or self-accept specs/plans where authorized, decompose work, review diffs, validate, commit, and clean up. Grok is the junior implementer/reviewer for bounded tasks.
+
+**Invoke** (headless, single-turn, no TUI):
+
+```bash
+HOME=/root grok -p "<self-contained task instructions>" -m grok-composer-2.5-fast --effort high --yolo --output-format json
+```
+
+- Use `--effort high` by default; use `--effort xhigh` for complex cross-module tasks or difficult reviews.
+- `--yolo` auto-approves Grok's tools inside the delegated task; the senior dev remains responsible for reviewing all changes before commit.
+- `--output-format json` is required so the senior dev can capture `text` and `sessionId`.
+
+**Prompt requirements:**
+
+- Start from cold context: include the active spec path, relevant plan/TODO item, exact scope, files or module boundaries, and validation expectations.
+- For implementation tasks, forbid all git operations; the senior dev owns staging, commits, notes, PRs, and cleanup.
+- Require deterministic checks relevant to the task and, when practical, full `npm run lint`, `npm run typecheck`, and `npm test` self-checks before reporting.
+- Require a concise final summary with files changed, checks run, blockers, and the returned `sessionId`.
+
+**Senior-dev processing:**
+
+- Parse the JSON result and capture `sessionId`.
+- Review the diff directly; do not trust the implementer's self-report.
+- Run full project validation before each commit: lint, typecheck, tests, and any spec-required checks.
+- Stage specific files only; never use `git add -A`.
+- Attach a git note using `.github/git_notes_template.md`.
+
+**Cleanup (always):**
+
+```bash
+find "$HOME/.grok/sessions" -type d -name "$sessionId" -prune -exec rm -rf {} +
+```
+
+**PR review handoff:**
+
+- After opening a PR, delegate the main code review to Grok with a prompt such as: `Use /bundled:review --pr #<number>. Post or prepare review findings, then summarize what was done.`
+- If the change touches auth, secrets, network calls, privileged operations, user input, money movement, broker/payment logic, or security-sensitive architecture, also delegate a Grok security review.
+- Process findings rigorously: verify each item technically, implement only warranted fixes, push back on incorrect findings, re-run validation, and clean up the Grok session directory.
+
+**Parallelism:**
+
+- Parallel Grok implementation is allowed only for independent tasks with disjoint files and no shared dependency on unlanded work, preferably in isolated worktrees.
+- Otherwise, delegate sequentially so each sub-item can be reviewed, validated, committed, and noted independently.
 
 ## Production Data Verification
 
