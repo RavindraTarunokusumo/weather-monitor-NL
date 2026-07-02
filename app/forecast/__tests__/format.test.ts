@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { ForecastHour, ForecastSummary } from "@/lib/types/forecast";
-import { comfortLabel, maxRainChance, narrativeSentences } from "../format";
+import {
+  comfortLabel,
+  maxRainChance,
+  narrativeSentences,
+  parseHourRange,
+} from "../format";
 
 function hour(overrides: Partial<ForecastHour> = {}): ForecastHour {
   return {
@@ -86,6 +91,25 @@ describe("maxRainChance", () => {
         2,
       ),
     ).toBe(75);
+  });
+});
+
+describe("parseHourRange", () => {
+  it("parses valid HH:MM-HH:MM ranges", () => {
+    expect(parseHourRange("10:00-13:00")).toEqual({ startHour: 10, endHour: 13 });
+    expect(parseHourRange("9:30-21:45")).toEqual({ startHour: 9, endHour: 21 });
+    expect(parseHourRange(" 08:00 - 11:00 ")).toEqual({ startHour: 8, endHour: 11 });
+  });
+
+  it("returns null for invalid or missing inputs", () => {
+    expect(parseHourRange(null)).toBeNull();
+    expect(parseHourRange(undefined)).toBeNull();
+    expect(parseHourRange("")).toBeNull();
+    expect(parseHourRange("10-13")).toBeNull();
+    expect(parseHourRange("10:00–13:00")).toBeNull();
+    expect(parseHourRange("25:00-13:00")).toBeNull();
+    expect(parseHourRange("10:60-13:00")).toBeNull();
+    expect(parseHourRange("best window")).toBeNull();
   });
 });
 

@@ -1834,6 +1834,198 @@ p {
   text-align: center;
 }
 
+.forecast-hourly-panel {
+  min-width: 0;
+}
+
+.forecast-hourly-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.forecast-hourly-title {
+  margin-bottom: 0;
+  color: #06111f;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.forecast-hourly-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.forecast-hourly-tab {
+  min-height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-muted);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.forecast-hourly-tab.is-active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+.forecast-hourly-tab:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.forecast-hourly-scroll {
+  overflow-x: auto;
+  margin-right: -4px;
+  margin-left: -4px;
+  padding-right: 4px;
+  padding-left: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.forecast-hourly-chart-wrap {
+  min-width: 640px;
+}
+
+.forecast-hourly-bands {
+  position: relative;
+  height: 24px;
+  margin-bottom: 4px;
+}
+
+.forecast-hourly-band {
+  position: absolute;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.forecast-hourly-band-best {
+  background: rgb(22 163 74 / 16%);
+  color: var(--good);
+}
+
+.forecast-hourly-band-showers {
+  background: rgb(59 130 246 / 16%);
+  color: var(--sky);
+}
+
+.forecast-hourly-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.forecast-hourly-tick-glyph {
+  font-size: 14px;
+}
+
+.forecast-hourly-tick-hour,
+.forecast-hourly-tick-value,
+.forecast-hourly-now-label {
+  fill: var(--muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.forecast-hourly-tick-value {
+  fill: var(--text);
+  font-size: 11px;
+}
+
+.forecast-hourly-line {
+  stroke: var(--accent);
+}
+
+.forecast-hourly-dot {
+  fill: var(--surface);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.forecast-hourly-now-line {
+  stroke: var(--muted);
+  stroke-dasharray: 4 4;
+  stroke-width: 1.2;
+}
+
+.forecast-hourly-now-label {
+  fill: var(--text);
+  font-size: 11px;
+}
+
+.forecast-hourly-subrows {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.forecast-hourly-subrow {
+  display: grid;
+  gap: 6px;
+}
+
+.forecast-hourly-subrow-label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.forecast-hourly-subrow-track {
+  position: relative;
+  min-height: 18px;
+}
+
+.forecast-hourly-subrow-value {
+  position: absolute;
+  top: 0;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.forecast-hourly-rain-bars {
+  position: relative;
+  height: 28px;
+  margin-top: 2px;
+}
+
+.forecast-hourly-rain-bar {
+  position: absolute;
+  bottom: 0;
+  width: 6px;
+  border-radius: 3px 3px 0 0;
+  background: rgb(59 130 246 / 55%);
+  transform: translateX(-50%);
+}
+
 .forecast-table {
   display: grid;
   gap: 2px;
