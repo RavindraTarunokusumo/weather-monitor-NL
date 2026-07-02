@@ -30,7 +30,8 @@ function riskBadgeVariant(label: string | null | undefined): "low" | "moderate" 
   if (text.includes("severe") || text.includes("high")) {
     return "high";
   }
-  if (text.includes("moderate")) {
+  // lib/forecast.ts emits "Rain risk" / "Wind watch" for elevated days
+  if (text.includes("moderate") || text.includes("risk") || text.includes("watch")) {
     return "moderate";
   }
   return "low";

@@ -178,7 +178,7 @@ export function comfortLabel(hourly: ForecastHour[]): ComfortLabel {
     }
   }
 
-  if (maxWind === null && maxPrecip === null) {
+  if (maxWind === null || maxPrecip === null) {
     return "Unavailable";
   }
 
@@ -187,10 +187,10 @@ export function comfortLabel(hourly: ForecastHour[]): ComfortLabel {
   if (tempOutOfRange) {
     exceeded += 1;
   }
-  if (maxWind !== null && maxWind >= 30) {
+  if (maxWind >= 30) {
     exceeded += 1;
   }
-  if (maxPrecip !== null && maxPrecip >= 40) {
+  if (maxPrecip >= 40) {
     exceeded += 1;
   }
 
@@ -316,22 +316,46 @@ function cachedFormatter(
   return formatter;
 }
 
-export function formatHourClock(value: string, timezone: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return "Unavailable";
+function parseIsoDate(value: string): Date | null {
+  if (!/^\d{4}-\d{2}-\d{2}/.test(value.trim())) {
+    return null;
   }
 
-  return cachedFormatter(hourClockFormatters, timezone, {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).format(date);
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function parseBareHour(value: string | null | undefined): number | null {
+  const match = (value ?? "").trim().match(/^(\d{1,2})(?::\d{2})?$/);
+  if (!match) {
+    return null;
+  }
+
+  const parsed = Number.parseInt(match[1], 10);
+  return parsed >= 0 && parsed <= 23 ? parsed : null;
+}
+
+export function formatHourClock(value: string, timezone: string): string {
+  const date = parseIsoDate(value);
+  if (date) {
+    return cachedFormatter(hourClockFormatters, timezone, {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(date);
+  }
+
+  const bareHour = parseBareHour(value);
+  if (bareHour !== null) {
+    return `${String(bareHour).padStart(2, "0")}:00`;
+  }
+
+  return "Unavailable";
 }
 
 export function hourNumberFromEntry(hour: ForecastHour, timezone: string): number | null {
-  const date = new Date(hour.starts_at);
-  if (!Number.isNaN(date.getTime())) {
+  const date = parseIsoDate(hour.starts_at);
+  if (date) {
     const parts = cachedFormatter(hourNumberFormatters, timezone, {
       hour: "numeric",
       hour12: false,
@@ -345,15 +369,7 @@ export function hourNumberFromEntry(hour: ForecastHour, timezone: string): numbe
     }
   }
 
-  const labelMatch = hour.label.trim().match(/^(\d{1,2})$/);
-  if (labelMatch) {
-    const parsed = Number.parseInt(labelMatch[1], 10);
-    if (Number.isInteger(parsed) && parsed >= 0 && parsed <= 23) {
-      return parsed;
-    }
-  }
-
-  return null;
+  return parseBareHour(hour.starts_at) ?? parseBareHour(hour.label);
 }
 
 export function weatherConditionGlyph(

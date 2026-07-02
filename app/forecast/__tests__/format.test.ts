@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import type { ForecastHour, ForecastRiskEvent, ForecastSummary } from "@/lib/types/forecast";
 import {
   comfortLabel,
+  formatHourClock,
+  hourNumberFromEntry,
   maxRainChance,
   narrativeSentences,
   parseHourRange,
@@ -64,6 +66,55 @@ describe("comfortLabel", () => {
         hour({ apparent_temperature_c: 30, wind_speed_kmh: 40, precipitation_probability: 75 }),
       ]),
     ).toBe("Poor");
+  });
+
+  it("returns Unavailable when wind or precipitation data is wholly missing", () => {
+    expect(
+      comfortLabel([
+        hour({ wind_speed_kmh: null }),
+        hour({ wind_speed_kmh: null }),
+      ]),
+    ).toBe("Unavailable");
+    expect(
+      comfortLabel([
+        hour({ precipitation_probability: null }),
+        hour({ precipitation_probability: null }),
+      ]),
+    ).toBe("Unavailable");
+  });
+});
+
+describe("formatHourClock", () => {
+  it("formats ISO timestamps in the city timezone", () => {
+    expect(formatHourClock("2026-06-11T09:00:00.000Z", "Europe/Amsterdam")).toBe("11:00");
+  });
+
+  it("formats production label-style hours instead of misparsing them as years", () => {
+    expect(formatHourClock("09", "Europe/Amsterdam")).toBe("09:00");
+    expect(formatHourClock("18", "Europe/Amsterdam")).toBe("18:00");
+    expect(formatHourClock("18:00", "Europe/Amsterdam")).toBe("18:00");
+  });
+
+  it("returns Unavailable for unparseable values", () => {
+    expect(formatHourClock("Mon", "Europe/Amsterdam")).toBe("Unavailable");
+    expect(formatHourClock("", "Europe/Amsterdam")).toBe("Unavailable");
+    expect(formatHourClock("31", "Europe/Amsterdam")).toBe("Unavailable");
+  });
+});
+
+describe("hourNumberFromEntry", () => {
+  it("derives the hour from ISO starts_at in the city timezone", () => {
+    expect(hourNumberFromEntry(hour(), "Europe/Amsterdam")).toBe(11);
+  });
+
+  it("falls back to bare-hour starts_at and labels without Date misparsing", () => {
+    expect(hourNumberFromEntry(hour({ starts_at: "09" }), "Europe/Amsterdam")).toBe(9);
+    expect(hourNumberFromEntry(hour({ starts_at: "18", label: "18" }), "Europe/Amsterdam")).toBe(18);
+    expect(hourNumberFromEntry(hour({ starts_at: "n/a", label: "07" }), "Europe/Amsterdam")).toBe(7);
+  });
+
+  it("returns null when nothing parses", () => {
+    expect(hourNumberFromEntry(hour({ starts_at: "n/a", label: "Mon" }), "Europe/Amsterdam")).toBeNull();
   });
 });
 
