@@ -6,10 +6,11 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import type { ForecastCity, ForecastResponse } from "@/lib/types/forecast";
 import { buildUnavailableForecast } from "../unavailable";
+import { displayDateTime } from "../format";
 import { ForecastDaily } from "./ForecastDaily";
+import { ForecastHero } from "./ForecastHero";
 import { ForecastHourly } from "./ForecastHourly";
 import { ForecastSources } from "./ForecastSources";
-import { ForecastSummary } from "./ForecastSummary";
 import { RiskTimeline } from "./RiskTimeline";
 
 type ForecastShellProps = {
@@ -98,7 +99,15 @@ export function ForecastShell({ initialForecast, initialCities }: ForecastShellP
         </div>
       ) : null}
 
-      <ForecastSummary forecast={forecast} />
+      <p className="forecast-generated-line">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" className="forecast-generated-icon">
+          <circle cx="7" cy="7" r="6" fill="none" stroke="currentColor" strokeWidth="1.2" />
+          <path d="M7 3.5V7l2.5 1.5" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+        </svg>
+        Generated {displayDateTime(forecast.generated_at, forecast.city.timezone)}
+      </p>
+
+      <ForecastHero forecast={forecast} />
 
       <div className="forecast-layout">
         <ForecastHourly hourly={forecast.hourly} />
