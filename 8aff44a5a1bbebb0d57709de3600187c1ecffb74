@@ -1,0 +1,6 @@
+Task: Forecast redesign item 2 — hourly signal timeline
+Summary: Metric tab pills + inline SVG line chart with best/worst window bands, now marker, feels-like/rain/wind sub-rows; parseHourRange helper + tests. Implemented via Grok session 019f223b-3c01-7402-bb35-cc365d403e10; senior review fixed a band/label misalignment (SVG max-width vs percentage overlays) and trimmed line stroke to 2px per dataviz spec. TODO item 1 checkbox update rides along.
+Spec: docs/specs/forecast-visual-redesign.md
+Docs: N/A
+TODO: Active Session item 2
+Validation: eslint, tsc --noEmit, vitest (143 passed)
